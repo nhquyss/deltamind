@@ -116,8 +116,20 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
     final user = authState.user;
+    final isAuthenticated = user != null;
     final theme = Theme.of(context);
     final screenWidth = MediaQuery.of(context).size.width;
+
+    // If not authenticated, don't show dashboard content
+    if (!isAuthenticated) {
+      debugPrint('User not authenticated, redirecting...');
+      // Return a minimal loading screen while navigation happens
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     return Scaffold(
       body: SafeArea(
@@ -216,6 +228,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   /// Build welcome message in a card
   Widget _buildWelcomeCard(user) {
     final theme = Theme.of(context);
+    final authState = ref.watch(authControllerProvider);
+    final isAuthenticated = authState.user != null;
+
+    // Safety check - if not authenticated, don't try to access user data
+    final username = isAuthenticated && user?.email != null
+        ? user.email.split('@').first
+        : 'Guest';
 
     return Card(
       elevation: 1,
@@ -255,9 +274,11 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                         fontWeight: FontWeight.w500,
                       ),
                       children: [
-                        const TextSpan(text: 'Welcome back, '),
                         TextSpan(
-                          text: '${user?.email?.split('@').first ?? 'User'}',
+                            text:
+                                isAuthenticated ? 'Welcome back, ' : 'Hello, '),
+                        TextSpan(
+                          text: username,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: AppColors.primary,
@@ -282,20 +303,20 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
               children: [
                 Expanded(
                   child: ElevatedButton(
-              onPressed: () => context.push(AppRoutes.quizList),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
+                    onPressed: () => context.push(AppRoutes.quizList),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
                         horizontal: 12,
-                  vertical: 10,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-              child: const Text('Start a Quiz'),
-            ),
+                        vertical: 10,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    child: const Text('Start a Quiz'),
+                  ),
                 ),
                 const SizedBox(width: 8),
                 Expanded(

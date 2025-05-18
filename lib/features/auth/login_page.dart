@@ -52,7 +52,50 @@ class _LoginPageState extends State<LoginPage> {
       }
     } on AuthException catch (e) {
       setState(() {
-        _errorMessage = e.message;
+        // Special handling for email verification errors
+        if (e.message.contains('Email not confirmed') ||
+            e.message.contains('Please verify your email')) {
+          _errorMessage =
+              'Please verify your email before logging in. Check your inbox for a verification link.';
+
+          // Show a button to resend verification email
+          // ScaffoldMessenger.of(context).showSnackBar(
+          //   SnackBar(
+          //     content: const Text('Need a new verification email?'),
+          //     action: SnackBarAction(
+          //       label: 'Resend',
+          //       onPressed: () async {
+          //         try {
+          //           await SupabaseService.resendEmailVerification(
+          //             _emailController.text.trim(),
+          //           );
+          //           if (mounted) {
+          //             ScaffoldMessenger.of(context).showSnackBar(
+          //               const SnackBar(
+          //                 content: Text(
+          //                     'Verification email resent. Please check your inbox.'),
+          //                 backgroundColor: Colors.green,
+          //               ),
+          //             );
+          //           }
+          //         } catch (resendError) {
+          //           if (mounted) {
+          //             ScaffoldMessenger.of(context).showSnackBar(
+          //               SnackBar(
+          //                 content: Text(
+          //                     'Failed to resend: ${resendError.toString()}'),
+          //                 backgroundColor: Colors.red,
+          //               ),
+          //             );
+          //           }
+          //         }
+          //       },
+          //     ),
+          //   ),
+          // );
+        } else {
+          _errorMessage = e.message;
+        }
       });
     } catch (e) {
       setState(() {

@@ -35,14 +35,12 @@ class Quiz {
       description: json['description'],
       quizType: json['quiz_type'],
       difficulty: json['difficulty'],
-      createdAt:
-          json['created_at'] != null
-              ? DateTime.parse(json['created_at'])
-              : null,
-      updatedAt:
-          json['updated_at'] != null
-              ? DateTime.parse(json['updated_at'])
-              : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
+          : null,
     );
   }
 
@@ -90,20 +88,17 @@ class Question {
       quizId: json['quiz_id'],
       questionText: json['question_text'],
       questionType: json['question_type'],
-      options:
-          json['options'] is List
-              ? List<String>.from(json['options'])
-              : List<String>.from(jsonDecode(json['options'])),
+      options: json['options'] is List
+          ? List<String>.from(json['options'])
+          : List<String>.from(jsonDecode(json['options'])),
       correctAnswer: json['correct_answer'],
       explanation: json['explanation'],
-      createdAt:
-          json['created_at'] != null
-              ? DateTime.parse(json['created_at'])
-              : null,
-      updatedAt:
-          json['updated_at'] != null
-              ? DateTime.parse(json['updated_at'])
-              : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
+          : null,
     );
   }
 
@@ -154,10 +149,9 @@ class QuizAttempt {
       correctAnswers: json['score'] ?? json['correct_answers'] ?? 0,
       totalQuestions: json['total_questions'] ?? 0,
       timeTaken: json['time_taken'] ?? 0,
-      completedAt:
-          json['completed_at'] != null
-              ? DateTime.parse(json['completed_at'])
-              : null,
+      completedAt: json['completed_at'] != null
+          ? DateTime.parse(json['completed_at'])
+          : null,
       quizType: json['quiz_type'],
       difficulty: json['difficulty'],
     );
@@ -201,12 +195,11 @@ class QuizService {
         'user_id': userId,
       };
 
-      final response =
-          await SupabaseService.client
-              .from('quizzes')
-              .insert(quizData)
-              .select()
-              .single();
+      final response = await SupabaseService.client
+          .from('quizzes')
+          .insert(quizData)
+          .select()
+          .single();
 
       return Quiz.fromJson(response);
     } catch (e) {
@@ -239,12 +232,11 @@ class QuizService {
   /// Get a quiz by ID
   static Future<Quiz> getQuizById(String quizId) async {
     try {
-      final response =
-          await SupabaseService.client
-              .from('quizzes')
-              .select()
-              .eq('id', quizId)
-              .single();
+      final response = await SupabaseService.client
+          .from('quizzes')
+          .select()
+          .eq('id', quizId)
+          .single();
 
       return Quiz.fromJson(response);
     } catch (e) {
@@ -307,12 +299,11 @@ class QuizService {
         'explanation': explanation,
       };
 
-      final response =
-          await SupabaseService.client
-              .from('questions')
-              .insert(questionData)
-              .select()
-              .single();
+      final response = await SupabaseService.client
+          .from('questions')
+          .insert(questionData)
+          .select()
+          .single();
 
       return Question.fromJson(response);
     } catch (e) {

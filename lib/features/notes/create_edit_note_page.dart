@@ -124,7 +124,15 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
   }
 
   Future<void> _autoSave() async {
+    // Không tự động lưu nếu không có thay đổi hoặc đang trong quá trình lưu
     if (!_isDirty || _isSaving) return;
+
+    // Khi auto-save, chỉ lưu khi đã có ghi chú (nghĩa là cập nhật)
+    // Không tạo ghi chú mới khi auto-save để tránh tạo nhiều ghi chú trùng lặp
+    if (_existingNote == null) {
+      // Chỉ đánh dấu là bẩn để người dùng biết cần lưu
+      return;
+    }
 
     setState(() {
       _isSaving = true;

@@ -12,7 +12,7 @@ class GeminiService {
   static Future<void> initialize() async {
     try {
       await dotenv.load();
-      
+
       final apiKey = GeminiConfig.apiKeyFromEnv;
       _model = GenerativeModel(
         model: GeminiConfig.modelName,
@@ -24,7 +24,7 @@ class GeminiService {
           maxOutputTokens: 2048,
         ),
       );
-      
+
       debugPrint(
         'Gemini initialized successfully with model: ${GeminiConfig.modelName}',
       );
@@ -43,7 +43,7 @@ class GeminiService {
   }
 
   /// Generate quiz from text content
-  /// 
+  ///
   /// [content] is the text material to generate quiz from
   /// [format] is the quiz format (Multiple Choice, True/False, etc.)
   /// [difficulty] is the difficulty level (Easy, Medium, Hard)
@@ -82,14 +82,14 @@ Important: Return only valid JSON, do not include any markdown formatting.
 
       final response = await model.generateContent([Content.text(prompt)]);
       final result = response.text;
-      
+
       if (result == null || result.isEmpty) {
         throw Exception('Failed to generate quiz: Empty response');
       }
-      
+
       // Process the response to extract JSON if it's in a markdown code block
       String processedResult = result;
-      
+
       // Check if the response is wrapped in markdown code blocks
       if (result.contains('```json')) {
         // Extract content between ```json and ``` markers
@@ -97,7 +97,7 @@ Important: Return only valid JSON, do not include any markdown formatting.
         final endMarker = '```';
         final startIndex = result.indexOf(startMarker) + startMarker.length;
         final endIndex = result.lastIndexOf(endMarker);
-        
+
         if (startIndex >= 0 && endIndex >= 0 && startIndex < endIndex) {
           processedResult = result.substring(startIndex, endIndex).trim();
           debugPrint('Extracted JSON from markdown code block');
@@ -108,13 +108,13 @@ Important: Return only valid JSON, do not include any markdown formatting.
         final endMarker = '```';
         final startIndex = result.indexOf(startMarker) + startMarker.length;
         final endIndex = result.lastIndexOf(endMarker);
-        
+
         if (startIndex >= 0 && endIndex >= 0 && startIndex < endIndex) {
           processedResult = result.substring(startIndex, endIndex).trim();
           debugPrint('Extracted content from generic markdown code block');
         }
       }
-      
+
       // Validate JSON structure (try parsing it)
       try {
         final jsonTest = jsonDecode(processedResult);
@@ -126,15 +126,15 @@ Important: Return only valid JSON, do not include any markdown formatting.
         debugPrint('Raw response: $result');
         // If we can't parse the processed result, attempt to parse various substrings
         // to find valid JSON
-        
+
         // Look for opening brace
         final firstBrace = result.indexOf('{');
         final lastBrace = result.lastIndexOf('}');
-        
+
         if (firstBrace >= 0 && lastBrace >= 0 && firstBrace < lastBrace) {
           processedResult = result.substring(firstBrace, lastBrace + 1);
           debugPrint('Attempting to extract JSON by finding braces');
-          
+
           // Validate this extracted content
           try {
             final jsonTest = jsonDecode(processedResult);
@@ -151,7 +151,7 @@ Important: Return only valid JSON, do not include any markdown formatting.
           throw Exception('Failed to extract valid JSON from response');
         }
       }
-      
+
       // Return the processed result
       debugPrint(
         'Generated quiz with ${questionCount} questions at ${difficulty} difficulty',
@@ -202,7 +202,7 @@ Include examples if relevant.
       return 'Error: $e';
     }
   }
-  
+
   /// Review quiz answers and provide feedback
   static Future<String> reviewQuizAnswers({
     required List<Map<String, dynamic>> questions,
@@ -212,13 +212,13 @@ Include examples if relevant.
       if (questions.length != userAnswers.length) {
         throw Exception('Number of questions and answers do not match');
       }
-      
+
       final questionsAndAnswers = <String>[];
       for (int i = 0; i < questions.length; i++) {
         final question = questions[i];
         final userAnswer = userAnswers[i];
         final correctAnswer = question['answer'] as String;
-        
+
         questionsAndAnswers.add('''
 Question ${i + 1}: ${question['question']}
 Options: ${(question['options'] as List).join(', ')}
@@ -227,7 +227,7 @@ User's answer: $userAnswer
 Explanation: ${question['explanation'] ?? 'No explanation provided'}
         ''');
       }
-      
+
       final prompt = '''
 Review the following quiz answers and provide detailed feedback to the user. 
 
@@ -254,7 +254,7 @@ Make your feedback constructive, encouraging, and personalized. Keep the total r
 
       final response = await model.generateContent([Content.text(prompt)]);
       final feedback = response.text ?? 'Failed to review quiz answers';
-      
+
       // If the response is empty or very short, provide a generic response
       if (feedback.isEmpty || feedback.length < 100) {
         // Count correct answers
@@ -264,7 +264,7 @@ Make your feedback constructive, encouraging, and personalized. Keep the total r
             correctCount++;
           }
         }
-        
+
         return '''
 ## Quiz Review
 
@@ -278,7 +278,7 @@ You answered $correctCount out of ${questions.length} questions correctly.
 - Practice with similar questions to reinforce your knowledge
 ''';
       }
-      
+
       return feedback;
     } catch (e) {
       debugPrint('Error reviewing quiz answers: $e');
@@ -296,9 +296,9 @@ Error details: $e
 ''';
     }
   }
-  
+
   /// Generate detailed AI recommendations for a completed quiz
-  /// 
+  ///
   /// This method analyzes user performance and provides personalized recommendations
   /// [quizData] is information about the quiz (title, type, difficulty)
   /// [userAnswers] contains the user's answers with correctness information
@@ -312,11 +312,10 @@ Error details: $e
       final correctAnswers =
           userAnswers.where((a) => a['is_correct'] == true).length;
       final totalQuestions = userAnswers.length;
-      final percentageScore =
-          totalQuestions > 0
-          ? (correctAnswers / totalQuestions * 100).round() 
+      final percentageScore = totalQuestions > 0
+          ? (correctAnswers / totalQuestions * 100).round()
           : 0;
-          
+
       // Build information about questions and answers
       final questionsAndAnswers = <String>[];
       for (var answer in userAnswers) {
@@ -324,7 +323,7 @@ Error details: $e
         final userAnswer = answer['user_answer'];
         final isCorrect = answer['is_correct'];
         final correctAnswer = question['correct_answer'];
-        
+
         questionsAndAnswers.add('''
 Question: ${question['question_text']}
 Options: ${question['options'] is String ? question['options'] : jsonEncode(question['options'])}
@@ -334,7 +333,7 @@ Is correct: $isCorrect
 Explanation: ${question['explanation'] ?? 'No explanation provided'}
         ''');
       }
-      
+
       // Create a comprehensive prompt for detailed recommendations
       final prompt = '''
 I need you to analyze a user's quiz performance and provide detailed, personalized recommendations.
@@ -371,37 +370,36 @@ Make the recommendations specific, detailed, and personalized to this user's act
 
       final response = await model.generateContent([Content.text(prompt)]);
       final result = response.text;
-      
+
       if (result == null || result.isEmpty) {
         throw Exception('Failed to generate recommendations: Empty response');
       }
-      
+
       // Process the response to extract JSON
       String processedResult = result;
-      
+
       // Extract JSON content from response
       if (result.contains('{') && result.contains('}')) {
         final startIndex = result.indexOf('{');
         final endIndex = result.lastIndexOf('}') + 1;
-        
+
         if (startIndex >= 0 && endIndex > startIndex) {
           processedResult = result.substring(startIndex, endIndex);
         }
       }
-      
+
       try {
         final jsonResult = jsonDecode(processedResult);
         return jsonResult;
       } catch (e) {
         // If we can't parse JSON, return a fallback recommendation
         debugPrint('Error parsing AI recommendations: $e');
-        final scoreMessage =
-            percentageScore >= 70
-            ? 'Great job!' 
-            : percentageScore >= 50 
-                ? 'Good effort, but there\'s room for improvement.' 
+        final scoreMessage = percentageScore >= 70
+            ? 'Great job!'
+            : percentageScore >= 50
+                ? 'Good effort, but there\'s room for improvement.'
                 : 'You might need more practice with this material.';
-        
+
         return {
           // New field names
           'performance_overview':
@@ -414,7 +412,7 @@ Make the recommendations specific, detailed, and personalized to this user's act
               'Focus on understanding the core concepts rather than memorizing answers. Try creating your own questions to test your understanding.',
           'action_plan':
               'Review your incorrect answers, create a study plan focusing on weak areas, and consider retaking a similar quiz in a week to measure improvement.',
-          
+
           // Old field names for backward compatibility
           'overall_assessment':
               'You scored $correctAnswers out of $totalQuestions ($percentageScore%). $scoreMessage',
@@ -443,7 +441,7 @@ Make the recommendations specific, detailed, and personalized to this user's act
             'Consider reviewing the material again and focusing on fundamentals.',
         'action_plan':
             'Review incorrect answers and try another quiz to practice.',
-        
+
         // Old field names for backward compatibility
         'overall_assessment':
             'Sorry, we encountered an issue generating detailed recommendations.',

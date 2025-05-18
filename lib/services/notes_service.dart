@@ -15,17 +15,13 @@ class NotesService {
         throw Exception('User not authenticated');
       }
 
-      var query = SupabaseService.client
-          .from('notes')
-          .select()
-          .eq('user_id', userId)
-          .eq('is_deleted', false);
+      var query =
+          SupabaseService.client.from('notes').select().eq('user_id', userId);
 
       // Apply filters
       if (searchQuery != null && searchQuery.isNotEmpty) {
-        query = query.or(
-          'title.ilike.%${searchQuery}%,content.ilike.%${searchQuery}%',
-        );
+        // Tìm kiếm bằng ilike trong tiêu đề
+        query = query.ilike('title', '%${searchQuery}%');
       }
 
       if (tags != null && tags.isNotEmpty) {
@@ -146,7 +142,7 @@ class NotesService {
     }
   }
 
-  /// Delete a note (soft delete)
+  /// Delete a note (hard delete)
   static Future<void> deleteNote(String id) async {
     try {
       final userId = SupabaseService.currentUser?.id;
@@ -156,7 +152,7 @@ class NotesService {
 
       await SupabaseService.client
           .from('notes')
-          .update({'is_deleted': true})
+          .delete()
           .eq('id', id)
           .eq('user_id', userId);
     } catch (e) {
@@ -177,8 +173,7 @@ class NotesService {
       final response = await SupabaseService.client
           .from('notes')
           .select('tags')
-          .eq('user_id', userId)
-          .eq('is_deleted', false);
+          .eq('user_id', userId);
 
       // Extract unique tags
       final Set<String> uniqueTags = {};

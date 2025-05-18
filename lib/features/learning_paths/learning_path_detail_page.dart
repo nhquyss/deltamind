@@ -4,7 +4,8 @@ import 'package:deltamind/models/learning_path.dart';
 import 'package:deltamind/services/learning_path_service.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:graphview/graphview.dart';
+// import 'package:graphview/graphview.dart';
+import 'package:graphview/GraphView.dart';
 
 /// Learning path detail page with node graph visualization
 class LearningPathDetailPage extends StatefulWidget {

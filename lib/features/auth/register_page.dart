@@ -1,6 +1,7 @@
 import 'package:deltamind/core/constants/app_constants.dart';
 import 'package:deltamind/core/theme/app_theme.dart';
 import 'package:deltamind/features/dashboard/dashboard_page.dart';
+import 'package:deltamind/features/auth/login_page.dart';
 import 'package:deltamind/services/supabase_service.dart';
 import 'package:deltamind/widgets/google_logo.dart';
 import 'package:deltamind/widgets/loading_button.dart';
@@ -56,9 +57,32 @@ class _RegisterPageState extends State<RegisterPage> {
         );
 
         if (mounted) {
-          Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => const DashboardPage()),
-          );
+          // Check if session is null, which means email verification is required
+          if (response.session == null) {
+            // Show verification message to user
+            setState(() {
+              _isLoading = false;
+              _errorMessage = null;
+              // Show success message
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text(
+                      'Registration successful! Please check your email to verify your account before logging in.'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            });
+
+            // Navigate back to login page
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const LoginPage()),
+            );
+          } else {
+            // If session is not null, user is already verified or verification is not required
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => const DashboardPage()),
+            );
+          }
         }
       }
     } on AuthException catch (e) {

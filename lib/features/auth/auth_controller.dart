@@ -38,13 +38,18 @@ class AuthController extends StateNotifier<AuthState> {
     state = state.copyWith(user: currentUser);
 
     // Listen for auth state changes
-    SupabaseService.client.auth.onAuthStateChange.listen((data) {
+    SupabaseService.client.auth.onAuthStateChange.listen((data) async {
       final AuthChangeEvent event = data.event;
       final Session? session = data.session;
 
       if (event == AuthChangeEvent.signedIn ||
           event == AuthChangeEvent.userUpdated) {
         state = state.copyWith(user: session?.user);
+
+        // Check and create user profile if needed
+        if (event == AuthChangeEvent.signedIn) {
+          await SupabaseService.checkAndCreateUserProfile();
+        }
       } else if (event == AuthChangeEvent.signedOut) {
         state = state.copyWith(user: null);
       }
@@ -117,7 +122,12 @@ class AuthController extends StateNotifier<AuthState> {
     try {
       state = state.copyWith(isLoading: true, error: null);
       await SupabaseService.signInWithGoogle();
+
       // Note: Auth state will be updated by the onAuthStateChange listener
+      // But we'll also explicitly check for profile here as a safeguard
+      if (SupabaseService.currentUser != null) {
+        await SupabaseService.checkAndCreateUserProfile();
+      }
     } catch (e) {
       state = state.copyWith(
         isLoading: false,
@@ -140,11 +150,17 @@ class AuthController extends StateNotifier<AuthState> {
       // Then perform the actual sign out operation
       await SupabaseService.signOut();
 
+      // Force refresh UI state with a small delay
+      await Future.delayed(const Duration(milliseconds: 50));
+
       // Ensure we've completely cleared the user state
       debugPrint('User signed out successfully');
 
       // Update final state
       state = state.copyWith(isLoading: false);
+
+      // Force one more state refresh to ensure all listeners update
+      state = AuthState(user: null, isLoading: false);
     } catch (e) {
       debugPrint('Error in AuthController.signOut: $e');
       // Even if there's an error, keep the user as null

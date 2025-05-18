@@ -327,9 +327,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       // Sign out first
       await ref.read(authControllerProvider.notifier).signOut();
 
+      // Wait for a small delay to ensure auth state is updated
+      await Future.delayed(const Duration(milliseconds: 100));
+
       // Then navigate (only if still mounted)
       if (mounted) {
-        // Use go instead of navigateNamed for better navigation control
+        // Clear navigation history and go to login
         context.go(AppRoutes.login);
 
         // Show success message

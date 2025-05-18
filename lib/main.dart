@@ -142,7 +142,7 @@ final _routerProvider = Provider<GoRouter>((ref) {
       if (!isLoggedIn && !isPublicRoute) {
         debugPrint(
             'Redirecting unauthenticated user to login from ${state.matchedLocation}');
-        // Clear any error messages that might be in the state
+        // Force logout handling by immediately redirecting to login
         return AppRoutes.login;
       }
 
@@ -301,12 +301,21 @@ class _RouterNotifier extends ChangeNotifier {
   _RouterNotifier(this._ref) {
     // Listen to auth state changes
     _ref.listen<AuthState>(authControllerProvider, (previous, next) {
-      // Only notify if auth status (logged in/out) changed
-      final didAuthStateChange = previous?.user != next.user;
+      // Always check if the user state changed
+      final didAuthStateChange = previous?.user?.id != next.user?.id;
+      final wasSignedOut = previous?.user != null && next.user == null;
+
       _previousAuthState = next;
-      if (didAuthStateChange) {
+
+      // If signed out, force immediate notification
+      if (wasSignedOut) {
+        debugPrint('User signed out - forcing router refresh');
+        // Force sync to ensure logout completes before navigation
+        notifyListeners();
+        // Double notification to ensure UI updates
+        Future.microtask(() => notifyListeners());
+      } else if (didAuthStateChange) {
         debugPrint('Auth state changed: user=${next.user != null}');
-        // Notify immediately on auth state change
         notifyListeners();
       }
     });

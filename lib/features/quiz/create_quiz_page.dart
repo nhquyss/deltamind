@@ -106,8 +106,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
 
         // Update the UI to show the file is ready for processing
         setState(() {
-          _contentController.text =
-              'File uploaded: $_fileName\n\n'
+          _contentController.text = 'File uploaded: $_fileName\n\n'
               '${_getFileTypeDescription(fileExtension)} ready for processing.\n\n'
               'Click "Generate Quiz" to create a quiz from this file content.';
         });
@@ -471,23 +470,21 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
                           borderSide: BorderSide.none,
                         ),
                       ),
-                      items:
-                          AppConstants.quizTypes.map((type) {
-                            return DropdownMenuItem(
-                              value: type,
-                              child: Text(type),
-                            );
-                          }).toList(),
-                      onChanged:
-                          _isLoading
-                              ? null
-                              : (value) {
-                                if (value != null) {
-                                  setState(() {
-                                    _selectedQuizType = value;
-                                  });
-                                }
-                              },
+                      items: AppConstants.quizTypes.map((type) {
+                        return DropdownMenuItem(
+                          value: type,
+                          child: Text(type),
+                        );
+                      }).toList(),
+                      onChanged: _isLoading
+                          ? null
+                          : (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _selectedQuizType = value;
+                                });
+                              }
+                            },
                     ),
                     const SizedBox(height: 16),
 
@@ -517,23 +514,21 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
                           borderSide: BorderSide.none,
                         ),
                       ),
-                      items:
-                          AppConstants.quizDifficulties.map((difficulty) {
-                            return DropdownMenuItem(
-                              value: difficulty,
-                              child: Text(difficulty),
-                            );
-                          }).toList(),
-                      onChanged:
-                          _isLoading
-                              ? null
-                              : (value) {
-                                if (value != null) {
-                                  setState(() {
-                                    _selectedDifficulty = value;
-                                  });
-                                }
-                              },
+                      items: AppConstants.quizDifficulties.map((difficulty) {
+                        return DropdownMenuItem(
+                          value: difficulty,
+                          child: Text(difficulty),
+                        );
+                      }).toList(),
+                      onChanged: _isLoading
+                          ? null
+                          : (value) {
+                              if (value != null) {
+                                setState(() {
+                                  _selectedDifficulty = value;
+                                });
+                              }
+                            },
                     ),
                     const SizedBox(height: 16),
 
@@ -561,14 +556,13 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
                         min: 3,
                         max: 10,
                         divisions: 7,
-                        onChanged:
-                            _isLoading
-                                ? null
-                                : (value) {
-                                  setState(() {
-                                    _questionCount = value.round();
-                                  });
-                                },
+                        onChanged: _isLoading
+                            ? null
+                            : (value) {
+                                setState(() {
+                                  _questionCount = value.round();
+                                });
+                              },
                       ),
                     ),
                   ],
@@ -749,31 +743,30 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child:
-                      _isLoading
-                          ? Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
+                  child: _isLoading
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
                               ),
-                              const SizedBox(width: 12),
-                              const Text('Generating Quiz...'),
-                            ],
-                          )
-                          : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Text('Generate Quiz'),
-                              const SizedBox(width: 8),
-                              Icon(PhosphorIcons.sparkle()),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(width: 12),
+                            const Text('Generating Quiz...'),
+                          ],
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text('Generate Quiz'),
+                            const SizedBox(width: 8),
+                            Icon(PhosphorIcons.sparkle()),
+                          ],
+                        ),
                 ),
               ),
               const SizedBox(height: 40),

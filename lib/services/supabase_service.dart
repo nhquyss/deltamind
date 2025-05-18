@@ -123,6 +123,20 @@ class SupabaseService {
     }
   }
 
+  /// Resend email verification
+  // static Future<void> resendEmailVerification(String email) async {
+  //   try {
+  //     await client.auth.resend(
+  //       type: OtpType.email,
+  //       email: email,
+  //     );
+  //     debugPrint('Verification email resent to $email');
+  //   } catch (e) {
+  //     debugPrint('Error resending verification email: $e');
+  //     rethrow;
+  //   }
+  // }
+
   /// Create user profile after sign up
   static Future<void> createUserProfile({
     required String userId,
@@ -494,5 +508,37 @@ class SupabaseService {
   static String generateUuid() {
     const uuid = Uuid();
     return uuid.v4();
+  }
+
+  /// Check if user profile exists and create one if it doesn't
+  static Future<void> checkAndCreateUserProfile() async {
+    try {
+      final user = currentUser;
+      if (user == null) return;
+
+      // Try to get existing profile
+      try {
+        await getUserProfile(user.id);
+        // Profile exists, do nothing
+      } catch (e) {
+        // Profile doesn't exist, create one
+        debugPrint('Profile not found for user ${user.id}, creating one...');
+
+        // Extract email and username from user object
+        final email = user.email ?? '';
+        final username = email.isNotEmpty ? email.split('@').first : '';
+
+        // Create profile
+        await createUserProfile(
+          userId: user.id,
+          email: email,
+          username: username,
+        );
+
+        debugPrint('Profile created for user ${user.id}');
+      }
+    } catch (e) {
+      debugPrint('Error checking/creating user profile: $e');
+    }
   }
 }
