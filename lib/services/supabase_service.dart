@@ -143,13 +143,14 @@ class SupabaseService {
     required String email,
     String? username,
   }) async {
-    await client.from('profiles').insert({
-      'id': userId,
-      'email': email,
-      'username': username ?? email.split('@').first,
-      'created_at': DateTime.now().toIso8601String(),
-      'updated_at': DateTime.now().toIso8601String(),
-    });
+    // already handled by handle_new_user trigger in supabase
+    // await client.from('profiles').insert({
+    //   'id': userId,
+    //   'email': email,
+    //   'username': username ?? email.split('@').first,
+    //   'created_at': DateTime.now().toIso8601String(),
+    //   'updated_at': DateTime.now().toIso8601String(),
+    // });
   }
 
   /// Get user profile

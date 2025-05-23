@@ -464,7 +464,9 @@ class _AchievementsPageState extends ConsumerState<AchievementsPage>
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    '${((gamificationState.earnedAchievements.length / gamificationState.achievements.length) * 100).toInt()}% complete',
+                                    gamificationState.achievements.isEmpty
+                                        ? '0% complete' // Handle division by zero
+                                        : '${((gamificationState.earnedAchievements.length / gamificationState.achievements.length) * 100).toInt()}% complete',
                                     style: const TextStyle(
                                       fontFamily: 'Inter', // Brand font
                                       fontSize: 12,

@@ -83,13 +83,13 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
 
       // Show success notification for refreshes (not initial load)
       if (!_animationController.isAnimating && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Dashboard refreshed'),
-            backgroundColor: AppColors.success,
-            duration: const Duration(seconds: 2),
-          ),
-        );
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text('Dashboard refreshed'),
+        //     backgroundColor: AppColors.success,
+        //     duration: const Duration(seconds: 2),
+        //   ),
+        // );
       }
     } catch (e) {
       debugPrint('Error loading dashboard data: $e');
