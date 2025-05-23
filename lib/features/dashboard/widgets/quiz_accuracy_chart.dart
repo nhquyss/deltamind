@@ -7,7 +7,7 @@ class QuizAccuracyChart extends StatefulWidget {
   final List<Map<String, dynamic>> accuracyData;
 
   const QuizAccuracyChart({Key? key, required this.accuracyData})
-    : super(key: key);
+      : super(key: key);
 
   @override
   State<QuizAccuracyChart> createState() => _QuizAccuracyChartState();
@@ -51,8 +51,8 @@ class _QuizAccuracyChartState extends State<QuizAccuracyChart> {
                   child: Text(
                     'Quiz Accuracy',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
               ],
@@ -60,16 +60,17 @@ class _QuizAccuracyChartState extends State<QuizAccuracyChart> {
             const SizedBox(height: 16),
             SizedBox(
               height: 200,
-              child:
-                  widget.accuracyData.isEmpty
-                      ? Center(
-                        child: Text(
-                          'No quiz data available yet',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: AppColors.textSecondary),
-                        ),
-                      )
-                      : _buildLineChart(),
+              child: widget.accuracyData.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No quiz data available yet',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: AppColors.textSecondary),
+                      ),
+                    )
+                  : _buildLineChart(),
             ),
           ],
         ),
@@ -83,11 +84,11 @@ class _QuizAccuracyChartState extends State<QuizAccuracyChart> {
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
-          horizontalInterval: 20,
+          horizontalInterval: 20.0,
           getDrawingHorizontalLine: (value) {
             return FlLine(
               color: AppColors.divider.withOpacity(0.3),
-              strokeWidth: 1,
+              strokeWidth: 1.0,
             );
           },
         ),
@@ -103,39 +104,40 @@ class _QuizAccuracyChartState extends State<QuizAccuracyChart> {
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 30,
-              interval: 1,
+              interval: 1.0,
               getTitlesWidget: bottomTitleWidgets,
             ),
           ),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              interval: 20,
+              interval: 20.0,
               getTitlesWidget: leftTitleWidgets,
               reservedSize: 42,
             ),
           ),
         ),
         borderData: FlBorderData(show: false),
-        minX: 0,
-        maxX: widget.accuracyData.length.toDouble() - 1,
-        minY: 0,
-        maxY: 100,
+        minX: 0.0,
+        maxX: widget.accuracyData.isEmpty
+            ? 0.0
+            : widget.accuracyData.length.toDouble() - 1,
+        minY: 0.0,
+        maxY: 100.0,
         lineBarsData: [
           LineChartBarData(
             spots: _createSpots(),
             isCurved: true,
             gradient: LinearGradient(colors: gradientColors),
-            barWidth: 3,
+            barWidth: 3.0,
             isStrokeCapRound: true,
             dotData: const FlDotData(show: true),
             belowBarData: BarAreaData(
               show: true,
               gradient: LinearGradient(
-                colors:
-                    gradientColors
-                        .map((color) => color.withOpacity(0.3))
-                        .toList(),
+                colors: gradientColors
+                    .map((color) => color.withOpacity(0.3))
+                    .toList(),
               ),
             ),
           ),
@@ -182,30 +184,5 @@ class _QuizAccuracyChartState extends State<QuizAccuracyChart> {
       final accuracy = data['accuracy_percentage'].toDouble();
       return FlSpot(index.toDouble(), accuracy > 100 ? 100 : accuracy);
     });
-  }
-}
-
-// Utility class to fetch quiz accuracy data
-class QuizAccuracyData {
-  static Future<List<Map<String, dynamic>>> fetchAccuracyData() async {
-    try {
-      // This would typically call a service method, but we'll simulate direct from controller
-      // Normally we would use SupabaseService or another service to fetch this data
-      return [
-        {'attempt_date': '2025-04-26 00:00:00+00', 'accuracy_percentage': 48.0},
-        {
-          'attempt_date': '2025-04-27 00:00:00+00',
-          'accuracy_percentage': 70.6, // Capping at a sensible value
-        },
-        {'attempt_date': '2025-04-28 00:00:00+00', 'accuracy_percentage': 75.0},
-        {
-          'attempt_date': '2025-04-29 00:00:00+00',
-          'accuracy_percentage': 51.85,
-        },
-      ];
-    } catch (e) {
-      print('Error fetching accuracy data: $e');
-      return [];
-    }
   }
 }

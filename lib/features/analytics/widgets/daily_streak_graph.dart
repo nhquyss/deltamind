@@ -7,7 +7,7 @@ class DailyStreakGraph extends StatefulWidget {
   final Map<String, dynamic> streakData;
 
   const DailyStreakGraph({Key? key, required this.streakData})
-    : super(key: key);
+      : super(key: key);
 
   @override
   State<DailyStreakGraph> createState() => _DailyStreakGraphState();
@@ -59,8 +59,8 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
                   child: Text(
                     'Daily Streak',
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                 ),
                 Container(
@@ -99,16 +99,17 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
             const SizedBox(height: 16),
             SizedBox(
               height: 200,
-              child:
-                  streakHistory.isEmpty
-                      ? Center(
-                        child: Text(
-                          'No streak data available',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: AppColors.textSecondary),
-                        ),
-                      )
-                      : _buildLineChart(streakHistory),
+              child: streakHistory.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No streak data available',
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodyMedium
+                            ?.copyWith(color: AppColors.textSecondary),
+                      ),
+                    )
+                  : _buildLineChart(streakHistory),
             ),
             if (widget.streakData['longest_streak'] != null)
               Padding(
@@ -147,11 +148,11 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
         gridData: FlGridData(
           show: true,
           drawVerticalLine: false,
-          horizontalInterval: 1,
+          horizontalInterval: 1.0,
           getDrawingHorizontalLine: (value) {
             return FlLine(
               color: AppColors.divider.withAlpha(76),
-              strokeWidth: 1,
+              strokeWidth: 1.0,
             );
           },
         ),
@@ -167,32 +168,31 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
             sideTitles: SideTitles(
               showTitles: true,
               reservedSize: 30,
-              interval: 1,
-              getTitlesWidget:
-                  (double value, TitleMeta meta) =>
-                      _bottomTitleWidgets(value, meta, streakHistory),
+              interval: 1.0,
+              getTitlesWidget: (double value, TitleMeta meta) =>
+                  _bottomTitleWidgets(value, meta, streakHistory),
             ),
           ),
           leftTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
-              interval: 1,
+              interval: 1.0,
               getTitlesWidget: _leftTitleWidgets,
               reservedSize: 42,
             ),
           ),
         ),
         borderData: FlBorderData(show: false),
-        minX: 0,
-        maxX: streakHistory.length.toDouble() - 1,
-        minY: 0,
+        minX: 0.0,
+        maxX: streakHistory.isEmpty ? 0.0 : streakHistory.length.toDouble() - 1,
+        minY: 0.0,
         maxY: _getMaxY(streakHistory),
         lineBarsData: [
           LineChartBarData(
             spots: _createSpots(streakHistory),
             isCurved: true,
             gradient: LinearGradient(colors: gradientColors),
-            barWidth: 3,
+            barWidth: 3.0,
             isStrokeCapRound: true,
             dotData: const FlDotData(show: true),
             belowBarData: BarAreaData(
@@ -287,8 +287,8 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
         history.add({'date': date.toIso8601String(), 'streak': streakValue});
         streakValue++;
       } else {
-        // For days before the streak started, show 0
-        history.add({'date': date.toIso8601String(), 'streak': 0});
+        // For days before the streak started, show 0.0
+        history.add({'date': date.toIso8601String(), 'streak': 0.0});
       }
     }
 

@@ -105,10 +105,9 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
           ),
         ],
       ),
-      body:
-          _isLoading
-              ? _buildLoadingView()
-              : (analyticsState.errorMessage != null)
+      body: _isLoading
+          ? _buildLoadingView()
+          : (analyticsState.errorMessage != null)
               ? _buildErrorView(analyticsState.errorMessage!)
               : _buildAnalyticsView(analyticsState),
     );
@@ -173,15 +172,15 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
     Map<String, int> activityData = state.dailyActivity;
 
     // If activity data is empty, add some sample data for demonstration
-    if (activityData.isEmpty) {
-      final now = DateTime.now();
-      for (int i = 0; i < 10; i++) {
-        final date = now.subtract(Duration(days: i * 2));
-        final dateStr =
-            '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-        activityData[dateStr] = (i % 5) + 1; // Varies between 1-5
-      }
-    }
+    // if (activityData.isEmpty) {
+    //   final now = DateTime.now();
+    //   for (int i = 0; i < 10; i++) {
+    //     final date = now.subtract(Duration(days: i * 2));
+    //     final dateStr =
+    //         '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+    //     activityData[dateStr] = (i % 5) + 1; // Varies between 1-5
+    //   }
+    // }
 
     return FadeTransition(
       opacity: _fadeAnimation,
@@ -200,10 +199,9 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
 
             // Quiz Accuracy Chart - added at the top
             FutureBuilder<List<Map<String, dynamic>>>(
-              future:
-                  ref
-                      .read(analyticsControllerProvider.notifier)
-                      .loadQuizAccuracyData(),
+              future: ref
+                  .read(analyticsControllerProvider.notifier)
+                  .loadQuizAccuracyData(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting &&
                     !snapshot.hasData) {

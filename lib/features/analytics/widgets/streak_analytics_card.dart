@@ -8,7 +8,7 @@ class StreakAnalyticsCard extends StatelessWidget {
   final Map<String, dynamic> streakData;
 
   const StreakAnalyticsCard({Key? key, required this.streakData})
-    : super(key: key);
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +19,7 @@ class StreakAnalyticsCard extends StatelessWidget {
     final freezesAvailable = streakData['streak_freezes_available'] ?? 0;
     final freezesUsed = streakData['streak_freezes_used'] ?? 0;
 
-    String lastActivityDate = 'N/A';
+    String lastActivityDate = 'No activity yet';
     if (streakData['last_activity_date'] != null) {
       try {
         final date = DateTime.parse(streakData['last_activity_date']);

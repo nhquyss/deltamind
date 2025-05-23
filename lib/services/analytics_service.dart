@@ -66,10 +66,9 @@ class QuizAnalytics {
       strongestCategoryName: strongestCatName,
       weakestCategoryId: json['weakest_category'],
       weakestCategoryName: weakestCatName,
-      lastUpdated:
-          json['last_updated'] != null
-              ? DateTime.parse(json['last_updated'])
-              : null,
+      lastUpdated: json['last_updated'] != null
+          ? DateTime.parse(json['last_updated'])
+          : null,
     );
   }
 }
@@ -117,10 +116,9 @@ class StudyTimeAnalytics {
       totalStudyTimeMinutes: json['total_study_time_minutes'] ?? 0,
       studyTimeByDay: timeByDay,
       studyTimeByCategory: timeByCategory,
-      lastUpdated:
-          json['last_updated'] != null
-              ? DateTime.parse(json['last_updated'])
-              : null,
+      lastUpdated: json['last_updated'] != null
+          ? DateTime.parse(json['last_updated'])
+          : null,
     );
   }
 }
@@ -156,10 +154,9 @@ class AnalyticsService {
         final weakestCategoryId = response['weakest_category'];
 
         // Format the lastUpdated datetime
-        final lastUpdated =
-            response['last_updated'] != null
-                ? DateTime.parse(response['last_updated'])
-                : DateTime.now();
+        final lastUpdated = response['last_updated'] != null
+            ? DateTime.parse(response['last_updated'])
+            : DateTime.now();
 
         return QuizAnalytics(
           userId: userId,
@@ -250,14 +247,12 @@ class AnalyticsService {
       }
 
       // Filter out entries where category_id is null
-      final categoryAnalytics =
-          (response as List)
-              .where((record) => record['category_id'] != null)
-              .map(
-                (item) =>
-                    QuizAnalytics.fromJson(item, categoryNames: categoryMap),
-              )
-              .toList();
+      final categoryAnalytics = (response as List)
+          .where((record) => record['category_id'] != null)
+          .map(
+            (item) => QuizAnalytics.fromJson(item, categoryNames: categoryMap),
+          )
+          .toList();
 
       return categoryAnalytics;
     } catch (e) {
@@ -268,7 +263,7 @@ class AnalyticsService {
 
   /// Get performance by category for the current user (most recent attempts)
   static Future<List<Map<String, dynamic>>>
-  getRecentPerformanceByCategory() async {
+      getRecentPerformanceByCategory() async {
     try {
       final userId = SupabaseService.currentUser?.id;
       if (userId == null) {
@@ -309,44 +304,38 @@ class AnalyticsService {
 
       if (response != null) {
         return {
-          'current_streak': response['current_streak'] ?? 2,
-          'longest_streak': response['longest_streak'] ?? 2,
-          'last_activity_date':
-              response['last_activity_date'] ??
-              DateTime.now().toIso8601String(),
+          'current_streak': response['current_streak'] ?? 0,
+          'longest_streak': response['longest_streak'] ?? 0,
+          'last_activity_date': response['last_activity_date'],
           'is_streak_freeze_active':
-              response['is_streak_freeze_active'] ?? true,
-          'streak_freezes_available': response['streak_freezes_available'] ?? 7,
+              response['is_streak_freeze_active'] ?? false,
+          'streak_freezes_available': response['streak_freezes_available'] ?? 0,
           'streak_freezes_used': response['streak_freezes_used'] ?? 0,
         };
       }
 
       // Fallback ke cara lama jika RPC tidak berhasil
-      final streakResponse =
-          await SupabaseService.client
-              .from('user_streaks')
-              .select()
-              .eq('user_id', userId)
-              .single();
+      final streakResponse = await SupabaseService.client
+          .from('user_streaks')
+          .select()
+          .eq('user_id', userId)
+          .single();
 
       // Get streak freezes data
-      final freezeResponse =
-          await SupabaseService.client
-              .from('streak_freezes')
-              .select()
-              .eq('user_id', userId)
-              .maybeSingle();
+      final freezeResponse = await SupabaseService.client
+          .from('streak_freezes')
+          .select()
+          .eq('user_id', userId)
+          .maybeSingle();
 
-      final availableFreezes = freezeResponse?['available_freezes'] ?? 7;
+      final availableFreezes = freezeResponse?['available_freezes'] ?? 0;
 
       return {
-        'current_streak': streakResponse['current_streak'] ?? 2,
-        'longest_streak': streakResponse['longest_streak'] ?? 2,
-        'last_activity_date':
-            streakResponse['last_activity_date'] ??
-            DateTime.now().toIso8601String(),
+        'current_streak': streakResponse['current_streak'] ?? 0,
+        'longest_streak': streakResponse['longest_streak'] ?? 0,
+        'last_activity_date': streakResponse['last_activity_date'],
         'is_streak_freeze_active':
-            streakResponse['is_streak_freeze_active'] ?? true,
+            streakResponse['is_streak_freeze_active'] ?? false,
         'streak_freezes_available': availableFreezes,
         'streak_freezes_used': streakResponse['streak_freezes_used'] ?? 0,
       };
@@ -354,13 +343,12 @@ class AnalyticsService {
       debugPrint('Error getting streak analytics: $e');
 
       // Kalau error, berikan data default yang bagus
-      final now = DateTime.now();
       return {
-        'current_streak': 2,
-        'longest_streak': 2,
-        'last_activity_date': now.toIso8601String(),
-        'is_streak_freeze_active': true,
-        'streak_freezes_available': 7,
+        'current_streak': 0,
+        'longest_streak': 0,
+        'last_activity_date': null,
+        'is_streak_freeze_active': false,
+        'streak_freezes_available': 0,
         'streak_freezes_used': 0,
       };
     }
@@ -422,9 +410,8 @@ class AnalyticsService {
   /// Get category map (id -> name)
   static Future<Map<String, String>> _getCategoryMap() async {
     try {
-      final response = await SupabaseService.client
-          .from('categories')
-          .select('id, name');
+      final response =
+          await SupabaseService.client.from('categories').select('id, name');
 
       if (response == null || response.isEmpty) {
         // Fallback to quiz_categories if the new table is empty
@@ -511,10 +498,9 @@ class AnalyticsService {
                   (attempt['total_questions'] as num?)?.toInt() ?? 0;
             }
 
-            final accuracy =
-                totalQuestions > 0
-                    ? (totalCorrect * 100.0 / totalQuestions)
-                    : 0.0;
+            final accuracy = totalQuestions > 0
+                ? (totalCorrect * 100.0 / totalQuestions)
+                : 0.0;
 
             // Use the day key for date
             final dateStr = '${day}T00:00:00Z';
@@ -541,11 +527,11 @@ class AnalyticsService {
       }
 
       // Default fallback data
-      return _getDefaultAccuracyData();
+      return []; // Return an empty list instead of mock data
     } catch (e) {
       debugPrint('Error getting quiz accuracy data: $e');
       // Return sample data on error
-      return _getDefaultAccuracyData();
+      return []; // Return an empty list instead of mock data
     }
   }
 
