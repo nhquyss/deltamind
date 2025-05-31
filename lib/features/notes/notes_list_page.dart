@@ -298,6 +298,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
           width: 1.0,
         ),
       ),
+      clipBehavior: Clip.hardEdge,
       child: InkWell(
         onTap: () => context.go('/notes/${note.id}'),
         child: Stack(
@@ -374,10 +375,12 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
                     ),
                   if (formattedDate.isNotEmpty)
                     Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
+                      padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
                       child: Text(
                         formattedDate,
                         style: theme.textTheme.bodySmall,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
                     ),
                 ],
