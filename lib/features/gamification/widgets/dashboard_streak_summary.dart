@@ -54,7 +54,11 @@ class DashboardStreakSummary extends ConsumerWidget {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  _buildStreakIcon(context, streak.currentStreak),
+                  _buildStreakIcon(
+                    context,
+                    streak.currentStreak,
+                    streak.isStreakAchievedToday,
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -278,13 +282,24 @@ class DashboardStreakSummary extends ConsumerWidget {
     );
   }
 
-  Widget _buildStreakIcon(BuildContext context, int streakCount) {
-    final color = _getStreakColor(streakCount);
+  Widget _buildStreakIcon(
+    BuildContext context,
+    int streakCount,
+    bool isStreakAchievedToday,
+  ) {
+    // If streak achieved today, use orange/yellow color to make it more prominent
+    final color = isStreakAchievedToday
+        ? Colors.orange.shade600 // Orange color when streak achieved today
+        : _getStreakColor(streakCount);
 
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: streakCount > 0 ? color.withOpacity(0.1) : Colors.grey.shade100,
+        color: streakCount > 0
+            ? (isStreakAchievedToday
+                ? Colors.orange.shade50 // Light orange background when achieved
+                : color.withOpacity(0.1))
+            : Colors.grey.shade100,
         shape: BoxShape.circle,
       ),
       child: Icon(

@@ -130,12 +130,38 @@ class GamificationController extends StateNotifier<GamificationState> {
   Future<bool> updateQuestProgress(String questType,
       [int incrementBy = 1]) async {
     try {
+      // Get current quest state before updating
+      final questsBefore = state.dailyQuests;
+      final wasQuestCompletedBefore = questsBefore
+          .where((q) => q.questType == questType)
+          .any((q) => q.completed);
+
       final result =
           await StreakService.updateQuestProgress(questType, incrementBy);
 
       if (result) {
         // Refresh quests after updating
         await refreshDailyQuests();
+
+        // Check if this quest was just completed (wasn't completed before, but is now)
+        final updatedQuests = state.dailyQuests;
+        final questsAfter =
+            updatedQuests.where((q) => q.questType == questType);
+        final questAfter = questsAfter.isNotEmpty ? questsAfter.first : null;
+
+        final isQuestJustCompleted = questAfter != null &&
+            !wasQuestCompletedBefore &&
+            questAfter.completed;
+
+        if (isQuestJustCompleted) {
+          // Record activity to update streak (only updates once per day)
+          // This ensures streak is updated when user completes their first quest of the day
+          await StreakService.recordActivity();
+
+          // Refresh streak data after recording activity
+          final userStreak = await StreakService.getUserStreak();
+          state = state.copyWith(userStreak: userStreak);
+        }
 
         // Also refresh user level data as quest completion grants XP
         final userLevel = await StreakService.getUserLevel();

@@ -6,7 +6,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:deltamind/features/gamification/widgets/streak_freeze_countdown.dart';
 
-class StreakCard extends StatelessWidget {
+class StreakCard extends StatefulWidget {
   final UserStreak streak;
   final StreakFreeze? streakFreeze;
   final bool isDetailed;
@@ -21,10 +21,45 @@ class StreakCard extends StatelessWidget {
   });
 
   @override
+  State<StreakCard> createState() => _StreakCardState();
+}
+
+class _StreakCardState extends State<StreakCard> {
+  Set<String>? _activityDates;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadActivityDates();
+  }
+
+  @override
+  void didUpdateWidget(StreakCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reload activity dates if streak changed
+    if (oldWidget.streak.currentStreak != widget.streak.currentStreak ||
+        oldWidget.streak.activityDateStr != widget.streak.activityDateStr) {
+      _loadActivityDates();
+    }
+  }
+
+  Future<void> _loadActivityDates() async {
+    try {
+      final activityDates = await StreakService.getActivityDatesLast7Days();
+      if (mounted) {
+        setState(() {
+          _activityDates = activityDates;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading activity dates: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final hasStreakFreezes =
-        streakFreeze != null && streakFreeze!.availableFreezes > 0;
+    final hasStreakFreezes = widget.streakFreeze != null &&
+        widget.streakFreeze!.availableFreezes > 0;
 
     return Card(
       elevation: 2,
@@ -34,7 +69,7 @@ class StreakCard extends StatelessWidget {
         side: BorderSide(color: AppColors.accent.withOpacity(0.3), width: 1.5),
       ),
       child: InkWell(
-        onTap: onTap,
+        onTap: widget.onTap,
         splashColor: AppColors.accent.withOpacity(0.1),
         highlightColor: AppColors.accent.withOpacity(0.05),
         child: Padding(
@@ -46,11 +81,11 @@ class StreakCard extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   _buildHeader(context),
-                  if (streak.isStreakFreezeActive) ...[
+                  if (widget.streak.isStreakFreezeActive) ...[
                     const SizedBox(height: 16),
                     _buildActiveStreakFreezeIndicator(
                       context,
-                      streak.streakFreezeExpiry,
+                      widget.streak.streakFreezeExpiry,
                     ),
                   ],
                   if (hasStreakFreezes) ...[
@@ -59,7 +94,8 @@ class StreakCard extends StatelessWidget {
                   ],
                   const SizedBox(height: 20),
                   _buildStreakStats(context),
-                  if (isDetailed) _buildDetailedContent(context, constraints),
+                  if (widget.isDetailed)
+                    _buildDetailedContent(context, constraints),
                 ],
               );
             },
@@ -71,6 +107,15 @@ class StreakCard extends StatelessWidget {
 
   Widget _buildHeader(BuildContext context) {
     final theme = Theme.of(context);
+    // final streak = widget.streak;
+    // final isStreakAchievedToday = streak.isStreakAchievedToday;
+
+    // // Use orange gradient if streak achieved today, otherwise use accent color
+    // final iconColor =
+    //     isStreakAchievedToday ? Colors.orange.shade600 : AppColors.accent;
+    // final iconGradientColors = isStreakAchievedToday
+    //     ? [Colors.orange.shade600, Colors.orange.shade400]
+    //     : [AppColors.accent, AppColors.accent.withOpacity(0.8)];
 
     return Row(
       children: [
@@ -81,11 +126,13 @@ class StreakCard extends StatelessWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [AppColors.accent, AppColors.accent.withOpacity(0.8)],
+              // colors: iconGradientColors,
             ),
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
                 color: AppColors.accent.withOpacity(0.3),
+                // color: iconColor.withOpacity(0.3),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -135,7 +182,7 @@ class StreakCard extends StatelessWidget {
           child: _buildStreakStat(
             context,
             'Current',
-            streak.currentStreak.toString(),
+            widget.streak.currentStreak.toString(),
             PhosphorIconsFill.flame,
             AppColors.accent,
           ),
@@ -149,7 +196,7 @@ class StreakCard extends StatelessWidget {
           child: _buildStreakStat(
             context,
             'Longest',
-            streak.longestStreak.toString(),
+            widget.streak.longestStreak.toString(),
             PhosphorIconsFill.trophy,
             Colors.amber,
           ),
@@ -189,7 +236,11 @@ class StreakCard extends StatelessWidget {
             ),
             Expanded(
               child: Text(
-                DateFormat.yMMMd().format(streak.lastActivityDate),
+                widget.streak.activityDateStr != null &&
+                        widget.streak.activityDateStr!.isNotEmpty
+                    ? DateFormat.yMMMd()
+                        .format(DateTime.parse(widget.streak.activityDateStr!))
+                    : DateFormat.yMMMd().format(widget.streak.lastActivityDate),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.primary,
                   fontWeight: FontWeight.w500,
@@ -250,16 +301,46 @@ class StreakCard extends StatelessWidget {
       final date = now.subtract(Duration(days: i));
       final isToday = i == 0;
       final dayName = DateFormat('E').format(date);
+      final dateOnly = DateTime(date.year, date.month, date.day);
+      final dateStr = dateOnly.toIso8601String().split('T')[0]; // YYYY-MM-DD
 
-      // Check if this date is within streak based on lastActivityDate
+      // Check if this date has actual activity from daily_quests
+      // Use _activityDates if available (from database query)
       bool isActive = false;
-      if (streak.currentStreak > 0) {
-        final streakStartDate = streak.lastActivityDate.subtract(
-          Duration(days: streak.currentStreak - 1),
-        );
-        isActive = !date.isBefore(streakStartDate) &&
-            !date.isAfter(streak.lastActivityDate);
+
+      if (_activityDates != null) {
+        // Use actual activity dates from database - shows real activity per day
+        isActive = _activityDates!.contains(dateStr);
       }
+      // else {
+      //   // Fallback: use old logic if activity dates not loaded yet
+      //   // This will be replaced once _activityDates is loaded
+      //   final streak = widget.streak;
+      //   if (streak.activityDateStr != null &&
+      //       streak.activityDateStr!.isNotEmpty) {
+      //     try {
+      //       final activityDate = DateTime.parse(streak.activityDateStr!);
+      //       final activityDateOnly = DateTime(
+      //         activityDate.year,
+      //         activityDate.month,
+      //         activityDate.day,
+      //       );
+
+      //       if (dateOnly == activityDateOnly) {
+      //         isActive = true;
+      //       } else if (streak.currentStreak > 0) {
+      //         final lastActivityDate = activityDateOnly;
+      //         final streakStartDate = lastActivityDate.subtract(
+      //           Duration(days: streak.currentStreak - 1),
+      //         );
+      //         isActive = !dateOnly.isBefore(streakStartDate) &&
+      //             !dateOnly.isAfter(lastActivityDate);
+      //       }
+      //     } catch (e) {
+      //       debugPrint('Error parsing activity_date_str: $e');
+      //     }
+      //   }
+      // }
 
       dayWidgets.add(
         SizedBox(
@@ -280,8 +361,8 @@ class StreakCard extends StatelessWidget {
   ) {
     final theme = Theme.of(context);
     final barColor = isActive
-            ? AppColors.accent
-            : theme.colorScheme.onSurface.withOpacity(0.1);
+        ? AppColors.accent
+        : theme.colorScheme.onSurface.withOpacity(0.1);
     final barHeight = isActive ? 40.0 : 15.0;
 
     return Column(
@@ -295,14 +376,14 @@ class StreakCard extends StatelessWidget {
             color: barColor,
             borderRadius: BorderRadius.circular(4),
             boxShadow: isActive
-                    ? [
-                      BoxShadow(
-                        color: AppColors.accent.withOpacity(0.3),
-                        blurRadius: 5,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
-                    : null,
+                ? [
+                    BoxShadow(
+                      color: AppColors.accent.withOpacity(0.3),
+                      blurRadius: 5,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                : null,
           ),
         ),
         const SizedBox(height: 8),
@@ -312,8 +393,8 @@ class StreakCard extends StatelessWidget {
             dayName,
             style: theme.textTheme.bodySmall?.copyWith(
               color: isToday
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurface.withOpacity(0.7),
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurface.withOpacity(0.7),
               fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
               fontSize: 10, // Smaller font size to avoid overflow
             ),
@@ -439,7 +520,7 @@ class StreakCard extends StatelessWidget {
                     color: Colors.blue.shade700,
                   ),
                   overflow: TextOverflow.ellipsis,
-                  ),
+                ),
                 const SizedBox(height: 4),
                 StreakFreezeCountdown(
                   expiryTime: expiryTime,
