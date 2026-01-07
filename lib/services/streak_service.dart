@@ -422,7 +422,7 @@ class StreakService {
 
       // Call the use_streak_freeze function
       final response = await SupabaseService.client
-          .rpc('use_streak_freeze', params: {'user_id_param': userId});
+          .rpc('use_streak_freeze', params: {'p_user_id_param': userId});
 
       return response as bool;
     } catch (e) {
@@ -442,7 +442,7 @@ class StreakService {
       try {
         // Call generate_daily_quests RPC to ensure user has quests
         await SupabaseService.client.rpc('generate_daily_quests', params: {
-          'user_id_param': userId,
+          'p_user_id_param': userId,
         });
       } catch (e) {
         // Log but continue - the user might still have existing quests
@@ -478,8 +478,8 @@ class StreakService {
 
       final response =
           await SupabaseService.client.rpc('update_quest_progress', params: {
-        'user_id_param': userId,
-        'quest_type_param': questType,
+        'p_user_id_param': userId,
+        'p_quest_type_param': questType,
         'increment_count': incrementBy,
       });
 

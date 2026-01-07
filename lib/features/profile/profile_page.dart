@@ -537,6 +537,19 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                               color: AppColors.accent,
                             ),
                           ),
+                          const Divider(),
+                          ListTile(
+                            title: const Text('Change Password'),
+                            leading: const Icon(
+                              Icons.lock_outline,
+                              color: AppColors.primary,
+                            ),
+                            onTap: () {
+                              context.push(AppRoutes.changePassword);
+                            },
+                            trailing:
+                                const Icon(Icons.arrow_forward_ios, size: 16),
+                          ),
                         ],
                       ),
                     ),
@@ -549,22 +562,17 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                       borderRadius: BorderRadius.circular(8.0),
                       side: const BorderSide(color: AppColors.error, width: 2),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 16),
-                          ListTile(
-                            title: const Text('Sign Out'),
-                            leading: const Icon(
-                              Icons.logout,
-                              color: AppColors.error,
-                            ),
-                            onTap: _isLoading ? null : _signOut,
-                          ),
-                        ],
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
                       ),
+                      title: const Text('Sign Out'),
+                      leading: const Icon(
+                        Icons.logout,
+                        color: AppColors.error,
+                      ),
+                      onTap: _isLoading ? null : _signOut,
                     ),
                   ),
                 ],

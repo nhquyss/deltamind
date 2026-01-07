@@ -252,7 +252,6 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
             );
 
             // Navigate to the quiz details page
-            Navigator.of(context).pop();
             context.go('/quiz/${quiz.id}');
             return; // Exit early as we've already handled this case
           } else {
@@ -301,7 +300,6 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
         );
 
         // Navigate to the quiz details page
-        Navigator.of(context).pop();
         context.go('/quiz/${quiz.id}');
       } else {
         throw Exception('Failed to generate quiz');

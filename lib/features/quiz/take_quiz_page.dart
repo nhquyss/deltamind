@@ -17,6 +17,7 @@ class QuizAttemptState {
   final DateTime startTime;
   final bool isCompleted;
   final int score;
+  final String quizTitle;
 
   QuizAttemptState({
     required this.quizId,
@@ -28,6 +29,7 @@ class QuizAttemptState {
     required this.startTime,
     this.isCompleted = false,
     this.score = 0,
+    required this.quizTitle,
   });
 
   QuizAttemptState copyWith({
@@ -40,6 +42,7 @@ class QuizAttemptState {
     DateTime? startTime,
     bool? isCompleted,
     int? score,
+    String? quizTitle,
   }) {
     return QuizAttemptState(
       quizId: quizId ?? this.quizId,
@@ -51,6 +54,7 @@ class QuizAttemptState {
       startTime: startTime ?? this.startTime,
       isCompleted: isCompleted ?? this.isCompleted,
       score: score ?? this.score,
+      quizTitle: quizTitle ?? this.quizTitle,
     );
   }
 
@@ -88,24 +92,28 @@ class QuizAttemptState {
 /// Provider for quiz attempt
 final quizAttemptProvider = StateNotifierProvider.family<QuizAttemptNotifier,
         QuizAttemptState, QuizAttemptParams>(
-    (ref, params) => QuizAttemptNotifier(params.quizId, params.questions));
+    (ref, params) =>
+        QuizAttemptNotifier(params.quizId, params.questions, params.quizTitle));
 
 /// Parameters for quiz attempt
 class QuizAttemptParams {
   final String quizId;
   final List<Question> questions;
+  final String quizTitle;
 
-  QuizAttemptParams({required this.quizId, required this.questions});
+  QuizAttemptParams(
+      {required this.quizId, required this.questions, required this.quizTitle});
 }
 
 /// Notifier for quiz attempt
 class QuizAttemptNotifier extends StateNotifier<QuizAttemptState> {
-  QuizAttemptNotifier(String quizId, List<Question> questions)
+  QuizAttemptNotifier(String quizId, List<Question> questions, String quizTitle)
       : super(
           QuizAttemptState(
             quizId: quizId,
             questions: questions,
             startTime: DateTime.now(),
+            quizTitle: quizTitle,
           ),
         );
 
@@ -226,6 +234,7 @@ class QuizAttemptNotifier extends StateNotifier<QuizAttemptState> {
         'total_questions': state.questions.length,
         'time_taken': state.totalTimeTaken,
         'completed': true,
+        'quiz_title': state.quizTitle,
       };
 
       // Add user_id last (this has been a common pattern to avoid ambiguity)
@@ -262,7 +271,7 @@ class QuizAttemptNotifier extends StateNotifier<QuizAttemptState> {
 
         // On some systems, casting the IDs to text helps avoid ambiguity
         final textCastQuery = '''
-        INSERT INTO quiz_attempts (id, user_id, quiz_id, score, total_questions, time_taken, completed) 
+        INSERT INTO quiz_attempts (id, user_id, quiz_id, score, total_questions, time_taken, completed, quiz_title) 
         VALUES (
           '$attemptId'::uuid, 
           '$userId'::uuid, 
@@ -270,7 +279,8 @@ class QuizAttemptNotifier extends StateNotifier<QuizAttemptState> {
           ${state.score}, 
           ${state.questions.length}, 
           ${state.totalTimeTaken}, 
-          ${true}
+          ${true},
+          '${state.quizTitle.replaceAll("'", "''")}'
         )
         ''';
 
@@ -292,8 +302,9 @@ class QuizAttemptNotifier extends StateNotifier<QuizAttemptState> {
               v_id uuid := '$attemptId'::uuid;
               v_user_id uuid := '$userId'::uuid;
               v_quiz_id uuid := '${state.quizId}'::uuid;
+              v_quiz_title text := '${state.quizTitle.replaceAll("'", "''")}';
             BEGIN
-              INSERT INTO quiz_attempts (id, user_id, quiz_id, score, total_questions, time_taken, completed)
+              INSERT INTO quiz_attempts (id, user_id, quiz_id, score, total_questions, time_taken, completed, quiz_title)
               VALUES (
                 v_id, 
                 v_user_id, 
@@ -301,7 +312,8 @@ class QuizAttemptNotifier extends StateNotifier<QuizAttemptState> {
                 ${state.score}, 
                 ${state.questions.length}, 
                 ${state.totalTimeTaken}, 
-                true
+                true,
+                v_quiz_title
               );
             END \$\$;
             ''';
@@ -324,6 +336,7 @@ class QuizAttemptNotifier extends StateNotifier<QuizAttemptState> {
                   'total_questions_value': state.questions.length,
                   'time_taken_value': state.totalTimeTaken,
                   'completed_value': true,
+                  'quiz_title_value': state.quizTitle,
                 },
               );
               debugPrint('Final direct insert approach successful');
@@ -464,6 +477,7 @@ class _TakeQuizPageState extends ConsumerState<TakeQuizPage> {
     _params = QuizAttemptParams(
       quizId: widget.quizId,
       questions: widget.questions,
+      quizTitle: widget.quizTitle,
     );
   }
 

@@ -2,8 +2,10 @@ import 'package:deltamind/core/constants/app_constants.dart';
 import 'package:deltamind/core/routing/app_router.dart';
 import 'package:deltamind/core/theme/app_theme.dart';
 import 'package:deltamind/features/auth/auth_controller.dart';
+import 'package:deltamind/features/auth/forgot_password_page.dart';
 import 'package:deltamind/features/auth/login_page.dart';
 import 'package:deltamind/features/auth/register_page.dart';
+import 'package:deltamind/features/auth/reset_password_page.dart';
 import 'package:deltamind/features/dashboard/dashboard_page.dart';
 import 'package:deltamind/features/flashcards/create_flashcard_deck_page.dart';
 import 'package:deltamind/features/flashcards/flashcard_deck_detail_page.dart';
@@ -128,10 +130,17 @@ final _routerProvider = Provider<GoRouter>((ref) {
       final isOnboardingRoute = state.matchedLocation == AppRoutes.onboarding;
       final isLoginRoute = state.matchedLocation == AppRoutes.login;
       final isRegisterRoute = state.matchedLocation == AppRoutes.register;
+      final isForgotPasswordRoute =
+          state.matchedLocation == AppRoutes.forgotPassword;
+      final isResetPasswordRoute =
+          state.matchedLocation == AppRoutes.resetPassword;
 
       // Define which routes are public (don't require authentication)
-      final isPublicRoute =
-          isOnboardingRoute || isLoginRoute || isRegisterRoute;
+      final isPublicRoute = isOnboardingRoute ||
+          isLoginRoute ||
+          isRegisterRoute ||
+          isForgotPasswordRoute ||
+          isResetPasswordRoute;
 
       // If we're currently loading auth state, don't redirect
       if (authState.isLoading) {
@@ -174,6 +183,22 @@ final _routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.register,
         builder: (context, state) => const RegisterPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.forgotPassword,
+        builder: (context, state) => const ForgotPasswordPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.resetPassword,
+        builder: (context, state) => const ResetPasswordPage(
+          isChangePassword: false,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.changePassword,
+        builder: (context, state) => const ResetPasswordPage(
+          isChangePassword: true,
+        ),
       ),
 
       // Shell route with navigation bar for authenticated routes

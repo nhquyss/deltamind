@@ -1,5 +1,6 @@
 import 'package:deltamind/services/supabase_service.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:convert';
 
 /// Model class for quiz analytics
 class QuizAnalytics {
@@ -137,25 +138,30 @@ class AnalyticsService {
       final categoryMap = await _getCategoryMap();
 
       // Mendapatkan data dari SQL untuk mendapatkan hasil yang paling akurat
-      final response = await SupabaseService.client.rpc(
+      final dynamic rpcRawResponse = await SupabaseService.client.rpc(
         'get_user_overall_analytics',
-        params: {'user_id_param': userId},
+        params: {'p_user_id_param': userId},
       );
 
-      if (response != null) {
+      final Map<String, dynamic>? overallAnalyticsData =
+          _extractMapData(rpcRawResponse);
+
+      if (overallAnalyticsData != null) {
         // Extract values with proper null handling to ensure accuracy
-        final averageScore = response['average_score']?.toDouble() ?? 0.0;
-        final totalAttempts = response['total_attempts'] ?? 0;
-        final totalCorrect = response['total_correct_answers'] ?? 0;
-        final totalQuestions = response['total_questions_attempted'] ?? 0;
+        final averageScore =
+            overallAnalyticsData['average_score']?.toDouble() ?? 0.0;
+        final totalAttempts = overallAnalyticsData['total_attempts'] ?? 0;
+        final totalCorrect = overallAnalyticsData['total_correct_answers'] ?? 0;
+        final totalQuestions =
+            overallAnalyticsData['total_questions_attempted'] ?? 0;
 
         // Get strongest and weakest categories if they exist
-        final strongestCategoryId = response['strongest_category'];
-        final weakestCategoryId = response['weakest_category'];
+        final strongestCategoryId = overallAnalyticsData['strongest_category'];
+        final weakestCategoryId = overallAnalyticsData['weakest_category'];
 
         // Format the lastUpdated datetime
-        final lastUpdated = response['last_updated'] != null
-            ? DateTime.parse(response['last_updated'])
+        final lastUpdated = overallAnalyticsData['last_updated'] != null
+            ? DateTime.parse(overallAnalyticsData['last_updated'])
             : DateTime.now();
 
         return QuizAnalytics(
@@ -171,11 +177,13 @@ class AnalyticsService {
           lastUpdated: lastUpdated,
         );
       }
+      debugPrint(
+          'RPC get_user_overall_analytics failed or returned unexpected data, falling back to direct table access.');
 
       // Get data directly from tables if RPC fails
       final attemptsResponse = await SupabaseService.client
           .from('quiz_attempts')
-          .select('correct_answers, total_questions')
+          .select('score, total_questions')
           .eq('user_id', userId);
 
       if (attemptsResponse != null && attemptsResponse.isNotEmpty) {
@@ -184,7 +192,7 @@ class AnalyticsService {
         int totalQuestions = 0;
 
         for (final attempt in attemptsResponse) {
-          totalCorrect += (attempt['correct_answers'] as num?)?.toInt() ?? 0;
+          totalCorrect += (attempt['score'] as num?)?.toInt() ?? 0;
           totalQuestions += (attempt['total_questions'] as num?)?.toInt() ?? 0;
         }
 
@@ -297,47 +305,70 @@ class AnalyticsService {
       }
 
       // Panggil fungsi RPC untuk mendapatkan data yang akurat
-      final response = await SupabaseService.client.rpc(
+      final dynamic rpcRawResponse = await SupabaseService.client.rpc(
         'get_user_streak_data',
-        params: {'user_id_param': userId},
+        params: {'p_user_id_param': userId},
       );
 
-      if (response != null) {
+      final Map<String, dynamic>? rpcData = _extractMapData(rpcRawResponse);
+
+      if (rpcData != null) {
         return {
-          'current_streak': response['current_streak'] ?? 0,
-          'longest_streak': response['longest_streak'] ?? 0,
-          'last_activity_date': response['last_activity_date'],
+          'current_streak': _parseInt(rpcData['current_streak']) ?? 0,
+          'longest_streak': _parseInt(rpcData['longest_streak']) ?? 0,
+          'last_activity_date': rpcData['last_activity_date'],
           'is_streak_freeze_active':
-              response['is_streak_freeze_active'] ?? false,
-          'streak_freezes_available': response['streak_freezes_available'] ?? 0,
-          'streak_freezes_used': response['streak_freezes_used'] ?? 0,
+              rpcData['is_streak_freeze_active'] ?? false,
+          'streak_freezes_available':
+              _parseInt(rpcData['streak_freezes_available']) ?? 0,
+          'streak_freezes_used': _parseInt(rpcData['streak_freezes_used']) ?? 0,
         };
       }
 
       // Fallback ke cara lama jika RPC tidak berhasil
-      final streakResponse = await SupabaseService.client
+      debugPrint(
+          'RPC failed or returned unexpected data, falling back to direct table access for streak analytics.');
+      final dynamic rawStreakTableResponse = await SupabaseService.client
           .from('user_streaks')
           .select()
           .eq('user_id', userId)
           .single();
+      final Map<String, dynamic>? streakTableData =
+          _extractMapData(rawStreakTableResponse);
 
-      // Get streak freezes data
-      final freezeResponse = await SupabaseService.client
+      final dynamic rawFreezeTableResponse = await SupabaseService.client
           .from('streak_freezes')
           .select()
           .eq('user_id', userId)
           .maybeSingle();
+      final Map<String, dynamic>? freezeTableData =
+          _extractMapData(rawFreezeTableResponse);
 
-      final availableFreezes = freezeResponse?['available_freezes'] ?? 0;
+      if (streakTableData != null) {
+        final availableFreezes =
+            _parseInt(freezeTableData?['available_freezes']) ?? 0;
+        return {
+          'current_streak': _parseInt(streakTableData['current_streak']) ?? 0,
+          'longest_streak': _parseInt(streakTableData['longest_streak']) ?? 0,
+          'last_activity_date': streakTableData['last_activity_date'],
+          'is_streak_freeze_active':
+              streakTableData['is_streak_freeze_active'] ?? false,
+          'streak_freezes_available': availableFreezes,
+          'streak_freezes_used':
+              _parseInt(streakTableData['streak_freezes_used']) ?? 0,
+        };
+      }
 
+      debugPrint(
+          'No streak data found through RPC or direct table access after fallback.');
+      // If all attempts fail, return default values consistent with catch block
       return {
-        'current_streak': streakResponse['current_streak'] ?? 0,
-        'longest_streak': streakResponse['longest_streak'] ?? 0,
-        'last_activity_date': streakResponse['last_activity_date'],
-        'is_streak_freeze_active':
-            streakResponse['is_streak_freeze_active'] ?? false,
-        'streak_freezes_available': availableFreezes,
-        'streak_freezes_used': streakResponse['streak_freezes_used'] ?? 0,
+        'current_streak': 0,
+        'longest_streak': 0,
+        'last_activity_date': null,
+        'is_streak_freeze_active': false,
+        'streak_freezes_available': 0,
+        'streak_freezes_used': 0,
       };
     } catch (e) {
       debugPrint('Error getting streak analytics: $e');
@@ -405,6 +436,68 @@ class AnalyticsService {
   // Helper method to format date as key
   static String _formatDateKey(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
+  // Helper method to safely parse an integer
+  static int? _parseInt(dynamic value) {
+    if (value == null) {
+      return null;
+    }
+    if (value is int) {
+      return value;
+    }
+    if (value is double) {
+      return value.toInt();
+    }
+    if (value is String) {
+      return int.tryParse(value);
+    }
+    debugPrint(
+        'AnalyticsService._parseInt: Unexpected type for value: ${value.runtimeType}');
+    return null;
+  }
+
+  // Helper method to safely extract Map<String, dynamic> from various data types
+  static Map<String, dynamic>? _extractMapData(dynamic rawData) {
+    if (rawData == null) {
+      return null;
+    }
+    if (rawData is Map<String, dynamic>) {
+      return rawData;
+    }
+    if (rawData is List) {
+      if (rawData.isNotEmpty && rawData.first is Map<String, dynamic>) {
+        return rawData.first as Map<String, dynamic>;
+      }
+      debugPrint(
+          'AnalyticsService._extractMapData: Input List was empty or first item not a Map: $rawData');
+      return null;
+    }
+    if (rawData is String) {
+      try {
+        final decodedJson = jsonDecode(rawData);
+        if (decodedJson is Map<String, dynamic>) {
+          return decodedJson;
+        } else if (decodedJson is List) {
+          if (decodedJson.isNotEmpty &&
+              decodedJson.first is Map<String, dynamic>) {
+            return decodedJson.first as Map<String, dynamic>;
+          }
+          debugPrint(
+              'AnalyticsService._extractMapData: Decoded JSON List was empty or first item not a Map: $decodedJson');
+        } else {
+          debugPrint(
+              'AnalyticsService._extractMapData: Decoded JSON was not a Map or List: ${decodedJson.runtimeType}');
+        }
+      } catch (e) {
+        debugPrint(
+            'AnalyticsService._extractMapData: Failed to jsonDecode String: $e, Data: $rawData');
+      }
+      return null;
+    }
+    debugPrint(
+        'AnalyticsService._extractMapData: Could not extract map from data of type ${rawData.runtimeType}');
+    return null;
   }
 
   /// Get category map (id -> name)

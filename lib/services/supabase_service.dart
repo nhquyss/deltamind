@@ -137,6 +137,51 @@ class SupabaseService {
   //   }
   // }
 
+  /// Send password reset email
+  static Future<void> resetPasswordForEmail(String email) async {
+    try {
+      await client.auth.resetPasswordForEmail(
+        email,
+        redirectTo: kIsWeb
+            ? '${Uri.base.origin}/login-callback/reset-password'
+            : 'io.supabase.deltamind://login-callback/reset-password',
+      );
+      debugPrint('Password reset email sent to $email');
+    } catch (e) {
+      debugPrint('Error sending password reset email: $e');
+      rethrow;
+    }
+  }
+
+  /// Update password (for authenticated users)
+  static Future<void> updatePassword(String newPassword) async {
+    try {
+      checkAuthentication();
+      await client.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+      debugPrint('Password updated successfully');
+    } catch (e) {
+      debugPrint('Error updating password: $e');
+      rethrow;
+    }
+  }
+
+  /// Reset password using token from email
+  static Future<void> resetPassword({
+    required String newPassword,
+  }) async {
+    try {
+      await client.auth.updateUser(
+        UserAttributes(password: newPassword),
+      );
+      debugPrint('Password reset successfully');
+    } catch (e) {
+      debugPrint('Error resetting password: $e');
+      rethrow;
+    }
+  }
+
   /// Create user profile after sign up
   static Future<void> createUserProfile({
     required String userId,

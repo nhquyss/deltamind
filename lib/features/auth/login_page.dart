@@ -1,4 +1,5 @@
 import 'package:deltamind/core/constants/app_constants.dart';
+import 'package:deltamind/core/routing/app_router.dart';
 import 'package:deltamind/core/theme/app_theme.dart';
 import 'package:deltamind/features/auth/register_page.dart';
 import 'package:deltamind/features/dashboard/dashboard_page.dart';
@@ -6,6 +7,7 @@ import 'package:deltamind/services/supabase_service.dart';
 import 'package:deltamind/widgets/google_logo.dart';
 import 'package:deltamind/widgets/loading_button.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Login page for user authentication
@@ -214,7 +216,7 @@ class _LoginPageState extends State<LoginPage> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () {
-                      // TODO: Implement forgot password
+                      context.push(AppRoutes.forgotPassword);
                     },
                     child: const Text('Forgot Password?'),
                   ),

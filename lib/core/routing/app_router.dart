@@ -1,8 +1,10 @@
 import 'package:deltamind/core/routing/scaffold_with_navbar.dart';
 import 'package:deltamind/features/analytics/analytics_page.dart';
 import 'package:deltamind/features/auth/auth_controller.dart';
+import 'package:deltamind/features/auth/forgot_password_page.dart';
 import 'package:deltamind/features/auth/login_page.dart';
 import 'package:deltamind/features/auth/register_page.dart';
+import 'package:deltamind/features/auth/reset_password_page.dart';
 import 'package:deltamind/features/dashboard/dashboard_page.dart';
 import 'package:deltamind/features/flashcards/create_flashcard_deck_page.dart';
 import 'package:deltamind/features/flashcards/flashcard_deck_detail_page.dart';
@@ -44,6 +46,15 @@ class AppRoutes {
 
   /// Register route
   static const String register = '/register';
+
+  /// Forgot password route
+  static const String forgotPassword = '/forgot-password';
+
+  /// Reset password route
+  static const String resetPassword = '/reset-password';
+
+  /// Change password route
+  static const String changePassword = '/change-password';
 
   /// Dashboard route
   static const String dashboard = '/dashboard';
@@ -112,17 +123,40 @@ final routerProvider = Provider<GoRouter>((ref) {
     debugLogDiagnostics: true,
     redirect: (context, state) {
       // If the user is not logged in, redirect to the login page
-      // unless they are already on the login page
+      // unless they are already on the login page, forgot password, or reset password
       final loginLocation = state.matchedLocation == AppRoutes.login;
       final splashLocation = state.matchedLocation == AppRoutes.splash;
+      final forgotPasswordLocation =
+          state.matchedLocation == AppRoutes.forgotPassword;
+      final resetPasswordLocation =
+          state.matchedLocation == AppRoutes.resetPassword;
 
-      if (authState.user == null && !loginLocation && !splashLocation) {
+      if (authState.user == null &&
+          !loginLocation &&
+          !splashLocation &&
+          !forgotPasswordLocation &&
+          !resetPasswordLocation) {
         return AppRoutes.login;
       }
 
       // If the user is logged in and on the login page, redirect to the home page
       if (authState.user != null && loginLocation) {
         return AppRoutes.dashboard;
+      }
+
+      // Handle reset password redirect from email
+      // Check if there's a hash fragment with access_token (from email link)
+      final uri = Uri.parse(state.uri.toString());
+      if (uri.hasFragment) {
+        final fragment = uri.fragment;
+        if (fragment.contains('access_token') ||
+            fragment.contains('type=recovery')) {
+          // User came from password reset email
+          // They should be able to access reset password page
+          if (state.matchedLocation != AppRoutes.resetPassword) {
+            return AppRoutes.resetPassword;
+          }
+        }
       }
 
       // No redirect
@@ -148,6 +182,22 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: AppRoutes.register,
         builder: (context, state) => const RegisterPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.forgotPassword,
+        builder: (context, state) => const ForgotPasswordPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.resetPassword,
+        builder: (context, state) => const ResetPasswordPage(
+          isChangePassword: false,
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.changePassword,
+        builder: (context, state) => const ResetPasswordPage(
+          isChangePassword: true,
+        ),
       ),
 
       // Shell route for the main navigation

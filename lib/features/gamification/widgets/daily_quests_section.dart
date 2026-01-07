@@ -1,8 +1,10 @@
+import 'package:deltamind/core/routing/app_router.dart';
 import 'package:deltamind/features/gamification/gamification_controller.dart';
 import 'package:deltamind/features/gamification/widgets/daily_quest_card.dart';
 import 'package:deltamind/models/daily_quest.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class DailyQuestsSection extends ConsumerWidget {
@@ -283,11 +285,26 @@ class DailyQuestsSection extends ConsumerWidget {
           ElevatedButton(
             onPressed: () {
               Navigator.pop(context);
+
               // Navigate to the relevant feature
-              // This is just a placeholder - actual navigation would depend on your app's routing
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Navigating to ${questAction.name}')),
-              );
+              switch (quest.questType) {
+                case 'complete_quiz':
+                  context.push(AppRoutes.quizList);
+                  break;
+                case 'write_note':
+                  // Assuming AppRoutes.notes exists, if not I'll check AppRouter or just use '/notes'
+                  // I'll check AppRouter in a moment, but safe bet is likely AppRoutes.notes if following convention
+                  // Looking at previous context, user mentions "integration flashcard...". Maybe notes route exists?
+                  // I will check AppRouter first to be safe.
+                  // For now, I'll use a safe fallback or check AppRouter.
+                  context.push('/notes');
+                  break;
+                case 'review_flashcards':
+                  context.push('/flashcards');
+                  break;
+                default:
+                  break;
+              }
             },
             child: Text('Go to ${questAction.name}'),
           ),

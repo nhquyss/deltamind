@@ -14,7 +14,6 @@ DeltaMind is an intelligent learning assistant that helps users create personali
 - **Analytics**: Gain deeper insights into your learning progress, streak, and quiz performance.
 - **Notes**: built-in note-taking system to help users actively reflect, summarize, and store learning insights alongside quizzes.
 
-
 ## 🚀 Getting Started
 
 ### Prerequisites
@@ -27,12 +26,9 @@ DeltaMind is an intelligent learning assistant that helps users create personali
 ### Installation
 
 1. Clone the repository
-   ```bash
-   git clone https://github.com/rafapradana/deltamind.git
-   cd deltamind
-   ```
 
 2. Create a `.env` file in the project root with the following variables:
+
    ```
    SUPABASE_URL=contact_me_to_get_the_url
    SUPABASE_ANON_KEY=contact_me_to_get_the_anon_key
@@ -41,6 +37,7 @@ DeltaMind is an intelligent learning assistant that helps users create personali
    ```
 
 3. Install dependencies
+
    ```bash
    flutter pub get
    ```

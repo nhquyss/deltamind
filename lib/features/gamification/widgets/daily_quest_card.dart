@@ -196,31 +196,25 @@ class DailyQuestCard extends StatelessWidget {
                     ),
                   ),
 
-                  // Status or time remaining
-                  Row(
-                    children: [
-                      Icon(
-                        completed
-                            ? PhosphorIconsFill.checkCircle
-                            : PhosphorIconsFill.clock,
-                        size: 14,
-                        color: completed
-                            ? Colors.green
-                            : theme.colorScheme.onSurface.withOpacity(0.6),
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        completed ? 'Completed' : quest.timeRemainingText,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight:
-                              completed ? FontWeight.w600 : FontWeight.w400,
-                          color: completed
-                              ? Colors.green
-                              : theme.colorScheme.onSurface.withOpacity(0.6),
+                  // Status (only show if completed)
+                  if (completed)
+                    Row(
+                      children: [
+                        const Icon(
+                          PhosphorIconsFill.checkCircle,
+                          size: 14,
+                          color: Colors.green,
                         ),
-                      ),
-                    ],
-                  ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Completed',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: Colors.green,
+                          ),
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ],

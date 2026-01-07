@@ -3,6 +3,7 @@ import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/features/auth/auth_controller.dart';
 import 'package:deltamind/features/dashboard/profile_avatar.dart';
 import 'package:deltamind/features/gamification/gamification_controller.dart';
+import 'package:deltamind/features/gamification/widgets/daily_quests_section.dart';
 import 'package:deltamind/features/gamification/widgets/dashboard_streak_summary.dart';
 import 'package:deltamind/features/learning_paths/learning_paths_page.dart';
 import 'package:deltamind/features/search/search_bar_widget.dart';
@@ -188,6 +189,10 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
 
                             // Streak summary with animation
                             const DashboardStreakSummary(),
+                            const SizedBox(height: 16),
+
+                            // Daily Quests
+                            const DailyQuestsSection(),
                             const SizedBox(height: 16),
 
                             // Learning Path card (if available)
