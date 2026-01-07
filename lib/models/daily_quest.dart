@@ -33,7 +33,8 @@ class DailyQuest {
       questType: json['quest_type'],
       targetCount: json['target_count'] ?? 1,
       currentCount: json['current_count'] ?? 0,
-      completed: json['completed'] ?? false,
+      completed: json['is_completed'] ??
+          false, // Fixed: use is_completed from database
       xpReward: json['xp_reward'] ?? 0,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])

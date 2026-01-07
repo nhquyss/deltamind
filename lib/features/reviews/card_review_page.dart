@@ -8,7 +8,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 class CardReviewPage extends StatefulWidget {
   /// List of cards to review
   final List<dynamic> cards;
-  
+
   /// Callback when review is complete
   final VoidCallback onReviewComplete;
 
@@ -28,13 +28,13 @@ class _CardReviewPageState extends State<CardReviewPage> {
   bool _isFlipped = false;
   bool _isAnswering = false;
   bool _isSubmitting = false;
-  
+
   /// Get current card
   Map<String, dynamic> get _currentCard => widget.cards[_currentCardIndex];
-  
+
   /// Get card progress
   double get _progress => ((_currentCardIndex + 1) / widget.cards.length);
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +55,7 @@ class _CardReviewPageState extends State<CardReviewPage> {
             backgroundColor: Colors.grey[200],
             valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
           ),
-          
+
           // Card counter
           Padding(
             padding: const EdgeInsets.all(16.0),
@@ -69,7 +69,7 @@ class _CardReviewPageState extends State<CardReviewPage> {
               ],
             ),
           ),
-          
+
           // Flashcard
           Expanded(
             child: Padding(
@@ -80,20 +80,20 @@ class _CardReviewPageState extends State<CardReviewPage> {
               ),
             ),
           ),
-          
+
           // Rating or Next buttons
           _isFlipped && !_isAnswering
-            ? _buildFlipPrompt()
-            : _isAnswering 
-              ? _buildRatingButtons()
-              : const SizedBox.shrink(),
-          
+              ? _buildFlipPrompt()
+              : _isAnswering
+                  ? _buildRatingButtons()
+                  : const SizedBox.shrink(),
+
           const SizedBox(height: 16),
         ],
       ),
     );
   }
-  
+
   /// Build the flashcard
   Widget _buildFlashcard() {
     return Card(
@@ -125,7 +125,7 @@ class _CardReviewPageState extends State<CardReviewPage> {
       ),
     );
   }
-  
+
   /// Build the front of the card (question)
   Widget _buildFrontCard() {
     return Container(
@@ -163,8 +163,8 @@ class _CardReviewPageState extends State<CardReviewPage> {
             Text(
               _currentCard['question'] ?? 'No question text',
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -181,13 +181,13 @@ class _CardReviewPageState extends State<CardReviewPage> {
       ),
     );
   }
-  
+
   /// Build the back of the card (answer)
   Widget _buildBackCard() {
     final options = _currentCard['options'] as List<dynamic>;
     final correctAnswer = _currentCard['correctAnswer'] as String;
     final explanation = _currentCard['explanation'] as String?;
-    
+
     return Container(
       key: const ValueKey(true),
       padding: const EdgeInsets.all(24),
@@ -280,23 +280,30 @@ class _CardReviewPageState extends State<CardReviewPage> {
                   vertical: 8,
                 ),
                 decoration: BoxDecoration(
-                  color: isCorrect ? Colors.green.withOpacity(0.1) : Colors.transparent,
+                  color: isCorrect
+                      ? Colors.green.withOpacity(0.1)
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: isCorrect ? Colors.green.shade200 : Colors.grey.shade300,
+                    color: isCorrect
+                        ? Colors.green.shade200
+                        : Colors.grey.shade300,
                   ),
                 ),
                 child: Row(
                   children: [
                     isCorrect
-                        ? Icon(Icons.check_circle, color: Colors.green[700], size: 16)
-                        : Icon(Icons.circle_outlined, color: Colors.grey, size: 16),
+                        ? Icon(Icons.check_circle,
+                            color: Colors.green[700], size: 16)
+                        : Icon(Icons.circle_outlined,
+                            color: Colors.grey, size: 16),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         option.toString(),
                         style: TextStyle(
-                          fontWeight: isCorrect ? FontWeight.bold : FontWeight.normal,
+                          fontWeight:
+                              isCorrect ? FontWeight.bold : FontWeight.normal,
                         ),
                       ),
                     ),
@@ -329,7 +336,7 @@ class _CardReviewPageState extends State<CardReviewPage> {
       ),
     );
   }
-  
+
   /// Build the prompt to show after flipping the card
   Widget _buildFlipPrompt() {
     return Padding(
@@ -372,7 +379,7 @@ class _CardReviewPageState extends State<CardReviewPage> {
       ),
     );
   }
-  
+
   /// Build the rating buttons
   Widget _buildRatingButtons() {
     return Padding(
@@ -399,7 +406,7 @@ class _CardReviewPageState extends State<CardReviewPage> {
       ),
     );
   }
-  
+
   /// Build a single rating button
   Widget _buildRatingButton(int quality, String label) {
     final colors = [
@@ -409,9 +416,9 @@ class _CardReviewPageState extends State<CardReviewPage> {
       Colors.lightGreen,
       Colors.green,
     ];
-    
+
     final color = quality <= colors.length ? colors[quality - 1] : Colors.blue;
-    
+
     return ElevatedButton(
       onPressed: () => _submitRating(quality),
       style: ElevatedButton.styleFrom(
@@ -425,40 +432,40 @@ class _CardReviewPageState extends State<CardReviewPage> {
       child: Text(label),
     );
   }
-  
+
   /// Flip the card
   void _flipCard() {
     setState(() {
       _isFlipped = !_isFlipped;
     });
   }
-  
+
   /// Set whether we're in answering mode
   void _setAnsweringMode(bool value) {
     setState(() {
       _isAnswering = value;
     });
   }
-  
+
   /// Submit rating for the current card
   Future<void> _submitRating(int quality) async {
     try {
       setState(() {
         _isSubmitting = true;
       });
-      
+
       // Update spaced repetition for this card
       await SpacedRepetitionService.updateAfterReview(
         _currentCard['questionId'],
         quality,
       );
-      
+
       // Move to next card or finish
       setState(() {
         _isSubmitting = false;
         _isFlipped = false;
         _isAnswering = false;
-        
+
         if (_currentCardIndex < widget.cards.length - 1) {
           _currentCardIndex++;
         } else {
@@ -469,24 +476,23 @@ class _CardReviewPageState extends State<CardReviewPage> {
       setState(() {
         _isSubmitting = false;
       });
-      
+
       // Show error
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error updating review: $e')),
       );
     }
   }
-  
+
   /// Show exit confirmation dialog
   void _showExitConfirmation() {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Finish Review'),
-        content: const Text(
-          'Are you sure you want to finish this review session? '
-          'Your progress will be saved.'
-        ),
+        content:
+            const Text('Are you sure you want to finish this review session? '
+                'Your progress will be saved.'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -503,12 +509,12 @@ class _CardReviewPageState extends State<CardReviewPage> {
       ),
     );
   }
-  
+
   /// Finish the review
   void _finishReview() {
     widget.onReviewComplete();
     Navigator.pop(context);
-    
+
     // Show congratulations dialog
     showDialog(
       context: context,
@@ -523,10 +529,8 @@ class _CardReviewPageState extends State<CardReviewPage> {
               color: Colors.amber[700],
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Congratulations on completing your review session! '
-              'Keep up the good work to improve your learning.'
-            ),
+            const Text('Congratulations on completing your review session! '
+                'Keep up the good work to improve your learning.'),
           ],
         ),
         actions: [
@@ -538,4 +542,4 @@ class _CardReviewPageState extends State<CardReviewPage> {
       ),
     );
   }
-} 
+}

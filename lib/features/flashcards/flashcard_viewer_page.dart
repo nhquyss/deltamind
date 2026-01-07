@@ -1,13 +1,16 @@
 import 'dart:math';
 import 'package:deltamind/core/theme/app_colors.dart';
+import 'package:deltamind/features/gamification/gamification_controller.dart';
 import 'package:deltamind/models/flashcard.dart';
 import 'package:deltamind/services/flashcard_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// FlashcardViewerPage for studying flashcards
-class FlashcardViewerPage extends StatefulWidget {
+class FlashcardViewerPage extends ConsumerStatefulWidget {
   /// The flashcard deck ID
   final String deckId;
 
@@ -18,10 +21,11 @@ class FlashcardViewerPage extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<FlashcardViewerPage> createState() => _FlashcardViewerPageState();
+  ConsumerState<FlashcardViewerPage> createState() =>
+      _FlashcardViewerPageState();
 }
 
-class _FlashcardViewerPageState extends State<FlashcardViewerPage> {
+class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
   late Future<FlashcardDeck> _deckFuture;
   late Future<List<Flashcard>> _flashcardsFuture;
 
@@ -82,7 +86,7 @@ class _FlashcardViewerPageState extends State<FlashcardViewerPage> {
   void _nextCard() {
     if (_currentIndex < _flashcards.length - 1) {
       // Mark the current card as completed if it was flipped
-      if (_isFlipped) {
+      if (_isFlipped && !_completedCards.contains(_currentIndex)) {
         _completedCards.add(_currentIndex);
       }
 
@@ -98,7 +102,7 @@ class _FlashcardViewerPageState extends State<FlashcardViewerPage> {
       );
     } else if (_flashcards.isNotEmpty) {
       // Complete the last card if it was flipped
-      if (_isFlipped) {
+      if (_isFlipped && !_completedCards.contains(_currentIndex)) {
         _completedCards.add(_currentIndex);
       }
 
@@ -127,7 +131,27 @@ class _FlashcardViewerPageState extends State<FlashcardViewerPage> {
   void _toggleFlip() {
     setState(() {
       _isFlipped = !_isFlipped;
+
+      // Nếu vừa flip sang answer (show answer), mark card as completed và update quest
+      if (_isFlipped && !_completedCards.contains(_currentIndex)) {
+        _completedCards.add(_currentIndex);
+
+        // Update quest progress khi review flashcard
+        _updateQuestProgress();
+      }
     });
+  }
+
+  /// Update quest progress for reviewing a flashcard
+  Future<void> _updateQuestProgress() async {
+    try {
+      await ref
+          .read(gamificationControllerProvider.notifier)
+          .updateQuestProgress('review_flashcards');
+    } catch (e) {
+      debugPrint('Error updating quest progress: $e');
+      // Don't fail if quest update fails
+    }
   }
 
   void _toggleHint() {
@@ -138,6 +162,13 @@ class _FlashcardViewerPageState extends State<FlashcardViewerPage> {
 
   void _onPageChanged(int index) {
     setState(() {
+      // Nếu card trước đó đã được flip, mark nó as completed
+      if (_currentIndex < _flashcards.length &&
+          _isFlipped &&
+          !_completedCards.contains(_currentIndex)) {
+        _completedCards.add(_currentIndex);
+      }
+
       _currentIndex = index;
       _isFlipped = false;
       _showHint = false;
@@ -369,7 +400,7 @@ class _FlashcardViewerPageState extends State<FlashcardViewerPage> {
             var percentage = value / 180;
 
             // Determine which side to show based on the animation progress
-            final showFront = percentage < 0.5;
+            // final showFront = percentage < 0.5;
 
             // This fixes the upside-down text issue
             final frontOpacity = percentage < 0.5 ? 1.0 : 0.0;

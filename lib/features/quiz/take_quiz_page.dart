@@ -1,4 +1,5 @@
 import 'package:deltamind/core/theme/app_colors.dart';
+import 'package:deltamind/features/gamification/gamification_controller.dart';
 import 'package:deltamind/features/history/quiz_review_detail_page.dart';
 import 'package:deltamind/services/quiz_service.dart';
 import 'package:deltamind/services/supabase_service.dart';
@@ -647,6 +648,16 @@ class _TakeQuizPageState extends ConsumerState<TakeQuizPage> {
           .saveQuizAttempt();
 
       if (quizAttemptId != null && mounted) {
+        // Update quest progress for completing a quiz
+        try {
+          await ref
+              .read(gamificationControllerProvider.notifier)
+              .updateQuestProgress('complete_quiz');
+        } catch (e) {
+          debugPrint('Error updating quest progress: $e');
+          // Don't fail navigation if quest update fails
+        }
+
         // Navigate to quiz review detail page using GoRouter
         context.go('/quiz-review/${quizAttemptId}');
       }

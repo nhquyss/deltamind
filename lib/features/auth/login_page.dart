@@ -295,6 +295,9 @@ class _LoginPageState extends State<LoginPage> {
                     TextButton(
                       onPressed: _navigateToRegister,
                       child: const Text('Register'),
+                      // style: TextButton.styleFrom(
+                      //   padding: EdgeInsets.zero,
+                      // ),
                     ),
                   ],
                 ),

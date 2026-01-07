@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:deltamind/core/routing/app_router.dart';
 import 'package:deltamind/core/theme/app_colors.dart';
+import 'package:deltamind/features/gamification/gamification_controller.dart';
 import 'package:deltamind/features/notes/notes_controller.dart';
 import 'package:deltamind/features/notes/widgets/note_tags_editor.dart';
 import 'package:deltamind/features/notes/widgets/rich_text_editor.dart';
 import 'package:deltamind/models/note.dart';
 import 'package:deltamind/services/supabase_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -242,6 +244,16 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
             isPinned: _isPinned,
           ),
         );
+
+        // Update quest progress for writing a note
+        try {
+          await ref
+              .read(gamificationControllerProvider.notifier)
+              .updateQuestProgress('write_note');
+        } catch (e) {
+          debugPrint('Error updating quest progress: $e');
+          // Don't fail the note creation if quest update fails
+        }
       }
 
       if (showFeedback && mounted) {

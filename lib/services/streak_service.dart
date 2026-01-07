@@ -439,29 +439,58 @@ class StreakService {
         throw Exception('User not authenticated');
       }
 
+      // Get today's date in YYYY-MM-DD format (client timezone)
+      final now = DateTime.now();
+      final todayDateStr =
+          now.toIso8601String().split('T')[0]; // Format: YYYY-MM-DD
+
+      debugPrint('Client date: $todayDateStr, calling generate_daily_quests');
+
+      // Call generate_daily_quests RPC với date từ client để tránh timezone mismatch
       try {
-        // Call generate_daily_quests RPC to ensure user has quests
         await SupabaseService.client.rpc('generate_daily_quests', params: {
           'p_user_id_param': userId,
+          'p_date_param': todayDateStr, // Truyền date từ client
         });
+        debugPrint(
+            'Successfully called generate_daily_quests for user: $userId with date: $todayDateStr');
       } catch (e) {
         // Log but continue - the user might still have existing quests
         debugPrint('Warning: Could not generate daily quests: $e');
+        // Don't return early - try to fetch existing quests anyway
       }
 
       // Get all active quests for the user
+      // Filter theo assigned_date (hôm nay theo client timezone)
+      debugPrint('Fetching daily quests for date: $todayDateStr');
+
       final response = await SupabaseService.client
           .from('daily_quests')
           .select()
           .eq('user_id', userId)
-          .gt('reset_at', DateTime.now().toIso8601String())
+          .eq('assigned_date', todayDateStr) // Quest assigned today
           .order('quest_type');
 
-      return response
+      final quests = response
           .map<DailyQuest>((json) => DailyQuest.fromJson(json))
           .toList();
+
+      debugPrint(
+          'Found ${quests.length} active daily quests for user: $userId');
+
+      // If no quests found, log a warning for debugging
+      if (quests.isEmpty) {
+        debugPrint(
+            'Warning: No daily quests found for today. This might indicate:');
+        debugPrint('  1. Quest generation failed');
+        debugPrint('  2. Timezone mismatch between client and server');
+        debugPrint('  3. User has no quests assigned for today');
+      }
+
+      return quests;
     } catch (e) {
       debugPrint('Error getting daily quests: $e');
+      debugPrint('Stack trace: ${StackTrace.current}');
       // Return empty list instead of throwing to prevent UI crashes
       return [];
     }
@@ -480,7 +509,7 @@ class StreakService {
           await SupabaseService.client.rpc('update_quest_progress', params: {
         'p_user_id_param': userId,
         'p_quest_type_param': questType,
-        'increment_count': incrementBy,
+        'p_increment_count': incrementBy,
       });
 
       return response as bool;
