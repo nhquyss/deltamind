@@ -1,4 +1,5 @@
 import 'package:deltamind/core/theme/app_colors.dart';
+import 'package:deltamind/services/streak_service.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
@@ -19,15 +20,48 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
     AppColors.primary.withAlpha(128),
   ];
 
+  /// Actual activity dates (YYYY-MM-DD) for the last 7 days
+  Set<String>? _activityDatesLast7Days;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadActivityDates();
+  }
+
+  Future<void> _loadActivityDates() async {
+    try {
+      final dates = await StreakService.getActivityDatesLast7Days();
+      if (!mounted) return;
+      setState(() {
+        _activityDatesLast7Days = dates;
+        _isLoading = false;
+      });
+    } catch (e) {
+      debugPrint('Error loading streak activity dates: $e');
+      if (!mounted) return;
+      setState(() {
+        _activityDatesLast7Days = null;
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Get current streak value
     final currentStreak = widget.streakData['current_streak'] as int? ?? 0;
 
-    // Generate graph data using currentStreak
-    final List<Map<String, dynamic>> streakHistory = _generateStreakHistory(
-      currentStreak,
-    );
+    // Generate graph data using real activity dates when available.
+    // Fallback to simulated data if we couldn't load activity history.
+    final List<Map<String, dynamic>> streakHistory =
+        _activityDatesLast7Days == null
+            ? _generateSimulatedStreakHistory(currentStreak)
+            : _generateHistoryFromActivityDates(
+                currentStreak,
+                _activityDatesLast7Days!,
+              );
 
     return Card(
       elevation: 1,
@@ -99,17 +133,19 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
             const SizedBox(height: 16),
             SizedBox(
               height: 200,
-              child: streakHistory.isEmpty
-                  ? Center(
-                      child: Text(
-                        'No streak data available',
-                        style: Theme.of(context)
-                            .textTheme
-                            .bodyMedium
-                            ?.copyWith(color: AppColors.textSecondary),
-                      ),
-                    )
-                  : _buildLineChart(streakHistory),
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : streakHistory.isEmpty
+                      ? Center(
+                          child: Text(
+                            'No streak data available',
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(color: AppColors.textSecondary),
+                          ),
+                        )
+                      : _buildLineChart(streakHistory),
             ),
             if (widget.streakData['longest_streak'] != null)
               Padding(
@@ -263,13 +299,58 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
     });
   }
 
-  // Generate a simulated streak history based on the current streak
-  List<Map<String, dynamic>> _generateStreakHistory(int currentStreak) {
+  /// Generate a streak history based on actual activity dates from the last 7 days.
+  /// We compute a running streak value per day (reset to 0 on inactive days).
+  List<Map<String, dynamic>> _generateHistoryFromActivityDates(
+    int currentStreak,
+    Set<String> activityDates,
+  ) {
+    final List<Map<String, dynamic>> history = [];
+    final now = DateTime.now();
+
+    // If there is no activity at all and currentStreak is 0, return empty.
+    if (activityDates.isEmpty && currentStreak == 0) {
+      return history;
+    }
+
+    double streakValue = 0;
+
+    // Build from 6 days ago up to today (7 days total)
+    for (int i = 6; i >= 0; i--) {
+      final date =
+          DateTime(now.year, now.month, now.day).subtract(Duration(days: i));
+      final dateStr = date.toIso8601String().split('T')[0]; // YYYY-MM-DD
+
+      if (activityDates.contains(dateStr)) {
+        streakValue += 1;
+      } else {
+        // Break in streak
+        streakValue = 0;
+      }
+
+      history.add({
+        'date': date.toIso8601String(),
+        'streak': streakValue,
+      });
+    }
+
+    return history;
+  }
+
+  // Generate a simulated streak history based only on the current streak.
+  // Kept as a fallback when we cannot read activity history.
+  List<Map<String, dynamic>> _generateSimulatedStreakHistory(
+    int currentStreak,
+  ) {
     final List<Map<String, dynamic>> history = [];
     final today = DateTime.now();
 
-    // If streak is 0, show empty graph
+    // If streak is 0, show an empty history for the last 7 days (all zeros)
     if (currentStreak == 0) {
+      for (int i = 6; i >= 0; i--) {
+        final date = today.subtract(Duration(days: i));
+        history.add({'date': date.toIso8601String(), 'streak': 0.0});
+      }
       return history;
     }
 
