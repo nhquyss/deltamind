@@ -65,14 +65,18 @@ class _AchievementsPageState extends ConsumerState<AchievementsPage>
         .read(gamificationControllerProvider.notifier)
         .getNextStreakAchievement();
 
+    // TODO: Tính năng achievement chưa hoàn chỉnh - tạm ẩn filter logic
     // Filter achievements by selected category
-    final filteredAchievements =
-        gamificationState.achievements.where((achievement) {
-      if (_selectedCategory == 'All') {
-        return true;
-      }
-      return achievement.category == _selectedCategory;
-    }).toList();
+    // final filteredAchievements =
+    //     gamificationState.achievements.where((achievement) {
+    //   if (_selectedCategory == 'All') {
+    //     return true;
+    //   }
+    //   return achievement.category == _selectedCategory;
+    // }).toList();
+
+    // Hiển thị tất cả achievements (không filter)
+    final filteredAchievements = gamificationState.achievements;
 
     // Sort achievements: earned first, then by name
     filteredAchievements.sort((a, b) {
@@ -331,293 +335,296 @@ class _AchievementsPageState extends ConsumerState<AchievementsPage>
                           // Daily Quests Section
                           const DailyQuestsSection(),
 
+                          // TODO: Tính năng achievement chưa hoàn chỉnh - tạm ẩn phần này
                           // Progress summary with improved design
-                          Container(
-                            margin: const EdgeInsets.only(bottom: 16),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFFFFFF), // Brand white
-                              borderRadius: BorderRadius.circular(16),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFF4A4A4A).withOpacity(
-                                    0.1,
-                                  ), // Brand gray with opacity
-                                  blurRadius: 6,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                            ),
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                        color: const Color(
-                                          0x3333A1FD,
-                                        ), // Light blue with opacity
-                                        borderRadius: BorderRadius.circular(
-                                          8,
-                                        ),
-                                      ),
-                                      padding: const EdgeInsets.all(8),
-                                      child: const Icon(
-                                        PhosphorIconsFill.chartBar,
-                                        color: Color(
-                                          0xFF0056D2,
-                                        ), // Brand blue
-                                        size: 18,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 12),
-                                    const Text(
-                                      'Your Progress',
-                                      style: TextStyle(
-                                        fontFamily: 'Inter', // Brand font
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                        color: Color(
-                                          0xFF000000,
-                                        ), // Brand black
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                RichText(
-                                  text: TextSpan(
-                                    style: const TextStyle(
-                                      fontFamily: 'Inter', // Brand font
-                                      fontSize: 14,
-                                      color: Color(0xFF4A4A4A), // Brand gray
-                                    ),
-                                    children: [
-                                      const TextSpan(
-                                        text: 'You have completed ',
-                                      ),
-                                      TextSpan(
-                                        text:
-                                            '${gamificationState.earnedAchievements.length}',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(
-                                            0xFF0056D2,
-                                          ), // Brand blue
-                                        ),
-                                      ),
-                                      const TextSpan(text: ' out of '),
-                                      TextSpan(
-                                        text:
-                                            '${gamificationState.achievements.length}',
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: Color(
-                                            0xFF000000,
-                                          ), // Brand black
-                                        ),
-                                      ),
-                                      const TextSpan(text: ' achievements.'),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                Stack(
-                                  children: [
-                                    // Background track
-                                    Container(
-                                      height: 8,
-                                      decoration: BoxDecoration(
-                                        color: const Color(
-                                          0x3333A1FD,
-                                        ), // Light blue with opacity
-                                        borderRadius: BorderRadius.circular(
-                                          4,
-                                        ),
-                                      ),
-                                    ),
-                                    // Progress fill
-                                    FractionallySizedBox(
-                                      widthFactor: gamificationState
-                                              .earnedAchievements.isEmpty
-                                          ? 0.0
-                                          : gamificationState
-                                                  .earnedAchievements.length /
-                                              gamificationState
-                                                  .achievements.length,
-                                      child: Container(
-                                        height: 8,
-                                        decoration: BoxDecoration(
-                                          color: const Color(
-                                            0xFF0056D2,
-                                          ), // Brand blue
-                                          borderRadius: BorderRadius.circular(
-                                            4,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Align(
-                                  alignment: Alignment.centerRight,
-                                  child: Text(
-                                    gamificationState.achievements.isEmpty
-                                        ? '0% complete' // Handle division by zero
-                                        : '${((gamificationState.earnedAchievements.length / gamificationState.achievements.length) * 100).toInt()}% complete',
-                                    style: const TextStyle(
-                                      fontFamily: 'Inter', // Brand font
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: Color(0xFF0056D2), // Brand blue
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                          // Container(
+                          //   margin: const EdgeInsets.only(bottom: 16),
+                          //   decoration: BoxDecoration(
+                          //     color: const Color(0xFFFFFFFF), // Brand white
+                          //     borderRadius: BorderRadius.circular(16),
+                          //     boxShadow: [
+                          //       BoxShadow(
+                          //         color: const Color(0xFF4A4A4A).withOpacity(
+                          //           0.1,
+                          //         ), // Brand gray with opacity
+                          //         blurRadius: 6,
+                          //         offset: const Offset(0, 2),
+                          //       ),
+                          //     ],
+                          //   ),
+                          //   padding: const EdgeInsets.all(16),
+                          //   child: Column(
+                          //     crossAxisAlignment: CrossAxisAlignment.start,
+                          //     children: [
+                          //       Row(
+                          //         children: [
+                          //           Container(
+                          //             decoration: BoxDecoration(
+                          //               color: const Color(
+                          //                 0x3333A1FD,
+                          //               ), // Light blue with opacity
+                          //               borderRadius: BorderRadius.circular(
+                          //                 8,
+                          //               ),
+                          //             ),
+                          //             padding: const EdgeInsets.all(8),
+                          //             child: const Icon(
+                          //               PhosphorIconsFill.chartBar,
+                          //               color: Color(
+                          //                 0xFF0056D2,
+                          //               ), // Brand blue
+                          //               size: 18,
+                          //             ),
+                          //           ),
+                          //           const SizedBox(width: 12),
+                          //           const Text(
+                          //             'Your Progress',
+                          //             style: TextStyle(
+                          //               fontFamily: 'Inter', // Brand font
+                          //               fontSize: 16,
+                          //               fontWeight: FontWeight.bold,
+                          //               color: Color(
+                          //                 0xFF000000,
+                          //               ), // Brand black
+                          //             ),
+                          //           ),
+                          //         ],
+                          //       ),
+                          //       const SizedBox(height: 12),
+                          //       RichText(
+                          //         text: TextSpan(
+                          //           style: const TextStyle(
+                          //             fontFamily: 'Inter', // Brand font
+                          //             fontSize: 14,
+                          //             color: Color(0xFF4A4A4A), // Brand gray
+                          //           ),
+                          //           children: [
+                          //             const TextSpan(
+                          //               text: 'You have completed ',
+                          //             ),
+                          //             TextSpan(
+                          //               text:
+                          //                   '${gamificationState.earnedAchievements.length}',
+                          //               style: const TextStyle(
+                          //                 fontWeight: FontWeight.bold,
+                          //                 color: Color(
+                          //                   0xFF0056D2,
+                          //                 ), // Brand blue
+                          //               ),
+                          //             ),
+                          //             const TextSpan(text: ' out of '),
+                          //             TextSpan(
+                          //               text:
+                          //                   '${gamificationState.achievements.length}',
+                          //               style: const TextStyle(
+                          //                 fontWeight: FontWeight.bold,
+                          //                 color: Color(
+                          //                   0xFF000000,
+                          //                 ), // Brand black
+                          //               ),
+                          //             ),
+                          //             const TextSpan(text: ' achievements.'),
+                          //           ],
+                          //         ),
+                          //       ),
+                          //       const SizedBox(height: 12),
+                          //       Stack(
+                          //         children: [
+                          //           // Background track
+                          //           Container(
+                          //             height: 8,
+                          //             decoration: BoxDecoration(
+                          //               color: const Color(
+                          //                 0x3333A1FD,
+                          //               ), // Light blue with opacity
+                          //               borderRadius: BorderRadius.circular(
+                          //                 4,
+                          //               ),
+                          //             ),
+                          //           ),
+                          //           // Progress fill
+                          //           FractionallySizedBox(
+                          //             widthFactor: gamificationState
+                          //                     .earnedAchievements.isEmpty
+                          //                 ? 0.0
+                          //                 : gamificationState
+                          //                         .earnedAchievements.length /
+                          //                     gamificationState
+                          //                         .achievements.length,
+                          //             child: Container(
+                          //               height: 8,
+                          //               decoration: BoxDecoration(
+                          //                 color: const Color(
+                          //                   0xFF0056D2,
+                          //                 ), // Brand blue
+                          //                 borderRadius: BorderRadius.circular(
+                          //                   4,
+                          //                 ),
+                          //               ),
+                          //             ),
+                          //           ),
+                          //         ],
+                          //       ),
+                          //       const SizedBox(height: 8),
+                          //       Align(
+                          //         alignment: Alignment.centerRight,
+                          //         child: Text(
+                          //           gamificationState.achievements.isEmpty
+                          //               ? '0% complete' // Handle division by zero
+                          //               : '${((gamificationState.earnedAchievements.length / gamificationState.achievements.length) * 100).toInt()}% complete',
+                          //           style: const TextStyle(
+                          //             fontFamily: 'Inter', // Brand font
+                          //             fontSize: 12,
+                          //             fontWeight: FontWeight.w600,
+                          //             color: Color(0xFF0056D2), // Brand blue
+                          //           ),
+                          //         ),
+                          //       ),
+                          //     ],
+                          //   ),
+                          // ),
 
+                          // TODO: Tính năng achievement chưa hoàn chỉnh - tạm ẩn phần này
                           // Category filter section
-                          const Padding(
-                            padding: EdgeInsets.only(left: 4, bottom: 8),
-                            child: Text(
-                              'Categories',
-                              style: TextStyle(
-                                fontFamily: 'Inter', // Brand font
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF000000), // Brand black
-                              ),
-                            ),
-                          ),
+                          // const Padding(
+                          //   padding: EdgeInsets.only(left: 4, bottom: 8),
+                          //   child: Text(
+                          //     'Categories',
+                          //     style: TextStyle(
+                          //       fontFamily: 'Inter', // Brand font
+                          //       fontSize: 16,
+                          //       fontWeight: FontWeight.bold,
+                          //       color: Color(0xFF000000), // Brand black
+                          //     ),
+                          //   ),
+                          // ),
 
+                          // TODO: Tính năng achievement chưa hoàn chỉnh - tạm ẩn phần này
                           // Category filter chips with improved design
-                          SizedBox(
-                            height: 40,
-                            child: ListView(
-                              scrollDirection: Axis.horizontal,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 8),
-                                  child: FilterChip(
-                                    label: const Text('All'),
-                                    selected: _selectedCategory == 'All',
-                                    onSelected: (selected) {
-                                      setState(() {
-                                        _selectedCategory = 'All';
-                                      });
-                                    },
-                                    backgroundColor: const Color(
-                                      0xFFFFFFFF,
-                                    ), // Brand white
-                                    selectedColor: const Color(
-                                      0x3333A1FD,
-                                    ), // Light blue with opacity
-                                    checkmarkColor: const Color(
-                                      0xFF0056D2,
-                                    ), // Brand blue
-                                    labelStyle: TextStyle(
-                                      fontFamily: 'Inter', // Brand font
-                                      color: _selectedCategory == 'All'
-                                          ? const Color(0xFF0056D2)
-                                          : const Color(
-                                              0xFF4A4A4A,
-                                            ), // Brand blue or gray
-                                      fontWeight: _selectedCategory == 'All'
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                      side: BorderSide(
-                                        color: _selectedCategory == 'All'
-                                            ? const Color(0xFF0056D2)
-                                            : const Color(
-                                                0xFF4A4A4A,
-                                              ).withOpacity(
-                                                0.3,
-                                              ), // Brand blue or gray
-                                        width: 1,
-                                      ),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                    ),
-                                  ),
-                                ),
-                                // Safely handle categories from constants
-                                if (AppConstants
-                                    .achievementCategories.isNotEmpty)
-                                  ...AppConstants.achievementCategories
-                                      .where(
-                                    (category) =>
-                                        category != 'All' &&
-                                        category.isNotEmpty,
-                                  )
-                                      .map((category) {
-                                    final isSelected =
-                                        _selectedCategory == category;
-                                    return Padding(
-                                      padding: const EdgeInsets.only(
-                                        right: 8,
-                                      ),
-                                      child: FilterChip(
-                                        label: Text(category),
-                                        selected: isSelected,
-                                        onSelected: (selected) {
-                                          setState(() {
-                                            _selectedCategory = category;
-                                          });
-                                        },
-                                        backgroundColor: const Color(
-                                          0xFFFFFFFF,
-                                        ), // Brand white
-                                        selectedColor: const Color(
-                                          0x3333A1FD,
-                                        ), // Light blue with opacity
-                                        checkmarkColor: const Color(
-                                          0xFF0056D2,
-                                        ), // Brand blue
-                                        labelStyle: TextStyle(
-                                          fontFamily: 'Inter', // Brand font
-                                          color: isSelected
-                                              ? const Color(
-                                                  0xFF0056D2,
-                                                )
-                                              : const Color(
-                                                  0xFF4A4A4A,
-                                                ), // Brand blue or gray
-                                          fontWeight: isSelected
-                                              ? FontWeight.bold
-                                              : FontWeight.normal,
-                                        ),
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          side: BorderSide(
-                                            color: isSelected
-                                                ? const Color(
-                                                    0xFF0056D2,
-                                                  )
-                                                : const Color(
-                                                    0xFF4A4A4A,
-                                                  ).withOpacity(
-                                                    0.3,
-                                                  ), // Brand blue or gray
-                                            width: 1,
-                                          ),
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 8,
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                              ],
-                            ),
-                          ),
+                          // SizedBox(
+                          //   height: 40,
+                          //   child: ListView(
+                          //     scrollDirection: Axis.horizontal,
+                          //     children: [
+                          //       Padding(
+                          //         padding: const EdgeInsets.only(right: 8),
+                          //         child: FilterChip(
+                          //           label: const Text('All'),
+                          //           selected: _selectedCategory == 'All',
+                          //           onSelected: (selected) {
+                          //             setState(() {
+                          //               _selectedCategory = 'All';
+                          //             });
+                          //           },
+                          //           backgroundColor: const Color(
+                          //             0xFFFFFFFF,
+                          //           ), // Brand white
+                          //           selectedColor: const Color(
+                          //             0x3333A1FD,
+                          //           ), // Light blue with opacity
+                          //           checkmarkColor: const Color(
+                          //             0xFF0056D2,
+                          //           ), // Brand blue
+                          //           labelStyle: TextStyle(
+                          //             fontFamily: 'Inter', // Brand font
+                          //             color: _selectedCategory == 'All'
+                          //                 ? const Color(0xFF0056D2)
+                          //                 : const Color(
+                          //                     0xFF4A4A4A,
+                          //                   ), // Brand blue or gray
+                          //             fontWeight: _selectedCategory == 'All'
+                          //                 ? FontWeight.bold
+                          //                 : FontWeight.normal,
+                          //           ),
+                          //           shape: RoundedRectangleBorder(
+                          //             borderRadius: BorderRadius.circular(20),
+                          //             side: BorderSide(
+                          //               color: _selectedCategory == 'All'
+                          //                   ? const Color(0xFF0056D2)
+                          //                   : const Color(
+                          //                       0xFF4A4A4A,
+                          //                     ).withOpacity(
+                          //                       0.3,
+                          //                     ), // Brand blue or gray
+                          //               width: 1,
+                          //             ),
+                          //           ),
+                          //           padding: const EdgeInsets.symmetric(
+                          //             horizontal: 8,
+                          //           ),
+                          //         ),
+                          //       ),
+                          //       // Safely handle categories from constants
+                          //       if (AppConstants
+                          //           .achievementCategories.isNotEmpty)
+                          //         ...AppConstants.achievementCategories
+                          //             .where(
+                          //           (category) =>
+                          //               category != 'All' &&
+                          //               category.isNotEmpty,
+                          //         )
+                          //             .map((category) {
+                          //           final isSelected =
+                          //               _selectedCategory == category;
+                          //           return Padding(
+                          //             padding: const EdgeInsets.only(
+                          //               right: 8,
+                          //             ),
+                          //             child: FilterChip(
+                          //               label: Text(category),
+                          //               selected: isSelected,
+                          //               onSelected: (selected) {
+                          //                 setState(() {
+                          //                   _selectedCategory = category;
+                          //                 });
+                          //               },
+                          //               backgroundColor: const Color(
+                          //                 0xFFFFFFFF,
+                          //               ), // Brand white
+                          //               selectedColor: const Color(
+                          //                 0x3333A1FD,
+                          //               ), // Light blue with opacity
+                          //               checkmarkColor: const Color(
+                          //                 0xFF0056D2,
+                          //               ), // Brand blue
+                          //               labelStyle: TextStyle(
+                          //                 fontFamily: 'Inter', // Brand font
+                          //                 color: isSelected
+                          //                     ? const Color(
+                          //                         0xFF0056D2,
+                          //                       )
+                          //                     : const Color(
+                          //                         0xFF4A4A4A,
+                          //                       ), // Brand blue or gray
+                          //                 fontWeight: isSelected
+                          //                     ? FontWeight.bold
+                          //                     : FontWeight.normal,
+                          //               ),
+                          //               shape: RoundedRectangleBorder(
+                          //                 borderRadius:
+                          //                     BorderRadius.circular(20),
+                          //                 side: BorderSide(
+                          //                   color: isSelected
+                          //                       ? const Color(
+                          //                           0xFF0056D2,
+                          //                         )
+                          //                       : const Color(
+                          //                           0xFF4A4A4A,
+                          //                         ).withOpacity(
+                          //                           0.3,
+                          //                         ), // Brand blue or gray
+                          //                   width: 1,
+                          //                 ),
+                          //               ),
+                          //               padding: const EdgeInsets.symmetric(
+                          //                 horizontal: 8,
+                          //               ),
+                          //             ),
+                          //           );
+                          //         }).toList(),
+                          //     ],
+                          //   ),
+                          // ),
 
                           const SizedBox(height: 16),
                         ]),
@@ -625,141 +632,141 @@ class _AchievementsPageState extends ConsumerState<AchievementsPage>
                     ),
 
                     // Achievements list
-                    if (gamificationState.achievements.isEmpty)
-                      SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 20),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  PhosphorIconsFill.trophy,
-                                  size: 50,
-                                  color: Colors.grey.shade300,
-                                ),
-                                const SizedBox(height: 16),
-                                const Text(
-                                  'Loading achievements...',
-                                  style: TextStyle(
-                                    fontFamily: 'Inter', // Brand font
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF000000), // Brand black
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                    else if (filteredAchievements.isEmpty)
-                      SliverFillRemaining(
-                        hasScrollBody: false,
-                        child: Center(
-                          child: Padding(
-                            padding: const EdgeInsets.only(top: 20),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  PhosphorIconsFill.trophy,
-                                  size: 50,
-                                  color: Colors.grey.shade300,
-                                ),
-                                const SizedBox(height: 16),
-                                const Text(
-                                  'No achievements found',
-                                  style: TextStyle(
-                                    fontFamily: 'Inter', // Brand font
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Color(0xFF000000), // Brand black
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  _selectedCategory != 'All'
-                                      ? 'Try selecting a different category'
-                                      : 'Complete quizzes to unlock achievements',
-                                  style: TextStyle(
-                                    fontFamily: 'Inter', // Brand font
-                                    fontSize: 14,
-                                    color: Color(0xFF4A4A4A), // Brand gray
-                                  ),
-                                  textAlign: TextAlign.center,
-                                ),
-                                const SizedBox(height: 20),
-                                ElevatedButton.icon(
-                                  onPressed: () {
-                                    setState(() {
-                                      _selectedCategory = 'All';
-                                    });
-                                  },
-                                  icon: const Icon(
-                                    PhosphorIconsFill.listBullets,
-                                    size: 16,
-                                  ),
-                                  label: const Text('Show all achievements'),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(
-                                      0xFF0056D2,
-                                    ), // Brand blue
-                                    foregroundColor: Colors.white,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 10,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                    elevation: 0,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      )
-                    else
-                      SliverPadding(
-                        padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
-                        sliver: SliverAnimatedList(
-                          initialItemCount: filteredAchievements.length,
-                          itemBuilder: (context, index, animation) {
-                            // Guard against index out of range errors
-                            if (index >= filteredAchievements.length) {
-                              return const SizedBox.shrink();
-                            }
+                    // if (gamificationState.achievements.isEmpty)
+                    //   SliverFillRemaining(
+                    //     hasScrollBody: false,
+                    //     child: Center(
+                    //       child: Padding(
+                    //         padding: const EdgeInsets.only(top: 20),
+                    //         child: Column(
+                    //           mainAxisAlignment: MainAxisAlignment.center,
+                    //           children: [
+                    //             Icon(
+                    //               PhosphorIconsFill.trophy,
+                    //               size: 50,
+                    //               color: Colors.grey.shade300,
+                    //             ),
+                    //             const SizedBox(height: 16),
+                    //             const Text(
+                    //               'Loading achievements...',
+                    //               style: TextStyle(
+                    //                 fontFamily: 'Inter', // Brand font
+                    //                 fontSize: 16,
+                    //                 fontWeight: FontWeight.bold,
+                    //                 color: Color(0xFF000000), // Brand black
+                    //               ),
+                    //               textAlign: TextAlign.center,
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   )
+                    // else if (filteredAchievements.isEmpty)
+                    //   SliverFillRemaining(
+                    //     hasScrollBody: false,
+                    //     child: Center(
+                    //       child: Padding(
+                    //         padding: const EdgeInsets.only(top: 20),
+                    //         child: Column(
+                    //           mainAxisAlignment: MainAxisAlignment.center,
+                    //           children: [
+                    //             Icon(
+                    //               PhosphorIconsFill.trophy,
+                    //               size: 50,
+                    //               color: Colors.grey.shade300,
+                    //             ),
+                    //             const SizedBox(height: 16),
+                    //             const Text(
+                    //               'No achievements found',
+                    //               style: TextStyle(
+                    //                 fontFamily: 'Inter', // Brand font
+                    //                 fontSize: 16,
+                    //                 fontWeight: FontWeight.bold,
+                    //                 color: Color(0xFF000000), // Brand black
+                    //               ),
+                    //               textAlign: TextAlign.center,
+                    //             ),
+                    //             const SizedBox(height: 8),
+                    //             Text(
+                    //               _selectedCategory != 'All'
+                    //                   ? 'Try selecting a different category'
+                    //                   : 'Complete quizzes to unlock achievements',
+                    //               style: TextStyle(
+                    //                 fontFamily: 'Inter', // Brand font
+                    //                 fontSize: 14,
+                    //                 color: Color(0xFF4A4A4A), // Brand gray
+                    //               ),
+                    //               textAlign: TextAlign.center,
+                    //             ),
+                    //             const SizedBox(height: 20),
+                    //             ElevatedButton.icon(
+                    //               onPressed: () {
+                    //                 setState(() {
+                    //                   _selectedCategory = 'All';
+                    //                 });
+                    //               },
+                    //               icon: const Icon(
+                    //                 PhosphorIconsFill.listBullets,
+                    //                 size: 16,
+                    //               ),
+                    //               label: const Text('Show all achievements'),
+                    //               style: ElevatedButton.styleFrom(
+                    //                 backgroundColor: const Color(
+                    //                   0xFF0056D2,
+                    //                 ), // Brand blue
+                    //                 foregroundColor: Colors.white,
+                    //                 padding: const EdgeInsets.symmetric(
+                    //                   horizontal: 16,
+                    //                   vertical: 10,
+                    //                 ),
+                    //                 shape: RoundedRectangleBorder(
+                    //                   borderRadius: BorderRadius.circular(10),
+                    //                 ),
+                    //                 elevation: 0,
+                    //               ),
+                    //             ),
+                    //           ],
+                    //         ),
+                    //       ),
+                    //     ),
+                    //   )
+                    // else
+                    //   SliverPadding(
+                    //     padding: const EdgeInsets.fromLTRB(0, 0, 0, 16),
+                    //     sliver: SliverAnimatedList(
+                    //       initialItemCount: filteredAchievements.length,
+                    //       itemBuilder: (context, index, animation) {
+                    //         // Guard against index out of range errors
+                    //         if (index >= filteredAchievements.length) {
+                    //           return const SizedBox.shrink();
+                    //         }
 
-                            final achievement = filteredAchievements[index];
+                    //         final achievement = filteredAchievements[index];
 
-                            return SlideTransition(
-                              position: Tween<Offset>(
-                                begin: const Offset(0.5, 0),
-                                end: Offset.zero,
-                              ).animate(
-                                CurvedAnimation(
-                                  parent: animation,
-                                  curve: Curves.easeOutQuart,
-                                ),
-                              ),
-                              child: FadeTransition(
-                                opacity: animation,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(bottom: 12),
-                                  child: AchievementCard(
-                                    achievement: achievement,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ),
+                    //         return SlideTransition(
+                    //           position: Tween<Offset>(
+                    //             begin: const Offset(0.5, 0),
+                    //             end: Offset.zero,
+                    //           ).animate(
+                    //             CurvedAnimation(
+                    //               parent: animation,
+                    //               curve: Curves.easeOutQuart,
+                    //             ),
+                    //           ),
+                    //           child: FadeTransition(
+                    //             opacity: animation,
+                    //             child: Padding(
+                    //               padding: const EdgeInsets.only(bottom: 12),
+                    //               child: AchievementCard(
+                    //                 achievement: achievement,
+                    //               ),
+                    //             ),
+                    //           ),
+                    //         );
+                    //       },
+                    //     ),
+                    //   ),
                   ],
                 ),
               ),
