@@ -3,7 +3,10 @@ import 'package:deltamind/core/utils/formatters.dart';
 import 'package:deltamind/models/learning_path.dart';
 import 'package:deltamind/services/learning_path_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 // import 'package:graphview/graphview.dart';
 import 'package:graphview/GraphView.dart';
 
@@ -39,7 +42,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
   void initState() {
     super.initState();
     _loadLearningPath();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 1, vsync: this);
 
     // Configure the graph layout with improved spacing and orientation
     builder
@@ -173,6 +176,280 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
     graph.addEdge(from, to, paint: edgePaint);
   }
 
+  /// Handle resource link click - open in browser
+  Future<void> _handleResourceClick(String resource) async {
+    try {
+      // First, try to extract URL from resource text
+      final url = _extractUrl(resource);
+
+      if (url != null) {
+        // If we found a URL, try to open it
+        final uri = Uri.tryParse(url);
+        if (uri != null && await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+          return;
+        }
+      }
+
+      // If resource itself is a valid URL
+      Uri? uri;
+      if (resource.startsWith('http://') || resource.startsWith('https://')) {
+        uri = Uri.parse(resource);
+      } else if (resource.contains('://')) {
+        uri = Uri.parse(resource);
+      } else {
+        // If not a URL, try to construct one
+        uri = Uri.tryParse('https://$resource');
+      }
+
+      if (uri != null && await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        // If can't launch, copy URL to clipboard (or text if no URL found)
+        await _copyResourceLink(resource);
+      }
+    } catch (e) {
+      // If opening fails, copy to clipboard instead
+      await _copyResourceLink(resource);
+    }
+  }
+
+  /// Extract display text from resource (remove URL part)
+  String _extractDisplayText(String resource) {
+    // If resource contains " - " separator, take the part before it
+    if (resource.contains(' - ')) {
+      final parts = resource.split(' - ');
+      // Check if the part after " - " is a URL
+      final urlRegex = RegExp(r'https?://', caseSensitive: false);
+      if (parts.length > 1 && urlRegex.hasMatch(parts.last)) {
+        return parts.first.trim();
+      }
+    }
+
+    // If resource is just a URL, extract domain name as display text
+    if (resource.startsWith('http://') || resource.startsWith('https://')) {
+      try {
+        final uri = Uri.parse(resource);
+        return uri.host.replaceFirst('www.', '');
+      } catch (e) {
+        return resource;
+      }
+    }
+
+    // Remove URL from text if present
+    final urlRegex = RegExp(
+      r'\s*-\s*(https?://[^\s]+|www\.[^\s]+)',
+      caseSensitive: false,
+    );
+    final cleaned = resource.replaceAll(urlRegex, '').trim();
+
+    return cleaned.isEmpty ? resource : cleaned;
+  }
+
+  /// Extract URL from resource text
+  String? _extractUrl(String resource) {
+    // First, try to find actual URLs (http, https, or any protocol)
+    final urlRegex = RegExp(
+      r'(https?://[^\s]+|www\.[^\s]+|[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}[^\s]*)',
+      caseSensitive: false,
+    );
+
+    final match = urlRegex.firstMatch(resource);
+    if (match != null) {
+      String url = match.group(0)!;
+      // Add https:// if it's a domain without protocol
+      if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        url = 'https://$url';
+      }
+      return url;
+    }
+
+    // If resource itself is a valid URL, return it
+    if (resource.startsWith('http://') || resource.startsWith('https://')) {
+      return resource;
+    }
+
+    // Try to extract platform links from text descriptions
+    final lowerResource = resource.toLowerCase();
+
+    // Reddit: "Reddit r/subreddit" or "r/subreddit"
+    final redditRegex =
+        RegExp(r'(?:reddit\s+)?r/([a-zA-Z0-9_]+)', caseSensitive: false);
+    final redditMatch = redditRegex.firstMatch(resource);
+    if (redditMatch != null) {
+      final subreddit = redditMatch.group(1);
+      return 'https://reddit.com/r/$subreddit';
+    }
+
+    // Stack Overflow
+    if (lowerResource.contains('stack overflow')) {
+      return 'https://stackoverflow.com';
+    }
+
+    // Discord
+    if (lowerResource.contains('discord')) {
+      return 'https://discord.com';
+    }
+
+    // GitHub: "GitHub username/repo" or "github.com/username/repo"
+    final githubRegex = RegExp(
+      r'(?:github\.com/|github\s+)([a-zA-Z0-9_-]+/[a-zA-Z0-9_.-]+)',
+      caseSensitive: false,
+    );
+    final githubMatch = githubRegex.firstMatch(resource);
+    if (githubMatch != null) {
+      final repo = githubMatch.group(1);
+      return 'https://github.com/$repo';
+    }
+
+    // YouTube: "YouTube" or "youtube.com/watch?v=..." or channel
+    if (lowerResource.contains('youtube')) {
+      final youtubeRegex = RegExp(
+        r'(?:youtube\.com/(?:watch\?v=|channel/|c/|user/)|youtu\.be/)([a-zA-Z0-9_-]+)',
+        caseSensitive: false,
+      );
+      final youtubeMatch = youtubeRegex.firstMatch(resource);
+      if (youtubeMatch != null) {
+        final videoId = youtubeMatch.group(1);
+        return 'https://youtube.com/watch?v=$videoId';
+      }
+      return 'https://youtube.com';
+    }
+
+    // Udemy: "Udemy course name"
+    if (lowerResource.contains('udemy')) {
+      return 'https://udemy.com';
+    }
+
+    // Coursera
+    if (lowerResource.contains('coursera')) {
+      return 'https://coursera.org';
+    }
+
+    // Medium
+    if (lowerResource.contains('medium')) {
+      final mediumRegex = RegExp(
+        r'medium\.com/@?([a-zA-Z0-9_-]+)',
+        caseSensitive: false,
+      );
+      final mediumMatch = mediumRegex.firstMatch(resource);
+      if (mediumMatch != null) {
+        final author = mediumMatch.group(1);
+        return 'https://medium.com/@$author';
+      }
+      return 'https://medium.com';
+    }
+
+    return null;
+  }
+
+  /// Copy resource link to clipboard
+  Future<void> _copyResourceLink(String resource) async {
+    // Try to extract URL from resource text
+    final url = _extractUrl(resource);
+    final textToCopy = url ?? resource;
+
+    await Clipboard.setData(ClipboardData(text: textToCopy));
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(url != null
+              ? 'Link copied to clipboard'
+              : 'Resource text copied to clipboard'),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  /// Check and unlock modules whose dependencies are completed
+  Future<void> _checkAndUnlockModules() async {
+    if (_path == null) return;
+
+    bool hasChanges = false;
+    final modulesToUpdate = <LearningPathModule>[];
+
+    for (var module in _path!.modules) {
+      // Skip if already unlocked or done
+      if (module.status != ModuleStatus.locked) continue;
+
+      // Check if all dependencies are completed
+      bool allDependenciesDone = true;
+      for (var depId in module.dependencies) {
+        final depModule = _path!.modules.firstWhere(
+          (m) => m.moduleId == depId,
+          orElse: () => module,
+        );
+
+        if (depModule.status != ModuleStatus.done) {
+          allDependenciesDone = false;
+          break;
+        }
+      }
+
+      // If all dependencies are done, unlock this module
+      if (allDependenciesDone) {
+        modulesToUpdate.add(module);
+        hasChanges = true;
+      }
+    }
+
+    // Update all modules that should be unlocked
+    if (hasChanges) {
+      for (var module in modulesToUpdate) {
+        try {
+          final updatedModule = await LearningPathService.updateModuleStatus(
+            module.id,
+            ModuleStatus.inProgress,
+          );
+
+          final moduleIndex = _path!.modules.indexWhere(
+            (m) => m.id == updatedModule.id,
+          );
+
+          if (moduleIndex != -1) {
+            _path!.modules[moduleIndex] = updatedModule;
+          }
+        } catch (e) {
+          // Log error but continue with other modules
+          debugPrint('Error unlocking module ${module.id}: $e');
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          // Trigger rebuild
+        });
+        _buildGraph(_path!);
+      }
+    }
+  }
+
+  /// Calculate and update learning path progress
+  Future<void> _updateProgress() async {
+    if (_path == null) return;
+
+    final totalModules = _path!.modules.length;
+    if (totalModules == 0) return;
+
+    final completedModules =
+        _path!.modules.where((m) => m.status == ModuleStatus.done).length;
+    final progress = (completedModules / totalModules * 100).round();
+
+    // Update progress in database
+    try {
+      await LearningPathService.updateLearningPathProgress(
+        _path!.id,
+        progress,
+      );
+
+      // Reload path to get updated progress
+      await _loadLearningPath();
+    } catch (e) {
+      debugPrint('Error updating progress: $e');
+    }
+  }
+
   /// Update a module's status
   Future<void> _updateModuleStatus(
     LearningPathModule module,
@@ -202,6 +479,14 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
 
         // Rebuild the graph to update edge styles
         _buildGraph(_path!);
+
+        // Auto-update progress when status changes
+        await _updateProgress();
+
+        // Check and unlock dependent modules if this module is now done
+        if (newStatus == ModuleStatus.done) {
+          await _checkAndUnlockModules();
+        }
       } else {
         // If module isn't found, refresh the entire path
         await _loadLearningPath();
@@ -233,7 +518,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                 controller: _tabController,
                 tabs: [
                   Tab(text: 'Overview'),
-                  Tab(text: 'Module Graph'),
+                  // Tab(text: 'Module Graph'),
                 ],
               )
             : null,
@@ -293,8 +578,8 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                     ? _buildPathOverview()
                     : _buildModuleDetail(),
 
-                // Module Graph tab
-                _buildModuleGraph(),
+                // // Module Graph tab
+                // _buildModuleGraph(),
               ],
             ),
           ),
@@ -302,29 +587,32 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
       );
     }
 
-    // Desktop view uses Row layout
+    // Desktop view - only show details panel (graph hidden)
     return Column(
       children: [
         _buildPathHeader(),
         Expanded(
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Graph visualization (2/3 of screen)
-              Expanded(
-                flex: 2,
-                child: _buildModuleGraph(),
-              ),
+          // child: Row(
+          //   crossAxisAlignment: CrossAxisAlignment.start,
+          //   children: [
+          //     // Graph visualization (2/3 of screen)
+          //     Expanded(
+          //       flex: 2,
+          //       child: _buildModuleGraph(),
+          //     ),
 
-              // Details panel (1/3 of screen)
-              Expanded(
-                flex: 1,
-                child: _selectedModule == null
-                    ? _buildPathOverview()
-                    : _buildModuleDetail(),
-              ),
-            ],
-          ),
+          //     // Details panel (1/3 of screen)
+          //     Expanded(
+          //       flex: 1,
+          //       child: _selectedModule == null
+          //           ? _buildPathOverview()
+          //           : _buildModuleDetail(),
+          //     ),
+          //   ],
+          // ),
+          child: _selectedModule == null
+              ? _buildPathOverview()
+              : _buildModuleDetail(),
         ),
       ],
     );
@@ -380,27 +668,28 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-              IconButton(
-                icon: Icon(
-                  _path!.isActive
-                      ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill)
-                      : PhosphorIcons.star(PhosphorIconsStyle.fill),
-                  color: _path!.isActive ? Colors.green : null,
-                  size: 20, // Smaller icon
-                ),
-                onPressed: _path!.isActive
-                    ? null
-                    : () async {
-                        await LearningPathService.setActiveLearningPath(
-                          _path!.id,
-                        );
-                        _loadLearningPath();
-                      },
-                tooltip: _path!.isActive ? 'Active Path' : 'Set as Active Path',
-                padding: EdgeInsets.zero, // Reduce padding on the icon button
-                visualDensity:
-                    VisualDensity.compact, // Make the button more compact
-              ),
+              // Commented out - Set as Active button no longer needed
+              // IconButton(
+              //   icon: Icon(
+              //     _path!.isActive
+              //         ? PhosphorIcons.checkCircle(PhosphorIconsStyle.fill)
+              //         : PhosphorIcons.star(PhosphorIconsStyle.fill),
+              //     color: _path!.isActive ? Colors.green : null,
+              //     size: 20, // Smaller icon
+              //   ),
+              //   onPressed: _path!.isActive
+              //       ? null
+              //       : () async {
+              //           await LearningPathService.setActiveLearningPath(
+              //             _path!.id,
+              //           );
+              //           _loadLearningPath();
+              //         },
+              //   tooltip: _path!.isActive ? 'Active Path' : 'Set as Active Path',
+              //   padding: EdgeInsets.zero, // Reduce padding on the icon button
+              //   visualDensity:
+              //       VisualDensity.compact, // Make the button more compact
+              // ),
             ],
           ),
           const SizedBox(height: 8),
@@ -670,6 +959,19 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
     // Enhanced module card with better visual hierarchy and information display
     return GestureDetector(
       onTap: () {
+        // Don't allow viewing locked modules
+        if (module.status == ModuleStatus.locked) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                'This module is locked. Complete its dependencies first.',
+              ),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+          return;
+        }
+
         setState(() {
           _selectedModule = module;
         });
@@ -1142,12 +1444,12 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                       fontWeight: FontWeight.bold,
                     ),
               ),
-              if (_isMobileView)
-                IconButton(
-                  icon: Icon(PhosphorIcons.graph(PhosphorIconsStyle.fill)),
-                  onPressed: () => _tabController.animateTo(1),
-                  tooltip: 'Show Graph View',
-                ),
+              // if (_isMobileView)
+              //   IconButton(
+              //     icon: Icon(PhosphorIcons.graph(PhosphorIconsStyle.fill)),
+              //     onPressed: () => _tabController.animateTo(1),
+              //     tooltip: 'Show Graph View',
+              //   ),
             ],
           ),
           const SizedBox(height: 12),
@@ -1313,7 +1615,21 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
         side: BorderSide(color: color.withOpacity(0.3)),
       ),
       child: InkWell(
-        onTap: () => setState(() => _selectedModule = module),
+        onTap: () {
+          // Don't allow viewing locked modules
+          if (module.status == ModuleStatus.locked) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  'This module is locked. Complete its dependencies first.',
+                ),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+            return;
+          }
+          setState(() => _selectedModule = module);
+        },
         borderRadius: BorderRadius.circular(8),
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -1444,12 +1760,17 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                   children: [
                     Row(
                       children: [
-                        Text(
-                          'Module ${module.moduleId}',
-                          style:
-                              Theme.of(context).textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                        Flexible(
+                          child: Text(
+                            'Module ${module.moduleId}',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         const SizedBox(width: 8),
                         // Module difficulty indicator
@@ -1483,6 +1804,8 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             fontWeight: FontWeight.w500,
                           ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                     ),
                   ],
                 ),
@@ -1517,6 +1840,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
           Text(
             module.description,
             style: Theme.of(context).textTheme.bodySmall, // Smaller text
+            overflow: TextOverflow.visible,
           ),
           const SizedBox(height: 12), // Reduced spacing
 
@@ -1611,6 +1935,9 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                     difficultyItem['difficulty'] ?? difficultyLevel;
               }
 
+              // Extract display text
+              final displayText = _extractDisplayText(resource);
+
               return Padding(
                 padding: const EdgeInsets.only(
                     bottom: 8), // Increased spacing for readability
@@ -1627,12 +1954,31 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            resource,
-                            style: TextStyle(
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
-                              fontSize: 12, // Smaller font
+                          InkWell(
+                            onTap: () => _copyResourceLink(resource),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    displayText,
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      decoration: TextDecoration.underline,
+                                      fontSize: 12, // Smaller font
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Icon(
+                                  PhosphorIcons.arrowSquareOut(
+                                      PhosphorIconsStyle.regular),
+                                  size: 12,
+                                  color: Colors.blue,
+                                ),
+                              ],
                             ),
                           ),
                           const SizedBox(height: 2),
@@ -1692,10 +2038,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                           style: TextStyle(fontSize: 11), // Smaller font
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/notes/${module.noteId}',
-                          );
+                          context.push('/notes/${module.noteId}');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blue,
@@ -1721,10 +2064,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                           style: TextStyle(fontSize: 11), // Smaller font
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/quiz/${module.quizId}',
-                          );
+                          context.push('/quiz/${module.quizId}');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green,
@@ -1749,10 +2089,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                           style: TextStyle(fontSize: 11), // Smaller font
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/flashcards/${module.deckId}/view',
-                          );
+                          context.push('/flashcards/${module.deckId}/view');
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange,
@@ -1778,11 +2115,15 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                   color: Colors.grey.shade700,
                 ),
                 const SizedBox(width: 8), // Reduced spacing
-                Text(
-                  'Estimated time: ${module.estimatedDuration}',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.w500,
-                      ),
+                Expanded(
+                  child: Text(
+                    'Estimated time: ${module.estimatedDuration}',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
+                  ),
                 ),
               ],
             ),
@@ -1796,6 +2137,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
             Text(
               module.assessment!,
               style: Theme.of(context).textTheme.bodySmall, // Smaller font
+              overflow: TextOverflow.visible,
             ),
             const SizedBox(height: 12), // Reduced spacing
           ],
@@ -1816,6 +2158,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
               child: Text(
                 module.additionalNotes!,
                 style: Theme.of(context).textTheme.bodySmall, // Smaller font
+                overflow: TextOverflow.visible,
               ),
             ),
             const SizedBox(height: 12), // Reduced spacing
@@ -1855,6 +2198,15 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
         ? _path!.modules[currentIndex + 1]
         : null;
 
+    // Check if previous/next modules are locked
+    // OLD CODE (before update): Only checked for null, didn't check locked status
+    // onPressed: previousModule != null ? () => setState(...) : null
+    // NEW CODE: Also check if module is locked to disable navigation
+    final bool canGoToPrevious =
+        previousModule != null && previousModule.status != ModuleStatus.locked;
+    final bool canGoToNext =
+        nextModule != null && nextModule.status != ModuleStatus.locked;
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -1865,7 +2217,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
             size: 16,
           ),
           label: const Text('Previous'),
-          onPressed: previousModule != null
+          onPressed: canGoToPrevious
               ? () => setState(() => _selectedModule = previousModule)
               : null,
           style: TextButton.styleFrom(
@@ -1893,7 +2245,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
             size: 16,
           ),
           label: const Text('Next'),
-          onPressed: nextModule != null
+          onPressed: canGoToNext
               ? () => setState(() => _selectedModule = nextModule)
               : null,
           style: TextButton.styleFrom(
@@ -1905,69 +2257,120 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
     );
   }
 
-  /// Build module status selector - fix ParentDataWidget errors
+  // Widget _buildStatusSelector(LearningPathModule module) {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       Text(
+  //         'Status:',
+  //         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+  //               fontWeight: FontWeight.bold,
+  //             ),
+  //       ),
+  //       const SizedBox(height: 8),
+  //       // Wrap in horizontal scrollview for smaller screens
+  //       SingleChildScrollView(
+  //         scrollDirection: Axis.horizontal,
+  //         child: Row(
+  //           mainAxisAlignment: MainAxisAlignment.start,
+  //           children: [
+  //             // Locked
+  //             SizedBox(
+  //               height: 36, // Fixed height for consistent sizing
+  //               child: _buildStatusButton(
+  //                 module: module,
+  //                 status: ModuleStatus.locked,
+  //                 icon: PhosphorIcons.lock(PhosphorIconsStyle.fill),
+  //                 label: 'Locked',
+  //                 color: Colors.grey.shade600,
+  //               ),
+  //             ),
+  //             const SizedBox(width: 8),
+
+  //             // In Progress
+  //             SizedBox(
+  //               height: 36, // Fixed height for consistent sizing
+  //               child: _buildStatusButton(
+  //                 module: module,
+  //                 status: ModuleStatus.inProgress,
+  //                 icon: PhosphorIcons.caretRight(PhosphorIconsStyle.fill),
+  //                 label: 'In Progress',
+  //                 color: AppColors.primary,
+  //               ),
+  //             ),
+  //             const SizedBox(width: 8),
+
+  //             // Done
+  //             SizedBox(
+  //               height: 36, // Fixed height for consistent sizing
+  //               child: _buildStatusButton(
+  //                 module: module,
+  //                 status: ModuleStatus.done,
+  //                 icon: PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
+  //                 label: 'Done',
+  //                 color: Colors.green,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
+  /// Build module status selector - simplified to single action button
+  ///
+  /// OLD CODE (before simplification):
+  /// - Showed 3 buttons: Locked, In Progress, Done
+  /// - Allowed changing status between all states
+  /// - Had separate _buildStatusButton function
+  ///
+  /// NEW CODE (simplified):
+  /// - Only shows "Mark as Done" button when status is In Progress
+  /// - No button shown when Done (user doesn't need to change back)
+  /// - No button shown when Locked (status is auto-managed by dependencies)
   Widget _buildStatusSelector(LearningPathModule module) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Status:',
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-        const SizedBox(height: 8),
-        // Wrap in horizontal scrollview for smaller screens
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              // Locked
-              SizedBox(
-                height: 36, // Fixed height for consistent sizing
-                child: _buildStatusButton(
-                  module: module,
-                  status: ModuleStatus.locked,
-                  icon: PhosphorIcons.lock(PhosphorIconsStyle.fill),
-                  label: 'Locked',
-                  color: Colors.grey.shade600,
-                ),
-              ),
-              const SizedBox(width: 8),
+    // Don't show action button for locked modules (status is auto-managed)
+    if (module.status == ModuleStatus.locked) {
+      return const SizedBox.shrink();
+    }
 
-              // In Progress
-              SizedBox(
-                height: 36, // Fixed height for consistent sizing
-                child: _buildStatusButton(
-                  module: module,
-                  status: ModuleStatus.inProgress,
-                  icon: PhosphorIcons.caretRight(PhosphorIconsStyle.fill),
-                  label: 'In Progress',
-                  color: AppColors.primary,
-                ),
-              ),
-              const SizedBox(width: 8),
+    // Don't show button if already done
+    // OLD CODE: Showed "Mark as In Progress" button to allow rework
+    // NEW CODE: No button - once done, no need to change status
+    if (module.status == ModuleStatus.done) {
+      return const SizedBox.shrink();
+    }
 
-              // Done
-              SizedBox(
-                height: 36, // Fixed height for consistent sizing
-                child: _buildStatusButton(
-                  module: module,
-                  status: ModuleStatus.done,
-                  icon: PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
-                  label: 'Done',
-                  color: Colors.green,
-                ),
-              ),
-            ],
-          ),
+    // Only show "Mark as Done" button when in progress
+    // OLD CODE: Showed all 3 status buttons with _buildStatusButton helper
+    // NEW CODE: Single button only for marking as done
+    if (module.status == ModuleStatus.inProgress) {
+      return ElevatedButton.icon(
+        icon: Icon(
+          PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
+          size: 18,
         ),
-      ],
-    );
+        label: const Text('Mark as Done'),
+        onPressed: () {
+          _updateModuleStatus(module, ModuleStatus.done);
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.green,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        ),
+      );
+    }
+
+    // Should not reach here, but return empty if status is unknown
+    return const SizedBox.shrink();
   }
 
-  /// Build a module status button
+  // OLD CODE - Removed _buildStatusButton function
+  // This function was used to build individual status buttons (Locked, In Progress, Done)
+  // It's no longer needed after simplification to single action button
+  /*
   Widget _buildStatusButton({
     required LearningPathModule module,
     required ModuleStatus status,
@@ -1981,11 +2384,11 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
       icon: Icon(
         icon,
         color: isSelected ? Colors.white : color,
-        size: 16, // Smaller icon
+        size: 16,
       ),
       label: Text(
         label,
-        style: TextStyle(fontSize: 12), // Smaller font
+        style: TextStyle(fontSize: 12),
       ),
       onPressed: () {
         if (!isSelected) {
@@ -1997,9 +2400,9 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
         foregroundColor: isSelected ? Colors.white : color,
         side: BorderSide(color: color, width: 1),
         elevation: isSelected ? 2 : 0,
-        padding: const EdgeInsets.symmetric(
-            horizontal: 12, vertical: 6), // Reduced padding
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       ),
     );
   }
+  */
 }

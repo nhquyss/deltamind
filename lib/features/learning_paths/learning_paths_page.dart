@@ -4,7 +4,7 @@ import 'package:deltamind/services/learning_path_service.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:deltamind/features/learning_paths/generate_path_dialog.dart';
-import 'package:deltamind/features/learning_paths/learning_path_detail_page.dart';
+// import 'package:deltamind/features/learning_paths/learning_path_detail_page.dart';
 import 'package:deltamind/features/learning_paths/learning_path_progress_widget.dart';
 import 'package:deltamind/core/utils/formatters.dart';
 import 'package:go_router/go_router.dart';
@@ -22,7 +22,8 @@ class _LearningPathsPageState extends State<LearningPathsPage>
   bool _isLoading = true;
   List<LearningPath> _paths = [];
   List<LearningPath> _filteredPaths = [];
-  LearningPath? _activePath;
+  // Commented out - Active path feature no longer used
+  // LearningPath? _activePath;
   String? _errorMessage;
   late TabController _tabController;
 
@@ -62,8 +63,9 @@ class _LearningPathsPageState extends State<LearningPathsPage>
     try {
       final paths = await LearningPathService.getAllLearningPaths();
 
-      // Find the active path
-      final activePath = paths.where((path) => path.isActive).firstOrNull;
+      // Commented out - Active path feature no longer used
+      // // Find the active path
+      // final activePath = paths.where((path) => path.isActive).firstOrNull;
 
       // Collect all available categories and tags
       final categories = paths.map((path) => path.category).toSet();
@@ -76,7 +78,8 @@ class _LearningPathsPageState extends State<LearningPathsPage>
         setState(() {
           _paths = paths;
           _filteredPaths = List.from(paths);
-          _activePath = activePath;
+          // Commented out - Active path feature no longer used
+          // _activePath = activePath;
           _availableCategories = categories;
           _availableTags = tags;
           _isLoading = false;
@@ -145,11 +148,12 @@ class _LearningPathsPageState extends State<LearningPathsPage>
   }
 
   /// Continue active learning path
-  void _continueLearningPath() {
-    if (_activePath != null) {
-      _onPathTap(_activePath!);
-    }
-  }
+  // Commented out - Active path feature no longer used
+  // void _continueLearningPath() {
+  //   if (_activePath != null) {
+  //     _onPathTap(_activePath!);
+  //   }
+  // }
 
   /// Show dialog to generate a new learning path
   void _showGeneratePathDialog() {
@@ -201,26 +205,26 @@ class _LearningPathsPageState extends State<LearningPathsPage>
   /// Build error view
   Widget _buildErrorView() {
     return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
             PhosphorIcons.warning(PhosphorIconsStyle.fill),
-              size: 64,
-              color: Colors.orange,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              _errorMessage!,
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _loadLearningPaths,
-              child: const Text('Try Again'),
-            ),
-          ],
+            size: 64,
+            color: Colors.orange,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            _errorMessage!,
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: _loadLearningPaths,
+            child: const Text('Try Again'),
+          ),
+        ],
       ),
     );
   }
@@ -275,38 +279,39 @@ class _LearningPathsPageState extends State<LearningPathsPage>
 
         const SizedBox(height: 16),
 
-        // Active learning path section
-        if (_activePath != null) ...[
-          Row(
-            children: [
-              Icon(
-                PhosphorIcons.star(PhosphorIconsStyle.fill),
-                color: Colors.amber,
-                size: 20,
-              ),
-              const SizedBox(width: 8),
-              Text(
-                'Active Learning Path',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
+        // Recent paths section - always show if paths exist, otherwise show empty state
+        // // Active learning path section
+        // if (_activePath != null) ...[
+        //   Row(
+        //     children: [
+        //       Icon(
+        //         PhosphorIcons.star(PhosphorIconsStyle.fill),
+        //         color: Colors.amber,
+        //         size: 20,
+        //       ),
+        //       const SizedBox(width: 8),
+        //       Text(
+        //         'Active Learning Path',
+        //         style: Theme.of(context).textTheme.titleMedium?.copyWith(
+        //               fontWeight: FontWeight.bold,
+        //             ),
+        //       ),
+        //     ],
+        //   ),
+        //   const SizedBox(height: 8),
 
-          // Active path progress widget
-          LearningPathProgressWidget(
-            learningPath: _activePath!,
-            onContinue: _continueLearningPath,
-          ),
-        ] else ...[
-          _buildNoActivePath(),
-        ],
+        //   // Active path progress widget
+        //   LearningPathProgressWidget(
+        //     learningPath: _activePath!,
+        //     onContinue: _continueLearningPath,
+        //   ),
+        // ] else ...[
+        //   _buildNoActivePath(),
+        // ],
 
-        const SizedBox(height: 24),
+        // const SizedBox(height: 24),
 
-        // Recent paths section
+        // // Recent paths section
         if (_paths.isNotEmpty) ...[
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -330,6 +335,9 @@ class _LearningPathsPageState extends State<LearningPathsPage>
             _paths.length > 3 ? 3 : _paths.length,
             (index) => _buildRecentPathCard(_paths[index]),
           ),
+        ] else ...[
+          // Empty state when no paths exist
+          _buildEmptyState(),
         ],
       ],
     );
@@ -493,36 +501,39 @@ class _LearningPathsPageState extends State<LearningPathsPage>
           if (_availableTags.isNotEmpty) ...[
             const SizedBox(height: 12),
 
-            // Tags filter
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: _availableTags
-                  .take(10) // Limit to prevent overcrowding
-                  .map((tag) => FilterChip(
-                        label: Text(tag),
-                        selected: _selectedTags.contains(tag),
-                        onSelected: (selected) {
-                          setState(() {
-                            if (selected) {
-                              _selectedTags.add(tag);
-                            } else {
-                              _selectedTags.remove(tag);
-                            }
-                            _applyFilters();
-                          });
-                        },
-                        backgroundColor: Colors.grey.shade100,
-                        selectedColor: AppColors.primary.withOpacity(0.15),
-                        checkmarkColor: AppColors.primary,
-                        labelStyle: TextStyle(
-                          fontSize: 12,
-                          color: _selectedTags.contains(tag)
-                              ? AppColors.primary
-                              : Colors.grey.shade800,
-                        ),
-                      ))
-                  .toList(),
+            // Tags filter - Single row with horizontal scroll
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: _availableTags
+                    .map((tag) => Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: FilterChip(
+                            label: Text(tag),
+                            selected: _selectedTags.contains(tag),
+                            onSelected: (selected) {
+                              setState(() {
+                                if (selected) {
+                                  _selectedTags.add(tag);
+                                } else {
+                                  _selectedTags.remove(tag);
+                                }
+                                _applyFilters();
+                              });
+                            },
+                            backgroundColor: Colors.grey.shade100,
+                            selectedColor: AppColors.primary.withOpacity(0.15),
+                            checkmarkColor: AppColors.primary,
+                            labelStyle: TextStyle(
+                              fontSize: 12,
+                              color: _selectedTags.contains(tag)
+                                  ? AppColors.primary
+                                  : Colors.grey.shade800,
+                            ),
+                          ),
+                        ))
+                    .toList(),
+              ),
             ),
           ],
         ],
@@ -607,7 +618,7 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                   vertical: 12,
                 ),
               ),
-              ),
+            ),
           ],
         ),
       ),
@@ -615,44 +626,45 @@ class _LearningPathsPageState extends State<LearningPathsPage>
   }
 
   /// Build no active path widget
-  Widget _buildNoActivePath() {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey.shade300),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'No Active Learning Path',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              'Set a learning path as active to track your progress and continue learning from where you left off.',
-              style: TextStyle(
-                color: Colors.grey.shade700,
-                fontSize: 14,
-              ),
-            ),
-            const SizedBox(height: 16),
-            OutlinedButton.icon(
-              onPressed: () => _tabController.animateTo(1),
-              icon: Icon(PhosphorIcons.arrowRight(PhosphorIconsStyle.fill)),
-              label: const Text('Browse Learning Paths'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+  // Commented out - Active path feature no longer used
+  // Widget _buildNoActivePath() {
+  //   return Card(
+  //     elevation: 0,
+  //     shape: RoundedRectangleBorder(
+  //       borderRadius: BorderRadius.circular(12),
+  //       side: BorderSide(color: Colors.grey.shade300),
+  //     ),
+  //     child: Padding(
+  //       padding: const EdgeInsets.all(16),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           const Text(
+  //             'No Active Learning Path',
+  //             style: TextStyle(
+  //               fontWeight: FontWeight.bold,
+  //               fontSize: 16,
+  //             ),
+  //           ),
+  //           const SizedBox(height: 8),
+  //           Text(
+  //             'Set a learning path as active to track your progress and continue learning from where you left off.',
+  //             style: TextStyle(
+  //               color: Colors.grey.shade700,
+  //               fontSize: 14,
+  //             ),
+  //           ),
+  //           const SizedBox(height: 16),
+  //           OutlinedButton.icon(
+  //             onPressed: () => _tabController.animateTo(1),
+  //             icon: Icon(PhosphorIcons.arrowRight(PhosphorIconsStyle.fill)),
+  //             label: const Text('Browse Learning Paths'),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   /// Build quick stats widget
   Widget _buildQuickStats() {
@@ -933,9 +945,9 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                         ),
                         Row(
                           children: [
-                        Text(
+                            Text(
                               formatDate(path.createdAt),
-                          style: Theme.of(context).textTheme.bodySmall,
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                             if (path.category != null) ...[
                               const Text(' • '),
@@ -957,16 +969,16 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                  if (path.isActive)
-                    Chip(
-                      label: const Text('Active'),
-                      backgroundColor: AppColors.primary.withOpacity(0.2),
-                      labelStyle: TextStyle(
-                        color: AppColors.primary,
-                        fontWeight: FontWeight.bold,
+                      if (path.isActive)
+                        Chip(
+                          label: const Text('Active'),
+                          backgroundColor: AppColors.primary.withOpacity(0.2),
+                          labelStyle: TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
                             fontSize: 12,
-                      ),
-                      padding: EdgeInsets.zero,
+                          ),
+                          padding: EdgeInsets.zero,
                           materialTapTargetSize:
                               MaterialTapTargetSize.shrinkWrap,
                         ),
@@ -989,7 +1001,7 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                             fontWeight: FontWeight.bold,
                             color: _getDifficultyColor(path.difficulty),
                           ),
-                            ),
+                        ),
                       ),
                     ],
                   ),
@@ -1052,51 +1064,52 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                 ),
               ),
 
-            // Actions
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                  // View button
-                  TextButton.icon(
-                    onPressed: () => _onPathTap(path),
-                        icon: Icon(
-                      PhosphorIcons.arrowUpRight(PhosphorIconsStyle.fill),
-                      size: 16,
-                    ),
-                    label: const Text('View'),
-                        style: TextButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Set as active button (shown only if not active)
-                  if (!path.isActive)
-                    OutlinedButton.icon(
-                      onPressed: () async {
-                        await LearningPathService.setActiveLearningPath(
-                            path.id);
-                        _loadLearningPaths();
-                      },
-                      icon: Icon(
-                        PhosphorIcons.star(PhosphorIconsStyle.fill),
-                        size: 16,
-                      ),
-                      label: const Text('Set as Active'),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 8,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
+            // Actions - Commented out - View button removed since tapping card opens view
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.end,
+            //     children: [
+            //       // View button
+            //       TextButton.icon(
+            //         onPressed: () => _onPathTap(path),
+            //         icon: Icon(
+            //           PhosphorIcons.arrowUpRight(PhosphorIconsStyle.fill),
+            //           size: 16,
+            //         ),
+            //         label: const Text('View'),
+            //         style: TextButton.styleFrom(
+            //           padding: const EdgeInsets.symmetric(
+            //             horizontal: 12,
+            //             vertical: 8,
+            //           ),
+            //         ),
+            //       ),
+            //       // Commented out - Set as Active button no longer needed
+            //       // const SizedBox(width: 8),
+            //       // // Set as active button (shown only if not active)
+            //       // if (!path.isActive)
+            //       //   OutlinedButton.icon(
+            //       //     onPressed: () async {
+            //       //       await LearningPathService.setActiveLearningPath(
+            //       //           path.id);
+            //       //       _loadLearningPaths();
+            //       //     },
+            //       //     icon: Icon(
+            //       //       PhosphorIcons.star(PhosphorIconsStyle.fill),
+            //       //       size: 16,
+            //       //     ),
+            //       //     label: const Text('Set as Active'),
+            //       //     style: OutlinedButton.styleFrom(
+            //       //       padding: const EdgeInsets.symmetric(
+            //       //         horizontal: 12,
+            //       //         vertical: 8,
+            //       //       ),
+            //       //     ),
+            //       //   ),
+            //     ],
+            //   ),
+            // ),
           ],
         ),
       ),

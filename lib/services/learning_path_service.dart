@@ -1,6 +1,9 @@
 import 'package:deltamind/models/learning_path.dart';
 import 'package:deltamind/services/gemini_service.dart';
 import 'package:deltamind/services/supabase_service.dart';
+import 'package:deltamind/services/quiz_service.dart';
+import 'package:deltamind/services/flashcard_service.dart';
+import 'package:deltamind/services/notes_service.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'package:google_generative_ai/google_generative_ai.dart' as ai;
@@ -217,6 +220,24 @@ class LearningPathService {
       return LearningPathModule.fromJson(response);
     } catch (e) {
       debugPrint('Error updating module status: $e');
+      rethrow;
+    }
+  }
+
+  /// Update learning path progress
+  static Future<void> updateLearningPathProgress(
+    String pathId,
+    int progress,
+  ) async {
+    try {
+      SupabaseService.checkAuthentication();
+
+      await SupabaseService.client.from('learning_paths').update({
+        'progress': progress,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', pathId);
+    } catch (e) {
+      debugPrint('Error updating learning path progress: $e');
       rethrow;
     }
   }
@@ -804,7 +825,10 @@ Your response MUST be valid JSON that can be parsed directly. Do not include any
           "Project-based Course: Build practical $topic projects on platforms like Pluralsight",
           "GitHub Repository: Annotated example projects implementing $topic concepts",
           "Interactive Tutorials: Step-by-step exercises on $topic with immediate feedback",
-          "Coding Challenges: Progressive $topic challenges on platforms like HackerRank or LeetCode"
+          "Coding Challenges: Progressive $topic challenges on platforms like HackerRank or LeetCode",
+          "Interactive Platform: Hands-on learning through platforms like Codecademy or freeCodeCamp",
+          "Simulation Tools: Interactive simulators demonstrating $topic principles",
+          "Live Workshops: Participate in online workshops focused on $topic implementation",
         ];
 
       case 'theoretical':
@@ -816,14 +840,15 @@ Your response MUST be valid JSON that can be parsed directly. Do not include any
           "Mathematics: Exploring the mathematical foundations of $topic on Khan Academy"
         ];
 
-      case 'interactive':
-        return [
-          "Interactive Platform: Hands-on learning through platforms like Codecademy or freeCodeCamp",
-          "Tutorial Projects: Guided interactive projects building $topic applications",
-          "Simulation Tools: Interactive simulators demonstrating $topic principles",
-          "Live Workshops: Participate in online workshops focused on $topic implementation",
-          "Community Challenges: Engage with $topic problems in community platforms"
-        ];
+      // Commented out - merged into 'practical' to simplify options
+      // case 'interactive':
+      //   return [
+      //     "Interactive Platform: Hands-on learning through platforms like Codecademy or freeCodeCamp",
+      //     "Tutorial Projects: Guided interactive projects building $topic applications",
+      //     "Simulation Tools: Interactive simulators demonstrating $topic principles",
+      //     "Live Workshops: Participate in online workshops focused on $topic implementation",
+      //     "Community Challenges: Engage with $topic problems in community platforms"
+      //   ];
 
       case 'balanced':
       default:
@@ -889,6 +914,19 @@ Your response MUST be valid JSON that can be parsed directly. Do not include any
       // Save the path first
       final createdPath = await createLearningPath(path);
 
+      // Commented out - Active path feature no longer used
+      // // Automatically set as active if no active path exists
+      // try {
+      //   final activePath = await getActiveLearningPath();
+      //   if (activePath == null) {
+      //     // No active path exists, set this new path as active
+      //     await setActiveLearningPath(createdPath.id);
+      //   }
+      // } catch (e) {
+      //   // If checking/setting active path fails, continue anyway
+      //   debugPrint('Error checking/setting active path: $e');
+      // }
+
       // Create modules
       if (generatedPath['modules'] != null &&
           generatedPath['modules'] is List) {
@@ -896,6 +934,21 @@ Your response MUST be valid JSON that can be parsed directly. Do not include any
 
         for (int i = 0; i < modules.length; i++) {
           final module = modules[i];
+
+          // Parse resource difficulties
+          List<Map<String, dynamic>> resourceDifficulties = [];
+          if (module['resource_difficulties'] != null &&
+              module['resource_difficulties'] is List) {
+            resourceDifficulties = List<Map<String, dynamic>>.from(
+              module['resource_difficulties']
+                  .map((x) => Map<String, dynamic>.from(x)),
+            );
+          }
+
+          // Get module difficulty
+          final String moduleDifficulty = module['difficulty'] != null
+              ? module['difficulty']
+              : 'intermediate';
 
           // Create module
           final LearningPathModule pathModule = LearningPathModule(
@@ -911,6 +964,7 @@ Your response MUST be valid JSON that can be parsed directly. Do not include any
                 module['resources'] != null && module['resources'] is List
                     ? List<String>.from(module['resources'])
                     : [],
+            resourceDifficulties: resourceDifficulties,
             learningObjectives: module['learning_objectives'] != null &&
                     module['learning_objectives'] is List
                 ? List<String>.from(module['learning_objectives'])
@@ -920,11 +974,95 @@ Your response MUST be valid JSON that can be parsed directly. Do not include any
             additionalNotes: module['additional_notes'] ?? '',
             moduleId: module['module_id']?.toString() ?? (i + 1).toString(),
             position: i,
+            difficulty: moduleDifficulty,
             status: i == 0 ? ModuleStatus.inProgress : ModuleStatus.locked,
           );
 
-          // Save module
-          await saveModule(pathModule);
+          // Save module first
+          final savedModule = await saveModule(pathModule);
+
+          // Automatically create quiz, flashcard, and note for each module
+          try {
+            // Create quiz from learning objectives
+            if (savedModule.learningObjectives.isNotEmpty) {
+              final quizContent = savedModule.description +
+                  '\n\nLearning Objectives:\n' +
+                  savedModule.learningObjectives.join('\n');
+
+              final quiz = await QuizService.createQuizWithGeneratedQuestions(
+                title: '${savedModule.title} - Quiz',
+                description: 'Quiz for ${savedModule.title}',
+                quizType: 'multiple_choice',
+                difficulty: savedModule.difficulty,
+                content: quizContent,
+                questionCount: 5,
+              );
+
+              // Create flashcard deck from key concepts
+              final flashcardContent = savedModule.description +
+                  (savedModule.prerequisites != null
+                      ? '\n\nPrerequisites: ${savedModule.prerequisites}'
+                      : '') +
+                  '\n\nKey Concepts:\n' +
+                  savedModule.learningObjectives.join('\n');
+
+              final flashcardCards =
+                  await FlashcardService.generateFlashcardsFromContent(
+                flashcardContent,
+                8, // Generate 8 flashcards per module
+              );
+
+              final flashcardDeck = await FlashcardService.createDeck(
+                title: '${savedModule.title} - Flashcards',
+                description: 'Flashcards for ${savedModule.title}',
+                sourceName: createdPath.title,
+                sourceType: 'learning_path',
+              );
+
+              await FlashcardService.createFlashcards(
+                deckId: flashcardDeck.id,
+                cards: flashcardCards,
+              );
+
+              // Create note only for first 3 modules (less notes as user prefers)
+              String? noteId;
+              if (i < 3) {
+                // Build plain text content
+                final plainTextContent = savedModule.description +
+                    (savedModule.prerequisites != null
+                        ? '\n\nPrerequisites: ${savedModule.prerequisites}'
+                        : '') +
+                    '\n\nKey Points:\n' +
+                    savedModule.learningObjectives
+                        .map((obj) => '• $obj')
+                        .join('\n');
+
+                // Convert plain text to Delta JSON format for Quill editor
+                final deltaContent =
+                    NotesService.convertPlainTextToDelta(plainTextContent);
+
+                final note = await NotesService.createNote(
+                  title: '${savedModule.title} - Notes',
+                  content: deltaContent,
+                  tags: [createdPath.title, savedModule.title],
+                );
+                noteId = note.id;
+              }
+
+              // Update module with linked content
+              final updatedModule = savedModule.copyWith(
+                quizId: quiz.id,
+                deckId: flashcardDeck.id,
+                noteId: noteId,
+              );
+
+              await saveModule(updatedModule);
+            }
+          } catch (e) {
+            // If creating quiz/flashcard/note fails, continue with module creation
+            debugPrint(
+                'Error creating quiz/flashcard/note for module ${savedModule.title}: $e');
+          }
         }
       }
 

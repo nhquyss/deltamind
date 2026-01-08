@@ -15,9 +15,10 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
   final _formKey = GlobalKey<FormState>();
   final _topicController = TextEditingController();
   final _learningGoalsController = TextEditingController();
-  final _timeCommitmentController = TextEditingController();
-  final _focusAreasController = TextEditingController();
-  final _suggestedTagsController = TextEditingController();
+  // Commented out - not currently used but kept for future use
+  // final _timeCommitmentController = TextEditingController();
+  // final _focusAreasController = TextEditingController();
+  // final _suggestedTagsController = TextEditingController();
   String _knowledgeLevel = 'beginner';
   String _learningStyle = 'balanced';
   bool _isAdvancedOptionsVisible = false;
@@ -34,16 +35,18 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
     'visual',
     'practical',
     'theoretical',
-    'interactive',
+    // Commented out - merged into 'practical' to simplify options
+    // 'interactive',
   ];
 
   @override
   void dispose() {
     _topicController.dispose();
     _learningGoalsController.dispose();
-    _timeCommitmentController.dispose();
-    _focusAreasController.dispose();
-    _suggestedTagsController.dispose();
+    // Commented out - not currently used but kept for future use
+    // _timeCommitmentController.dispose();
+    // _focusAreasController.dispose();
+    // _suggestedTagsController.dispose();
     super.dispose();
   }
 
@@ -53,23 +56,22 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
 
     final topic = _topicController.text.trim();
     final learningGoals = _learningGoalsController.text.trim();
-    final timeCommitment = _timeCommitmentController.text.trim();
-    final focusAreas = _focusAreasController.text.trim().isNotEmpty
-        ? _focusAreasController.text
-            .trim()
-            .split(',')
-            .map((e) => e.trim())
-            .toList()
-        : null;
-
-    // Process suggested tags
-    final suggestedTags = _suggestedTagsController.text.trim().isNotEmpty
-        ? _suggestedTagsController.text
-            .trim()
-            .split(',')
-            .map((e) => e.trim())
-            .toList()
-        : null;
+    // Commented out - not currently used but kept for future use
+    // final timeCommitment = _timeCommitmentController.text.trim();
+    // final focusAreas = _focusAreasController.text.trim().isNotEmpty
+    //     ? _focusAreasController.text
+    //         .trim()
+    //         .split(',')
+    //         .map((e) => e.trim())
+    //         .toList()
+    //     : null;
+    // final suggestedTags = _suggestedTagsController.text.trim().isNotEmpty
+    //     ? _suggestedTagsController.text
+    //         .trim()
+    //         .split(',')
+    //         .map((e) => e.trim())
+    //         .toList()
+    //     : null;
 
     setState(() {
       _isGenerating = true;
@@ -82,10 +84,11 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
         topic: topic,
         knowledgeLevel: _knowledgeLevel,
         learningGoals: learningGoals.isNotEmpty ? learningGoals : null,
-        timeCommitment: timeCommitment.isNotEmpty ? timeCommitment : null,
         learningStyle: _learningStyle,
-        focusAreas: focusAreas,
-        suggestedTags: suggestedTags,
+        // Commented out - not currently used but kept for future use
+        // timeCommitment: timeCommitment.isNotEmpty ? timeCommitment : null,
+        // focusAreas: focusAreas,
+        // suggestedTags: suggestedTags,
       );
 
       if (!mounted) return;
@@ -427,65 +430,66 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
                     },
             ),
 
-            const SizedBox(height: 16),
-
-            // Time commitment
-            TextFormField(
-              controller: _timeCommitmentController,
-              decoration: InputDecoration(
-                labelText: 'Time Commitment (Optional)',
-                hintText: 'e.g. 2 hours daily, 8 hours per week',
-                prefixIcon:
-                    Icon(PhosphorIcons.clock(PhosphorIconsStyle.regular)),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                filled: true,
-              ),
-              enabled: !_isGenerating,
-              textInputAction: TextInputAction.next,
-            ),
-
-            const SizedBox(height: 16),
-
-            // Focus areas
-            TextFormField(
-              controller: _focusAreasController,
-              decoration: InputDecoration(
-                labelText: 'Focus Areas (Optional)',
-                hintText:
-                    'Enter specific areas to focus on, separated by commas',
-                prefixIcon: Icon(
-                    PhosphorIcons.magnifyingGlass(PhosphorIconsStyle.regular)),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                filled: true,
-              ),
-              enabled: !_isGenerating,
-              textInputAction: TextInputAction.next,
-            ),
-
-            const SizedBox(height: 16),
-
-            // Suggested tags
-            TextFormField(
-              controller: _suggestedTagsController,
-              decoration: InputDecoration(
-                labelText: 'Suggested Tags (Optional)',
-                hintText:
-                    'Enter tags separated by commas for better organization',
-                prefixIcon: Icon(PhosphorIcons.tag(PhosphorIconsStyle.regular)),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                filled: true,
-                helperText:
-                    'These tags will be used to categorize and filter your learning path',
-              ),
-              enabled: !_isGenerating,
-              textInputAction: TextInputAction.done,
-            ),
+            // Commented out - not currently used but kept for future use
+            // const SizedBox(height: 16),
+            //
+            // // Time commitment
+            // TextFormField(
+            //   controller: _timeCommitmentController,
+            //   decoration: InputDecoration(
+            //     labelText: 'Time Commitment (Optional)',
+            //     hintText: 'e.g. 2 hours daily, 8 hours per week',
+            //     prefixIcon:
+            //         Icon(PhosphorIcons.clock(PhosphorIconsStyle.regular)),
+            //     border: OutlineInputBorder(
+            //       borderRadius: BorderRadius.circular(8),
+            //     ),
+            //     filled: true,
+            //   ),
+            //   enabled: !_isGenerating,
+            //   textInputAction: TextInputAction.next,
+            // ),
+            //
+            // const SizedBox(height: 16),
+            //
+            // // Focus areas
+            // TextFormField(
+            //   controller: _focusAreasController,
+            //   decoration: InputDecoration(
+            //     labelText: 'Focus Areas (Optional)',
+            //     hintText:
+            //         'Enter specific areas to focus on, separated by commas',
+            //     prefixIcon: Icon(
+            //         PhosphorIcons.magnifyingGlass(PhosphorIconsStyle.regular)),
+            //     border: OutlineInputBorder(
+            //       borderRadius: BorderRadius.circular(8),
+            //     ),
+            //     filled: true,
+            //   ),
+            //   enabled: !_isGenerating,
+            //   textInputAction: TextInputAction.next,
+            // ),
+            //
+            // const SizedBox(height: 16),
+            //
+            // // Suggested tags
+            // TextFormField(
+            //   controller: _suggestedTagsController,
+            //   decoration: InputDecoration(
+            //     labelText: 'Suggested Tags (Optional)',
+            //     hintText:
+            //         'Enter tags separated by commas for better organization',
+            //     prefixIcon: Icon(PhosphorIcons.tag(PhosphorIconsStyle.regular)),
+            //     border: OutlineInputBorder(
+            //       borderRadius: BorderRadius.circular(8),
+            //     ),
+            //     filled: true,
+            //     helperText:
+            //         'These tags will be used to categorize and filter your learning path',
+            //   ),
+            //   enabled: !_isGenerating,
+            //   textInputAction: TextInputAction.done,
+            // ),
           ],
         ),
       ),
