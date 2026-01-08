@@ -1,9 +1,11 @@
+import 'package:deltamind/core/routing/app_router.dart';
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/features/gamification/widgets/streak_freeze_widget.dart';
 import 'package:deltamind/services/streak_service.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:go_router/go_router.dart';
 import 'package:deltamind/features/gamification/widgets/streak_freeze_countdown.dart';
 
 class StreakCard extends StatefulWidget {
@@ -88,7 +90,9 @@ class _StreakCardState extends State<StreakCard> {
                       widget.streak.streakFreezeExpiry,
                     ),
                   ],
-                  if (hasStreakFreezes) ...[
+                  // Show streak freeze widget if user has freezes AND hasn't achieved streak today
+                  if (hasStreakFreezes &&
+                      !widget.streak.isStreakAchievedToday) ...[
                     const SizedBox(height: 12),
                     StreakFreezeWidget(compact: false),
                   ],
@@ -168,7 +172,54 @@ class _StreakCardState extends State<StreakCard> {
             ],
           ),
         ),
+        // Streak freeze chip (only show if NOT showing StreakFreezeWidget)
+        _buildFreezeChipInHeader(context),
       ],
+    );
+  }
+
+  Widget _buildFreezeChipInHeader(BuildContext context) {
+    final theme = Theme.of(context);
+    final hasStreakFreezes = widget.streakFreeze != null &&
+        widget.streakFreeze!.availableFreezes > 0;
+    final showStreakFreezeWidget =
+        hasStreakFreezes && !widget.streak.isStreakAchievedToday;
+
+    // Only show chip if NOT showing StreakFreezeWidget
+    if (showStreakFreezeWidget) {
+      return const SizedBox.shrink();
+    }
+
+    return GestureDetector(
+      onTap: () => context.push(AppRoutes.streakFreeze),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: 4,
+        ),
+        decoration: BoxDecoration(
+          color: Colors.blue.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              PhosphorIconsFill.snowflake,
+              size: 14,
+              color: Colors.blue.shade700,
+            ),
+            const SizedBox(width: 4),
+            Text(
+              '${widget.streakFreeze?.availableFreezes ?? 0}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: Colors.blue.shade700,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 

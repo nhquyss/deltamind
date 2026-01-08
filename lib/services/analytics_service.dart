@@ -345,8 +345,11 @@ class AnalyticsService {
           _extractMapData(rawFreezeTableResponse);
 
       if (streakTableData != null) {
+        // Database uses 'available_count', not 'available_freezes'
         final availableFreezes =
-            _parseInt(freezeTableData?['available_freezes']) ?? 0;
+            _parseInt(freezeTableData?['available_count']) ??
+                _parseInt(freezeTableData?['available_freezes']) ??
+                0;
         return {
           'current_streak': _parseInt(streakTableData['current_streak']) ?? 0,
           'longest_streak': _parseInt(streakTableData['longest_streak']) ?? 0,

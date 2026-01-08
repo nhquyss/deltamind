@@ -82,13 +82,18 @@ class StreakFreeze {
   factory StreakFreeze.fromJson(Map<String, dynamic> json) {
     return StreakFreeze(
       userId: json['user_id'],
-      availableFreezes: json['available_freezes'] ?? 0,
+      // Database uses 'available_count', not 'available_freezes'
+      availableFreezes:
+          json['available_count'] ?? json['available_freezes'] ?? 0,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'])
           : null,
-      updatedAt: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'])
-          : null,
+      // Database uses 'last_updated_at', not 'updated_at'
+      updatedAt: json['last_updated_at'] != null
+          ? DateTime.parse(json['last_updated_at'])
+          : json['updated_at'] != null
+              ? DateTime.parse(json['updated_at'])
+              : null,
     );
   }
 }
@@ -266,6 +271,9 @@ class StreakService {
 
       final streak = UserStreak.fromJson(response);
 
+      // Check and deactivate expired freeze first
+      await _checkAndDeactivateExpiredFreeze(userId, streak);
+
       // Check if streak needs to be reset (user missed days)
       // This ensures streak is reset even if user doesn't complete quests
       await _checkAndResetStreakIfNeeded(userId, streak);
@@ -281,6 +289,40 @@ class StreakService {
     } catch (e) {
       debugPrint('Error getting user streak: $e');
       return null;
+    }
+  }
+
+  /// Check and deactivate expired streak freeze
+  /// This ensures expired freezes are automatically deactivated
+  static Future<void> _checkAndDeactivateExpiredFreeze(
+      String userId, UserStreak streak) async {
+    try {
+      // Only check if freeze is marked as active
+      if (!streak.isStreakFreezeActive) {
+        return; // Freeze not active, nothing to do
+      }
+
+      // Check if freeze has expired
+      if (streak.streakFreezeExpiry != null) {
+        final now = DateTime.now();
+        if (streak.streakFreezeExpiry!.isBefore(now)) {
+          // Freeze has expired, deactivate it
+          debugPrint(
+            'Streak freeze has expired (expired at: ${streak.streakFreezeExpiry}), deactivating...',
+          );
+
+          await SupabaseService.client.from('user_streaks').update({
+            'is_streak_freeze_active': false,
+            'streak_freeze_expiry': null,
+            // 'updated_at': now.toIso8601String(),
+          }).eq('user_id', userId);
+
+          debugPrint('Expired streak freeze deactivated successfully');
+        }
+      }
+    } catch (e) {
+      debugPrint('Error checking/deactivating expired freeze: $e');
+      // Don't throw - freeze check failure shouldn't break the app
     }
   }
 
@@ -332,19 +374,100 @@ class StreakService {
 
       final daysDifference = todayDate.difference(lastActivityDate).inDays;
 
-      // If user missed more than 1 day, reset streak to 0
+      debugPrint(
+          'Days difference: $daysDifference, lastActivityDate: $lastActivityDate, todayDate: $todayDate');
+
+      // Helper function to check if freeze is truly active (not expired)
+      final isFreezeTrulyActive = streak.isStreakFreezeActive &&
+          streak.streakFreezeExpiry != null &&
+          streak.streakFreezeExpiry!.isAfter(DateTime.now());
+
+      // If user missed exactly 1 day (daysDifference == 2 means: last activity was 2 days ago,
+      // which means user skipped 1 day in between), try to auto-use streak freeze if available
+      // daysDifference == 1: User học hôm qua, hôm nay chưa học (chưa bỏ lỡ)
+      // daysDifference == 2: User học 2 ngày trước, bỏ lỡ 1 ngày, hôm nay mở app
+      // daysDifference > 2: User bỏ lỡ nhiều hơn 1 ngày
+      if (daysDifference == 2) {
+        // User bỏ lỡ đúng 1 ngày - kiểm tra có freeze available không
+        // Chỉ check nếu freeze không active hoặc đã hết hạn
+        if (!isFreezeTrulyActive) {
+          final streakFreeze = await getAvailableStreakFreezes();
+
+          if (streakFreeze != null && streakFreeze.availableFreezes > 0) {
+            // Auto-activate streak freeze to protect the streak
+            debugPrint(
+              'User missed 1 day (daysDifference=2), auto-activating streak freeze to protect streak of ${streak.currentStreak} days',
+            );
+
+            try {
+              final freezeActivated =
+                  await useStreakFreeze(reason: 'auto_activation');
+              if (freezeActivated) {
+                debugPrint('Streak freeze auto-activated successfully');
+                // Don't reset streak - freeze will protect it
+                return;
+              } else {
+                debugPrint(
+                    'Failed to auto-activate streak freeze, will reset streak');
+                // If freeze activation failed, continue to reset streak
+              }
+            } catch (e) {
+              debugPrint('Error auto-activating streak freeze: $e');
+              // If error, continue to reset streak
+            }
+          } else {
+            debugPrint(
+              'User missed 1 day (daysDifference=2) but no streak freeze available (available: ${streakFreeze?.availableFreezes ?? 0}), resetting streak',
+            );
+          }
+        } else {
+          debugPrint(
+            'User missed 1 day (daysDifference=2) but streak freeze is already active and not expired, streak is protected',
+          );
+          // Freeze is already active and not expired, streak is protected
+          return;
+        }
+      }
+
+      // If user missed more than 1 day (daysDifference > 2), check if freeze is still active
+      // If freeze is active and not expired, don't reset streak
+      if (daysDifference > 2) {
+        if (isFreezeTrulyActive) {
+          debugPrint(
+            'User missed $daysDifference days but streak freeze is still active and not expired, streak is protected',
+          );
+          // Freeze is still protecting the streak, don't reset
+          return;
+        }
+      }
+
+      // If user missed more than 1 day (daysDifference > 2) and freeze is not active/expired, reset streak to 0
       // Note: We don't increment streak here (only when completing quests)
       // We only reset if streak is broken
       // Don't update activity_date_str here - it should only be updated when user completes a quest
-      if (daysDifference > 1) {
+      if (daysDifference > 2) {
         debugPrint(
-          'User missed $daysDifference days, resetting streak from ${streak.currentStreak} to 0',
+          'User missed more than 1 day (daysDifference=$daysDifference), resetting streak from ${streak.currentStreak} to 0',
         );
 
         await SupabaseService.client.from('user_streaks').update({
           'current_streak': 0,
           // Don't update activity_date_str - keep it as the last day user actually completed a quest
           // This ensures that when user completes a quest today, recordActivity() will properly update streak
+          // Don't update streak_start_date - it will be updated when user starts a new streak (streak = 1)
+          'streak_start_date': null,
+          'activity_date_str': null,
+        }).eq('user_id', userId);
+      } else if (daysDifference == 2) {
+        // If we reach here, it means freeze wasn't available or activation failed
+        // Reset streak to 0 (user bỏ lỡ 1 ngày nhưng không có freeze)
+        debugPrint(
+          'User missed 1 day (daysDifference=2), no freeze available or activation failed, resetting streak from ${streak.currentStreak} to 0',
+        );
+
+        await SupabaseService.client.from('user_streaks').update({
+          'current_streak': 0,
+          // Don't update activity_date_str - keep it as the last day user actually completed a quest
           // Don't update streak_start_date - it will be updated when user starts a new streak (streak = 1)
           'streak_start_date': null,
           'activity_date_str': null,
@@ -527,16 +650,23 @@ class StreakService {
   }
 
   /// Use a streak freeze for the current user
-  static Future<bool> useStreakFreeze() async {
+  /// [reason] can be 'manual_activation' (user manually activated) or 'auto_activation' (system auto-activated)
+  static Future<bool> useStreakFreeze(
+      {String reason = 'manual_activation'}) async {
     try {
       final userId = SupabaseService.currentUser?.id;
       if (userId == null) {
         throw Exception('User not authenticated');
       }
 
-      // Call the use_streak_freeze function
-      final response = await SupabaseService.client
-          .rpc('use_streak_freeze', params: {'p_user_id_param': userId});
+      // Call the use_streak_freeze function with reason
+      final response = await SupabaseService.client.rpc(
+        'use_streak_freeze',
+        params: {
+          'p_user_id_param': userId,
+          'p_reason': reason,
+        },
+      );
 
       return response as bool;
     } catch (e) {

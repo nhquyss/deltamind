@@ -119,10 +119,12 @@ class DashboardStreakSummary extends ConsumerWidget {
                                   ],
                                 ),
                               ),
-                            if (level != null && hasStreakFreezes)
-                              const SizedBox(width: 8),
-                            if (hasStreakFreezes)
-                              Container(
+                            // if (level != null && hasStreakFreezes)
+                            if (level != null) const SizedBox(width: 8),
+                            // if (hasStreakFreezes)
+                            GestureDetector(
+                              onTap: () => context.push(AppRoutes.streakFreeze),
+                              child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 10,
                                   vertical: 4,
@@ -141,7 +143,7 @@ class DashboardStreakSummary extends ConsumerWidget {
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      '${streakFreeze.availableFreezes}',
+                                      '${streakFreeze?.availableFreezes}',
                                       style:
                                           theme.textTheme.bodySmall?.copyWith(
                                         color: Colors.blue.shade700,
@@ -151,6 +153,7 @@ class DashboardStreakSummary extends ConsumerWidget {
                                   ],
                                 ),
                               ),
+                            ),
                           ],
                         ),
                       ],
