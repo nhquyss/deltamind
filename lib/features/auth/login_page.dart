@@ -5,8 +5,10 @@ import 'package:deltamind/features/auth/register_page.dart';
 import 'package:deltamind/features/dashboard/dashboard_page.dart';
 import 'package:deltamind/services/supabase_service.dart';
 import 'package:deltamind/widgets/google_logo.dart';
+import 'package:deltamind/widgets/language_switcher_button.dart';
 import 'package:deltamind/widgets/loading_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -24,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _obscurePassword = true;
   String? _errorMessage;
 
   @override
@@ -57,8 +60,7 @@ class _LoginPageState extends State<LoginPage> {
         // Special handling for email verification errors
         if (e.message.contains('Email not confirmed') ||
             e.message.contains('Please verify your email')) {
-          _errorMessage =
-              'Please verify your email before logging in. Check your inbox for a verification link.';
+          _errorMessage = AppLocalizations.of(context)!.pleaseVerifyEmail;
 
           // Show a button to resend verification email
           // ScaffoldMessenger.of(context).showSnackBar(
@@ -101,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'An unexpected error occurred';
+        _errorMessage = AppLocalizations.of(context)!.unexpectedError;
       });
     } finally {
       if (mounted) {
@@ -127,7 +129,7 @@ class _LoginPageState extends State<LoginPage> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'An unexpected error occurred';
+        _errorMessage = AppLocalizations.of(context)!.unexpectedError;
       });
     } finally {
       if (mounted) {
@@ -146,8 +148,15 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Login')),
+      appBar: AppBar(
+        title: Text(l10n.login),
+        actions: const [
+          LanguageSwitcherButton(),
+          SizedBox(width: 8),
+        ],
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -165,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  AppConstants.appDescription,
+                  l10n.appDescription,
                   style: AppTheme.subtitle.copyWith(color: Colors.grey[600]),
                   textAlign: TextAlign.center,
                 ),
@@ -174,17 +183,17 @@ class _LoginPageState extends State<LoginPage> {
                 // Email field
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.email,
+                    prefixIcon: const Icon(Icons.email_outlined),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
+                      return l10n.pleaseEnterEmail;
                     }
                     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'Please enter a valid email';
+                      return l10n.pleaseEnterValidEmail;
                     }
                     return null;
                   },
@@ -194,17 +203,29 @@ class _LoginPageState extends State<LoginPage> {
                 // Password field
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.password,
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                   ),
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
+                      return l10n.pleaseEnterPassword;
                     }
                     if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                      return l10n.passwordTooShort;
                     }
                     return null;
                   },
@@ -218,7 +239,7 @@ class _LoginPageState extends State<LoginPage> {
                     onPressed: () {
                       context.push(AppRoutes.forgotPassword);
                     },
-                    child: const Text('Forgot Password?'),
+                    child: Text(l10n.forgotPassword),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -243,7 +264,7 @@ class _LoginPageState extends State<LoginPage> {
                 LoadingButton(
                   onPressed: _signInWithEmail,
                   isLoading: _isLoading,
-                  child: const Text('Sign In'),
+                  child: Text(l10n.signIn),
                 ),
                 const SizedBox(height: 16),
 
@@ -254,7 +275,7 @@ class _LoginPageState extends State<LoginPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'OR',
+                        l10n.or,
                         style: TextStyle(color: Colors.grey[600], fontSize: 14),
                       ),
                     ),
@@ -278,7 +299,7 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       const GoogleLogo(size: 24),
                       const SizedBox(width: 12),
-                      const Text('Sign in with Google'),
+                      Text(l10n.signInWithGoogle),
                     ],
                   ),
                 ),
@@ -289,12 +310,12 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Don't have an account?",
+                      l10n.dontHaveAccount,
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     TextButton(
                       onPressed: _navigateToRegister,
-                      child: const Text('Register'),
+                      child: Text(l10n.register),
                       // style: TextButton.styleFrom(
                       //   padding: EdgeInsets.zero,
                       // ),

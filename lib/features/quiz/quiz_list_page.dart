@@ -1,14 +1,13 @@
 import 'package:deltamind/core/routing/app_router.dart';
 import 'package:deltamind/core/theme/app_colors.dart';
-import 'package:deltamind/core/theme/app_theme.dart';
+import 'package:deltamind/core/utils/formatters.dart';
 import 'package:deltamind/features/quiz/quiz_controller.dart';
 import 'package:deltamind/features/quiz/quiz_history_tab.dart';
 import 'package:deltamind/services/quiz_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:intl/intl.dart';
 
 /// Quiz list page with tabbed interface for Quizzes and History
 class QuizListPage extends ConsumerStatefulWidget {
@@ -28,8 +27,8 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
   String? _errorMessage;
   List<Quiz> _quizzes = [];
   String _searchQuery = '';
-  String _selectedQuizType = 'All';
-  String _selectedDifficulty = 'All';
+  String _selectedQuizType = 'All'; // Will be localized in build
+  String _selectedDifficulty = 'All'; // Will be localized in build
   bool _showFilters = false;
 
   // Tab controller
@@ -37,19 +36,26 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
 
   // For filtering
   final TextEditingController _searchController = TextEditingController();
-  final List<String> _quizTypes = [
-    'All',
-    'Multiple Choice',
-    'True/False',
-    'Fill in the Blank',
-  ];
-  final List<String> _difficulties = [
-    'All',
-    'Easy',
-    'Medium',
-    'Hard',
-    'Expert',
-  ];
+
+  // Helper methods to map between localized and English values
+  String _getEnglishQuizType(String localizedType, AppLocalizations l10n) {
+    if (localizedType == l10n.quizTypeAll) return 'All';
+    if (localizedType == l10n.quizTypeMultipleChoice) return 'Multiple Choice';
+    if (localizedType == l10n.quizTypeTrueFalse) return 'True/False';
+    if (localizedType == l10n.quizTypeFillInTheBlank)
+      return 'Fill in the Blank';
+    return localizedType; // Fallback to original if not found
+  }
+
+  String _getEnglishDifficulty(
+      String localizedDifficulty, AppLocalizations l10n) {
+    if (localizedDifficulty == l10n.quizDifficultyAll) return 'All';
+    if (localizedDifficulty == l10n.quizDifficultyEasy) return 'Easy';
+    if (localizedDifficulty == l10n.quizDifficultyMedium) return 'Medium';
+    if (localizedDifficulty == l10n.quizDifficultyHard) return 'Hard';
+    if (localizedDifficulty == l10n.quizDifficultyExpert) return 'Expert';
+    return localizedDifficulty; // Fallback to original if not found
+  }
 
   @override
   void initState() {
@@ -91,6 +97,7 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
   void _handleTabChange() {
     if (_tabController.indexIsChanging) {
       // Clear search and filters when switching tabs
+      // Reset to 'All' - will be localized in build method
       setState(() {
         _searchQuery = '';
         _searchController.clear();
@@ -139,22 +146,21 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
 
   /// Delete a quiz
   Future<void> _deleteQuiz(String quizId) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Quiz'),
-        content: Text(
-          'Are you sure you want to delete this quiz? This action cannot be undone.',
-        ),
+        title: Text(l10n.deleteQuiz),
+        content: Text(l10n.deleteQuizConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -173,8 +179,8 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
 
         if (success && mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Quiz deleted successfully'),
+            SnackBar(
+              content: Text(l10n.quizDeletedSuccessfully),
               backgroundColor: AppColors.success,
             ),
           );
@@ -214,15 +220,9 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
     setState(() {
       _searchController.clear();
       _searchQuery = '';
-      _selectedQuizType = 'All';
-      _selectedDifficulty = 'All';
+      _selectedQuizType = 'All'; // Will be localized in build
+      _selectedDifficulty = 'All'; // Will be localized in build
     });
-  }
-
-  /// Format date to readable string
-  String _formatDate(DateTime date) {
-    final formatter = DateFormat('MMM d, yyyy');
-    return formatter.format(date);
   }
 
   /// Build filter chip
@@ -257,9 +257,10 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
 
   /// Build empty state widget
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     final isFiltered = _searchQuery.isNotEmpty ||
-        _selectedDifficulty != 'All' ||
-        _selectedQuizType != 'All';
+        _selectedDifficulty != l10n.quizDifficultyAll ||
+        _selectedQuizType != l10n.quizTypeAll;
 
     return Center(
       child: Column(
@@ -272,7 +273,7 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
           ),
           const SizedBox(height: 24),
           Text(
-            isFiltered ? 'No matching quizzes' : 'No quizzes available',
+            isFiltered ? l10n.noMatchingQuizzes : l10n.noQuizzesAvailable,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -284,8 +285,8 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
               isFiltered
-                  ? 'Try adjusting your filters or search terms'
-                  : 'Create your first quiz to see it here',
+                  ? l10n.adjustFiltersOrSearch
+                  : l10n.createYourFirstQuizHere,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
@@ -295,7 +296,7 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
             OutlinedButton.icon(
               onPressed: _resetFilters,
               icon: const Icon(Icons.filter_list_off),
-              label: const Text('Clear Filters'),
+              label: Text(l10n.clearFiltersAction),
             )
           else
             ElevatedButton.icon(
@@ -303,7 +304,7 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
                 context.go('/create-quiz');
               },
               icon: const Icon(Icons.add),
-              label: const Text('Create Quiz'),
+              label: Text(l10n.createQuiz),
             ),
         ],
       ),
@@ -319,14 +320,15 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
         final quiz = _quizzes[index];
 
         // Create display description without repetition
-        String displayDescription = "Generated quiz";
+        final l10n = AppLocalizations.of(context)!;
+        String displayDescription = l10n.generatedQuiz;
         if (quiz.description != null && quiz.description!.isNotEmpty) {
           if (quiz.description!.toLowerCase().contains("elon")) {
-            displayDescription = "Generated quiz based on elon.png";
+            displayDescription = l10n.generatedQuizBasedOnFile("elon.png");
           } else if (quiz.description!.toLowerCase().contains("poem")) {
-            displayDescription = "Generated quiz based on provided content";
+            displayDescription = l10n.generatedQuizBasedOnContent;
           } else {
-            displayDescription = "Generated quiz based on content";
+            displayDescription = l10n.generatedQuizBasedOnContent;
           }
         }
 
@@ -373,21 +375,24 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
                             _deleteQuiz(quiz.id);
                           }
                         },
-                        itemBuilder: (context) => [
-                          PopupMenuItem(
-                            value: 'delete',
-                            child: Row(
-                              children: [
-                                const Icon(Icons.delete, color: Colors.red),
-                                const SizedBox(width: 8),
-                                const Text(
-                                  'Delete',
-                                  style: TextStyle(color: Colors.red),
-                                ),
-                              ],
+                        itemBuilder: (context) {
+                          final l10n = AppLocalizations.of(context)!;
+                          return [
+                            PopupMenuItem(
+                              value: 'delete',
+                              child: Row(
+                                children: [
+                                  const Icon(Icons.delete, color: Colors.red),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    l10n.delete,
+                                    style: const TextStyle(color: Colors.red),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ];
+                        },
                       ),
                     ],
                   ),
@@ -410,7 +415,7 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
                             size: 16, color: Colors.grey[600]),
                         const SizedBox(width: 6),
                         Text(
-                          _formatDate(quiz.createdAt!),
+                          formatDate(quiz.createdAt!, context),
                           style: TextStyle(color: Colors.grey[700]),
                         ),
                       ],
@@ -439,7 +444,7 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      child: const Text('Start Quiz'),
+                      child: Text(l10n.startQuiz),
                     ),
                   ),
                 ],
@@ -504,6 +509,16 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Initialize filter values with localized strings if they're still in English
+    if (_selectedQuizType == 'All') {
+      _selectedQuizType = l10n.quizTypeAll;
+    }
+    if (_selectedDifficulty == 'All') {
+      _selectedDifficulty = l10n.quizDifficultyAll;
+    }
+
     // Use try-catch for the controller interaction
     try {
       final quizState = ref.watch(quizControllerProvider);
@@ -521,16 +536,18 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
       }
 
       // Apply type filter
-      if (_selectedQuizType != 'All') {
-        _quizzes = _quizzes
-            .where((quiz) => quiz.quizType == _selectedQuizType)
-            .toList();
+      final englishQuizType = _getEnglishQuizType(_selectedQuizType, l10n);
+      if (englishQuizType != 'All') {
+        _quizzes =
+            _quizzes.where((quiz) => quiz.quizType == englishQuizType).toList();
       }
 
       // Apply difficulty filter
-      if (_selectedDifficulty != 'All') {
+      final englishDifficulty =
+          _getEnglishDifficulty(_selectedDifficulty, l10n);
+      if (englishDifficulty != 'All') {
         _quizzes = _quizzes
-            .where((quiz) => quiz.difficulty == _selectedDifficulty)
+            .where((quiz) => quiz.difficulty == englishDifficulty)
             .toList();
       }
     } catch (e) {
@@ -542,12 +559,12 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Quizzes'),
+        title: Text(l10n.quizzes),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Quizzes', icon: Icon(Icons.quiz)),
-            Tab(text: 'History', icon: Icon(Icons.history)),
+          tabs: [
+            Tab(text: l10n.quizzesTab, icon: const Icon(Icons.quiz)),
+            Tab(text: l10n.historyTab, icon: const Icon(Icons.history)),
           ],
           indicatorColor: AppColors.primary,
           labelColor: AppColors.primary,
@@ -582,7 +599,7 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
                         child: TextField(
                           controller: _searchController,
                           decoration: InputDecoration(
-                            hintText: 'Search quizzes...',
+                            hintText: l10n.searchQuizzes,
                             prefixIcon: const Icon(Icons.search),
                             suffixIcon: _searchQuery.isNotEmpty
                                 ? IconButton(
@@ -636,8 +653,8 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
                                     ? AppColors.primary
                                     : Colors.grey[700],
                               ),
-                              if (_selectedQuizType != 'All' ||
-                                  _selectedDifficulty != 'All')
+                              if (_selectedQuizType != l10n.quizTypeAll ||
+                                  _selectedDifficulty != l10n.quizDifficultyAll)
                                 Positioned(
                                   top: 0,
                                   right: 0,
@@ -653,7 +670,7 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
                             ],
                           ),
                           onPressed: _toggleFilters,
-                          tooltip: 'Toggle Filters',
+                          tooltip: l10n.toggleFilters,
                         ),
                       ),
                     ],
@@ -665,73 +682,110 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
                   const SizedBox(height: 16),
 
                   // Quiz type filter
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Quiz type label
-                      Text(
-                        'Quiz Type:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[800],
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 0.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Quiz type label
+                        Text(
+                          l10n.quizTypeLabel,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[800],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
+                        const SizedBox(height: 12),
 
-                      // Quiz type chips
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: _quizTypes
-                              .map(
-                                (type) => _buildFilterChip(
-                                  type,
-                                  _selectedQuizType,
-                                  _quizTypes,
-                                  (value) {
-                                    setState(() {
-                                      _selectedQuizType = value;
-                                    });
-                                  },
-                                ),
-                              )
-                              .toList(),
+                        // Quiz type chips
+                        Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context)!;
+                            final List<String> quizTypes = [
+                              l10n.quizTypeAll,
+                              l10n.quizTypeMultipleChoice,
+                              l10n.quizTypeTrueFalse,
+                              l10n.quizTypeFillInTheBlank,
+                            ];
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: quizTypes
+                                    .map(
+                                      (type) => _buildFilterChip(
+                                        type,
+                                        _selectedQuizType,
+                                        quizTypes,
+                                        (value) {
+                                          setState(() {
+                                            _selectedQuizType = value;
+                                          });
+                                        },
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            );
+                          },
                         ),
-                      ),
+                      ],
+                    ),
+                  ),
 
-                      const SizedBox(height: 16),
+                  const SizedBox(height: 8),
 
-                      // Difficulty label
-                      Text(
-                        'Difficulty:',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[800],
+                  // Difficulty filter
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Difficulty label
+                        Text(
+                          l10n.difficultyLabel,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[800],
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
+                        const SizedBox(height: 12),
 
-                      // Difficulty chips
-                      SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: _difficulties
-                              .map(
-                                (difficulty) => _buildFilterChip(
-                                  difficulty,
-                                  _selectedDifficulty,
-                                  _difficulties,
-                                  (value) {
-                                    setState(() {
-                                      _selectedDifficulty = value;
-                                    });
-                                  },
-                                ),
-                              )
-                              .toList(),
+                        // Difficulty chips
+                        Builder(
+                          builder: (context) {
+                            final l10n = AppLocalizations.of(context)!;
+                            final List<String> difficulties = [
+                              l10n.quizDifficultyAll,
+                              l10n.quizDifficultyEasy,
+                              l10n.quizDifficultyMedium,
+                              l10n.quizDifficultyHard,
+                              l10n.quizDifficultyExpert,
+                            ];
+                            return SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: difficulties
+                                    .map(
+                                      (difficulty) => _buildFilterChip(
+                                        difficulty,
+                                        _selectedDifficulty,
+                                        difficulties,
+                                        (value) {
+                                          setState(() {
+                                            _selectedDifficulty = value;
+                                          });
+                                        },
+                                      ),
+                                    )
+                                    .toList(),
+                              ),
+                            );
+                          },
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
 
                   const SizedBox(height: 16),
@@ -741,12 +795,12 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       // Only show reset button if filters are applied
-                      if (_selectedQuizType != 'All' ||
-                          _selectedDifficulty != 'All')
+                      if (_selectedQuizType != l10n.quizTypeAll ||
+                          _selectedDifficulty != l10n.quizDifficultyAll)
                         TextButton.icon(
                           onPressed: _resetFilters,
                           icon: const Icon(Icons.refresh),
-                          label: const Text('Reset Filters'),
+                          label: Text(l10n.resetFilters),
                           style: TextButton.styleFrom(
                             foregroundColor: AppColors.primary,
                           ),
@@ -757,8 +811,8 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
 
                 // Active filters display (when filters are collapsed)
                 if (!_showFilters &&
-                    (_selectedQuizType != 'All' ||
-                        _selectedDifficulty != 'All'))
+                    (_selectedQuizType != l10n.quizTypeAll ||
+                        _selectedDifficulty != l10n.quizDifficultyAll))
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
@@ -775,7 +829,7 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
                     child: Row(
                       children: [
                         Text(
-                          'Active filters:',
+                          l10n.activeFilters,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w500,
@@ -783,7 +837,7 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
                           ),
                         ),
                         const SizedBox(width: 8),
-                        if (_selectedQuizType != 'All')
+                        if (_selectedQuizType != l10n.quizTypeAll)
                           Padding(
                             padding: const EdgeInsets.only(right: 8),
                             child: Chip(
@@ -793,7 +847,7 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
                               deleteIcon: const Icon(Icons.close, size: 16),
                               onDeleted: () {
                                 setState(() {
-                                  _selectedQuizType = 'All';
+                                  _selectedQuizType = l10n.quizTypeAll;
                                 });
                               },
                               visualDensity: VisualDensity.compact,
@@ -810,14 +864,14 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
                               ),
                             ),
                           ),
-                        if (_selectedDifficulty != 'All')
+                        if (_selectedDifficulty != l10n.quizDifficultyAll)
                           Chip(
                             label: Text(_selectedDifficulty),
                             backgroundColor: AppColors.primary.withOpacity(0.1),
                             deleteIcon: const Icon(Icons.close, size: 16),
                             onDeleted: () {
                               setState(() {
-                                _selectedDifficulty = 'All';
+                                _selectedDifficulty = l10n.quizDifficultyAll;
                               });
                             },
                             visualDensity: VisualDensity.compact,
@@ -836,7 +890,7 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
                         const Spacer(),
                         TextButton(
                           onPressed: _resetFilters,
-                          child: const Text('Clear All'),
+                          child: Text(l10n.clearAll),
                           style: TextButton.styleFrom(
                             visualDensity: VisualDensity.compact,
                             padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -868,7 +922,7 @@ class _QuizListPageState extends ConsumerState<QuizListPage>
       floatingActionButton: _tabController.index == 0
           ? FloatingActionButton(
               onPressed: () => context.push(AppRoutes.createQuiz),
-              tooltip: 'Create Quiz',
+              tooltip: l10n.createQuiz,
               child: const Icon(Icons.add),
             )
           : null,

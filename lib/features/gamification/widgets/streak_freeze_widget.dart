@@ -3,6 +3,7 @@ import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/features/gamification/gamification_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:go_router/go_router.dart';
 
@@ -13,6 +14,7 @@ class StreakFreezeWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final gamificationState = ref.watch(gamificationControllerProvider);
     final theme = Theme.of(context);
 
@@ -77,7 +79,7 @@ class StreakFreezeWidget extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Streak Freezes',
+                l10n.streakFreezes,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   color: Colors.blue.shade700,
@@ -103,28 +105,23 @@ class StreakFreezeWidget extends ConsumerWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 8),
-
           Text(
-            'Protect your streak when you miss a day',
+            l10n.protectYourStreakWhenMissDay,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: Colors.blue.shade900,
             ),
           ),
-
           const SizedBox(height: 8),
-
           OutlinedButton.icon(
             onPressed: () => context.push(AppRoutes.streakFreeze),
             icon: Icon(
               PhosphorIconsFill.arrowRight,
               color: Colors.blue.shade700,
             ),
-            label:
-                availableFreezes > 0
-                    ? const Text('Manage Streak Freezes')
-                    : const Text('View Details'),
+            label: availableFreezes > 0
+                ? Text(l10n.manageStreakFreezes)
+                : Text(l10n.viewDetails),
             style: OutlinedButton.styleFrom(
               foregroundColor: Colors.blue.shade700,
               side: BorderSide(color: Colors.blue.shade700),

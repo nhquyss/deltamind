@@ -1,6 +1,7 @@
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/services/streak_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -11,6 +12,7 @@ class AchievementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final categoryColor = _getCategoryColor(achievement.category);
 
@@ -20,17 +22,15 @@ class AchievementCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(14),
         side: BorderSide(
-          color:
-              achievement.isEarned
-                  ? categoryColor.withOpacity(0.3)
-                  : theme.colorScheme.outline.withOpacity(0.1),
+          color: achievement.isEarned
+              ? categoryColor.withOpacity(0.3)
+              : theme.colorScheme.outline.withOpacity(0.1),
           width: achievement.isEarned ? 1 : 0.5,
         ),
       ),
-      color:
-          achievement.isEarned
-              ? theme.colorScheme.surface
-              : theme.colorScheme.surface.withOpacity(0.7),
+      color: achievement.isEarned
+          ? theme.colorScheme.surface
+          : theme.colorScheme.surface.withOpacity(0.7),
       child: InkWell(
         onTap: () {
           // Show achievement details in a dialog
@@ -51,40 +51,36 @@ class AchievementCard extends StatelessWidget {
                 width: 55,
                 height: 55,
                 decoration: BoxDecoration(
-                  gradient:
-                      achievement.isEarned
-                          ? LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              categoryColor,
-                              categoryColor.withOpacity(0.7),
-                            ],
-                          )
-                          : null,
-                  color:
-                      achievement.isEarned
-                          ? null
-                          : theme.colorScheme.onSurface.withOpacity(0.07),
+                  gradient: achievement.isEarned
+                      ? LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            categoryColor,
+                            categoryColor.withOpacity(0.7),
+                          ],
+                        )
+                      : null,
+                  color: achievement.isEarned
+                      ? null
+                      : theme.colorScheme.onSurface.withOpacity(0.07),
                   borderRadius: BorderRadius.circular(10),
-                  boxShadow:
-                      achievement.isEarned
-                          ? [
-                            BoxShadow(
-                              color: categoryColor.withOpacity(0.2),
-                              blurRadius: 6,
-                              offset: const Offset(0, 2),
-                            ),
-                          ]
-                          : null,
+                  boxShadow: achievement.isEarned
+                      ? [
+                          BoxShadow(
+                            color: categoryColor.withOpacity(0.2),
+                            blurRadius: 6,
+                            offset: const Offset(0, 2),
+                          ),
+                        ]
+                      : null,
                 ),
                 child: Center(
                   child: Icon(
                     _getIconData(achievement.iconName),
-                    color:
-                        achievement.isEarned
-                            ? Colors.white
-                            : theme.colorScheme.onSurface.withOpacity(0.5),
+                    color: achievement.isEarned
+                        ? Colors.white
+                        : theme.colorScheme.onSurface.withOpacity(0.5),
                     size: 26,
                   ),
                 ),
@@ -104,12 +100,11 @@ class AchievementCard extends StatelessWidget {
                             achievement.name,
                             style: theme.textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
-                              color:
-                                  achievement.isEarned
-                                      ? theme.colorScheme.onSurface
-                                      : theme.colorScheme.onSurface.withOpacity(
-                                        0.7,
-                                      ),
+                              color: achievement.isEarned
+                                  ? theme.colorScheme.onSurface
+                                  : theme.colorScheme.onSurface.withOpacity(
+                                      0.7,
+                                    ),
                             ),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
@@ -132,25 +127,22 @@ class AchievementCard extends StatelessWidget {
                         vertical: 3,
                       ),
                       decoration: BoxDecoration(
-                        color:
-                            achievement.isEarned
-                                ? categoryColor.withOpacity(0.15)
-                                : theme.colorScheme.onSurface.withOpacity(0.05),
+                        color: achievement.isEarned
+                            ? categoryColor.withOpacity(0.15)
+                            : theme.colorScheme.onSurface.withOpacity(0.05),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
                         achievement.category,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color:
-                              achievement.isEarned
-                                  ? categoryColor
-                                  : theme.colorScheme.onSurface.withOpacity(
-                                    0.6,
-                                  ),
-                          fontWeight:
-                              achievement.isEarned
-                                  ? FontWeight.bold
-                                  : FontWeight.normal,
+                          color: achievement.isEarned
+                              ? categoryColor
+                              : theme.colorScheme.onSurface.withOpacity(
+                                  0.6,
+                                ),
+                          fontWeight: achievement.isEarned
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                     ),
@@ -160,10 +152,9 @@ class AchievementCard extends StatelessWidget {
                     Text(
                       achievement.description,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color:
-                            achievement.isEarned
-                                ? theme.colorScheme.onSurface.withOpacity(0.8)
-                                : theme.colorScheme.onSurface.withOpacity(0.6),
+                        color: achievement.isEarned
+                            ? theme.colorScheme.onSurface.withOpacity(0.8)
+                            : theme.colorScheme.onSurface.withOpacity(0.6),
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
@@ -202,7 +193,7 @@ class AchievementCard extends StatelessWidget {
                         else
                           Expanded(
                             child: Text(
-                              'Not yet earned',
+                              l10n.notYetEarned,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurface.withOpacity(
                                   0.5,
@@ -220,12 +211,11 @@ class AchievementCard extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color:
-                                achievement.isEarned
-                                    ? Colors.green.withOpacity(0.15)
-                                    : theme.colorScheme.onSurface.withOpacity(
-                                      0.05,
-                                    ),
+                            color: achievement.isEarned
+                                ? Colors.green.withOpacity(0.15)
+                                : theme.colorScheme.onSurface.withOpacity(
+                                    0.05,
+                                  ),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           child: Row(
@@ -234,25 +224,22 @@ class AchievementCard extends StatelessWidget {
                               Icon(
                                 PhosphorIconsFill.star,
                                 size: 12,
-                                color:
-                                    achievement.isEarned
-                                        ? Colors.amber
-                                        : theme.colorScheme.onSurface
-                                            .withOpacity(0.5),
+                                color: achievement.isEarned
+                                    ? Colors.amber
+                                    : theme.colorScheme.onSurface
+                                        .withOpacity(0.5),
                               ),
                               const SizedBox(width: 4),
                               Text(
-                                '+${achievement.xpReward} XP',
+                                '+${achievement.xpReward} ${l10n.xpLabel}',
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  fontWeight:
-                                      achievement.isEarned
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                  color:
-                                      achievement.isEarned
-                                          ? Colors.green
-                                          : theme.colorScheme.onSurface
-                                              .withOpacity(0.5),
+                                  fontWeight: achievement.isEarned
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  color: achievement.isEarned
+                                      ? Colors.green
+                                      : theme.colorScheme.onSurface
+                                          .withOpacity(0.5),
                                 ),
                               ),
                             ],
@@ -272,6 +259,7 @@ class AchievementCard extends StatelessWidget {
 
   // Dialog to show achievement details
   Widget _buildAchievementDialog(BuildContext context, ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     final categoryColor = _getCategoryColor(achievement.category);
 
     return Dialog(
@@ -349,7 +337,7 @@ class AchievementCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Description',
+                    l10n.description,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -383,10 +371,9 @@ class AchievementCard extends StatelessWidget {
                                   : 'Not Yet Earned',
                               style: theme.textTheme.titleSmall?.copyWith(
                                 fontWeight: FontWeight.bold,
-                                color:
-                                    achievement.isEarned
-                                        ? Colors.green
-                                        : Colors.orange,
+                                color: achievement.isEarned
+                                    ? Colors.green
+                                    : Colors.orange,
                               ),
                             ),
                             if (achievement.isEarned &&
@@ -417,7 +404,7 @@ class AchievementCard extends StatelessWidget {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '+${achievement.xpReward} XP',
+                              '+${achievement.xpReward} ${l10n.xpLabel}',
                               style: theme.textTheme.bodyMedium?.copyWith(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.green,
@@ -451,7 +438,7 @@ class AchievementCard extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    'How to earn this achievement',
+                                    l10n.howToEarnThisAchievement,
                                     style: theme.textTheme.titleSmall?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: Colors.blue.shade700,
@@ -459,7 +446,7 @@ class AchievementCard extends StatelessWidget {
                                   ),
                                   const SizedBox(height: 4),
                                   Text(
-                                    _getRequirementText(achievement),
+                                    _getRequirementText(achievement, l10n),
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: Colors.blue.shade700,
                                     ),
@@ -491,7 +478,7 @@ class AchievementCard extends StatelessWidget {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text('Close'),
+                  child: Text(l10n.close),
                 ),
               ),
             ),
@@ -502,28 +489,28 @@ class AchievementCard extends StatelessWidget {
   }
 
   // Helper to generate requirement text
-  String _getRequirementText(Achievement achievement) {
+  String _getRequirementText(Achievement achievement, AppLocalizations l10n) {
     switch (achievement.requirementType) {
       case 'streak_days':
-        return 'Maintain a streak of ${achievement.requirementValue} days.';
+        return l10n.maintainStreakOfDays(achievement.requirementValue);
       case 'quiz_count':
-        return 'Complete ${achievement.requirementValue} quizzes.';
+        return l10n.completeQuizzes(achievement.requirementValue);
       case 'perfect_score':
-        return 'Get ${achievement.requirementValue} perfect scores in quizzes.';
+        return l10n.getPerfectScores(achievement.requirementValue);
       case 'create_quiz':
-        return 'Create ${achievement.requirementValue} quizzes.';
+        return l10n.createQuizzes(achievement.requirementValue);
       case 'quick_completion':
-        return 'Complete ${achievement.requirementValue} quizzes quickly.';
+        return l10n.completeQuizzesQuickly(achievement.requirementValue);
       case 'accuracy_streak':
-        return 'Maintain at least 90% accuracy across ${achievement.requirementValue} quizzes.';
+        return l10n.maintainAccuracyAcross(achievement.requirementValue);
       case 'morning_quizzes':
-        return 'Complete ${achievement.requirementValue} quizzes before 10 AM.';
+        return l10n.completeQuizzesBefore10AM(achievement.requirementValue);
       case 'weekend_quizzes':
-        return 'Complete ${achievement.requirementValue} quizzes on weekends.';
+        return l10n.completeQuizzesOnWeekends(achievement.requirementValue);
       case 'daily_time_spent':
-        return 'Study on the app for ${achievement.requirementValue} minutes in a single day.';
+        return l10n.studyForMinutesInSingleDay(achievement.requirementValue);
       default:
-        return 'Continue using the app to unlock this achievement.';
+        return l10n.continueUsingAppToUnlock;
     }
   }
 

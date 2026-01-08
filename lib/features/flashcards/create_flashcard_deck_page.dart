@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/models/flashcard.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:deltamind/services/flashcard_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
@@ -76,8 +77,9 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
         });
       }
     } catch (e) {
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
-        _errorMessage = 'Error picking file: $e';
+        _errorMessage = l10n.errorPickingFileFlashcards(e.toString());
       });
     }
   }
@@ -87,9 +89,10 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     if (_selectedFile == null && _webFileBytes == null) {
       setState(() {
-        _errorMessage = 'Please select a file to generate flashcards';
+        _errorMessage = l10n.pleaseSelectFileToGenerateFlashcards;
       });
       return;
     }
@@ -100,6 +103,10 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
     });
 
     try {
+      // Get current locale and map to language name
+      final locale = Localizations.localeOf(context);
+      final language = _getLanguageName(locale);
+
       final deck = await FlashcardService.createFlashcardsFromFile(
         file: _selectedFile,
         fileBytes: _webFileBytes,
@@ -108,31 +115,35 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
         title: _titleController.text,
         description: _descriptionController.text,
         cardCount: _cardCount,
+        language: language,
       );
 
+      final l10n = AppLocalizations.of(context)!;
       if (mounted) {
         // Show success and navigate to the deck detail page
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Created ${deck.cardCount} flashcards'),
+            content: Text(l10n.createdFlashcards(deck.cardCount)),
             backgroundColor: Colors.green,
           ),
         );
         context.go('/flashcards/${deck.id}');
       }
     } catch (e) {
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
         _isProcessing = false;
-        _errorMessage = 'Error creating flashcards: $e';
+        _errorMessage = l10n.errorCreatingFlashcards(e.toString());
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Flashcard Deck'),
+        title: Text(l10n.createFlashcardDeck),
       ),
       body: _isProcessing
           ? _buildLoadingView()
@@ -162,14 +173,14 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
                     const SizedBox(height: 24),
                     TextFormField(
                       controller: _titleController,
-                      decoration: const InputDecoration(
-                        labelText: 'Deck Title',
-                        hintText: 'Enter a title for your flashcard deck',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.deckTitle,
+                        hintText: l10n.enterTitleForFlashcardDeck,
+                        border: const OutlineInputBorder(),
                       ),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a title';
+                          return l10n.pleaseEnterTitle;
                         }
                         return null;
                       },
@@ -177,10 +188,10 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: const InputDecoration(
-                        labelText: 'Description (Optional)',
-                        hintText: 'Add a description for your flashcards',
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        labelText: l10n.descriptionOptional,
+                        hintText: l10n.addDescriptionForFlashcards,
+                        border: const OutlineInputBorder(),
                       ),
                       maxLines: 3,
                     ),
@@ -199,9 +210,9 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
                           backgroundColor: AppColors.primary,
                           foregroundColor: Colors.white,
                         ),
-                        child: const Text(
-                          'Generate Flashcards',
-                          style: TextStyle(fontSize: 16),
+                        child: Text(
+                          l10n.generateFlashcards,
+                          style: const TextStyle(fontSize: 16),
                         ),
                       ),
                     ),
@@ -212,28 +223,42 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
     );
   }
 
+  /// Map locale to language name for AI generation
+  String? _getLanguageName(Locale locale) {
+    switch (locale.languageCode) {
+      case 'vi':
+        return 'Vietnamese';
+      case 'en':
+        return 'English';
+      default:
+        return 'English'; // Default to English
+    }
+  }
+
   Widget _buildLoadingView() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const CircularProgressIndicator(),
           const SizedBox(height: 24),
-          const Text(
-            'Generating Flashcards...',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Text(
+            l10n.generatingFlashcards,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
           Text(
-            'Using AI to create ${_cardCount} flashcards from ${_selectedFileName ?? 'your file'}',
+            l10n.usingAIToCreateFlashcards(
+                _cardCount, _selectedFileName ?? 'your file'),
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.grey[600]),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'This may take a minute or two depending on the file size.',
+          Text(
+            l10n.thisMayTakeAMinuteOrTwo,
             textAlign: TextAlign.center,
-            style: TextStyle(fontStyle: FontStyle.italic),
+            style: const TextStyle(fontStyle: FontStyle.italic),
           ),
         ],
       ),
@@ -241,6 +266,7 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
   }
 
   Widget _buildFileSelector() {
+    final l10n = AppLocalizations.of(context)!;
     final bool hasSelectedFile = _selectedFile != null || _webFileBytes != null;
 
     return Container(
@@ -253,17 +279,17 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
       ),
       child: Column(
         children: [
-          const Text(
-            'Upload File to Generate Flashcards',
-            style: TextStyle(
+          Text(
+            l10n.uploadFileToGenerateFlashcards,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
             ),
           ),
           const SizedBox(height: 8),
-          const Text(
-            'Select a PDF, TXT, or DOC file',
-            style: TextStyle(color: Colors.grey),
+          Text(
+            l10n.selectPdfTxtOrDocFile,
+            style: const TextStyle(color: Colors.grey),
           ),
           const SizedBox(height: 16),
           if (!hasSelectedFile) ...[
@@ -276,7 +302,7 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
             ElevatedButton.icon(
               onPressed: _pickFile,
               icon: const Icon(Icons.file_upload),
-              label: const Text('Select File'),
+              label: Text(l10n.selectFile),
             ),
           ] else ...[
             Container(
@@ -301,7 +327,7 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          '${_selectedFileType?.toUpperCase()} file',
+                          l10n.fileType(_selectedFileType?.toUpperCase() ?? ''),
                           style: TextStyle(
                             color: Colors.grey[600],
                             fontSize: 12,
@@ -320,7 +346,7 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
                       });
                     },
                     icon: const Icon(Icons.close, color: Colors.grey),
-                    tooltip: 'Remove file',
+                    tooltip: l10n.removeFile,
                   ),
                 ],
               ),
@@ -329,7 +355,7 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
             TextButton.icon(
               onPressed: _pickFile,
               icon: const Icon(Icons.file_upload, size: 16),
-              label: const Text('Choose a different file'),
+              label: Text(l10n.chooseDifferentFile),
             ),
           ],
         ],
@@ -356,11 +382,12 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
   }
 
   Widget _buildCardCountSelector() {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Number of Flashcards to Generate: $_cardCount',
+          l10n.numberOfFlashcardsToGenerate(_cardCount),
           style: const TextStyle(
             fontWeight: FontWeight.bold,
           ),
@@ -378,9 +405,9 @@ class _CreateFlashcardDeckPageState extends State<CreateFlashcardDeckPage> {
             });
           },
         ),
-        const Text(
-          'Tip: Start with fewer cards for better quality. You can always add more later.',
-          style: TextStyle(
+        Text(
+          l10n.tipStartWithFewerCards,
+          style: const TextStyle(
             fontSize: 12,
             fontStyle: FontStyle.italic,
             color: Colors.grey,

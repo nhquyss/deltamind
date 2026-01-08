@@ -325,12 +325,20 @@ class FlashcardService {
   }
 
   /// Generate flashcards from file content
+  /// [language] is the language to generate content in (e.g., "Vietnamese", "English"). If null, defaults to English.
   static Future<List<Map<String, String>>> generateFlashcardsFromContent(
     String content,
-    int cardCount,
-  ) async {
+    int cardCount, {
+    String? language,
+  }) async {
     try {
+      // Add language instruction if specified
+      final languageInstruction = language != null && language.isNotEmpty
+          ? 'IMPORTANT: Generate all content (questions, answers, hints) in $language language. '
+          : '';
+
       final prompt = '''
+$languageInstruction
 Generate $cardCount flashcards based on the following educational content:
 
 $content
@@ -489,6 +497,7 @@ Important: Return only valid JSON, do not include any markdown formatting.
   }
 
   /// Create flashcards from a file
+  /// [language] is the language to generate content in (e.g., "Vietnamese", "English"). If null, defaults to English.
   static Future<FlashcardDeck> createFlashcardsFromFile({
     File? file,
     Uint8List? fileBytes,
@@ -497,6 +506,7 @@ Important: Return only valid JSON, do not include any markdown formatting.
     required String title,
     String? description,
     int cardCount = 10,
+    String? language,
   }) async {
     try {
       if (file == null && fileBytes == null) {

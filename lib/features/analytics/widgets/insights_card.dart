@@ -1,5 +1,6 @@
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Card displaying study insights
@@ -20,6 +21,7 @@ class InsightsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
       elevation: 1,
@@ -37,7 +39,7 @@ class InsightsCard extends StatelessWidget {
                 Icon(PhosphorIconsFill.lightbulb, color: Colors.teal, size: 20),
                 const SizedBox(width: 8),
                 Text(
-                  'Insights',
+                  l10n.insights,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -45,44 +47,40 @@ class InsightsCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 16),
-
             _buildInsightItem(
               context,
-              'Study Consistency',
+              l10n.studyConsistency,
               '${consistency.toStringAsFixed(0)}%',
-              'Based on active days in the last month',
+              l10n.basedOnActiveDaysInLastMonth,
               PhosphorIconsFill.calendar,
               _getConsistencyColor(consistency),
             ),
-
             const Divider(height: 24),
-
             _buildCategoryInsight(
               context,
-              'Strongest Category',
-              strongestCategory ?? 'Not enough data',
+              l10n.strongestCategory,
+              strongestCategory ?? l10n.notEnoughData,
               PhosphorIconsFill.trophy,
               Colors.amber,
+              l10n,
             ),
-
             const SizedBox(height: 12),
-
             _buildCategoryInsight(
               context,
-              'Weakest Category',
-              weakestCategory ?? 'Not enough data',
+              l10n.weakestCategory,
+              weakestCategory ?? l10n.notEnoughData,
               PhosphorIconsFill.warning,
               Colors.red,
+              l10n,
             ),
-
             const SizedBox(height: 12),
-
             _buildCategoryInsight(
               context,
-              'Most Improved',
-              mostImprovedCategory ?? 'Not enough data',
+              l10n.mostImproved,
+              mostImprovedCategory ?? l10n.notEnoughData,
               PhosphorIconsFill.arrowUp,
               Colors.green,
+              l10n,
             ),
           ],
         ),
@@ -149,19 +147,19 @@ class InsightsCard extends StatelessWidget {
     String category,
     IconData icon,
     Color color,
+    AppLocalizations l10n,
   ) {
     final theme = Theme.of(context);
-    final isDataAvailable = category != 'Not enough data';
+    final isDataAvailable = category != l10n.notEnoughData;
 
     return Row(
       children: [
         Container(
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
-            color:
-                isDataAvailable
-                    ? color.withOpacity(0.1)
-                    : Colors.grey.withOpacity(0.1),
+            color: isDataAvailable
+                ? color.withOpacity(0.1)
+                : Colors.grey.withOpacity(0.1),
             borderRadius: BorderRadius.circular(6),
           ),
           child: Icon(

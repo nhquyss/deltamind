@@ -4,8 +4,10 @@ import 'package:deltamind/features/dashboard/dashboard_page.dart';
 import 'package:deltamind/features/auth/login_page.dart';
 import 'package:deltamind/services/supabase_service.dart';
 import 'package:deltamind/widgets/google_logo.dart';
+import 'package:deltamind/widgets/language_switcher_button.dart';
 import 'package:deltamind/widgets/loading_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 /// Registration page for new users
@@ -24,6 +26,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final _confirmPasswordController = TextEditingController();
   final _usernameController = TextEditingController();
   bool _isLoading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   String? _errorMessage;
 
   @override
@@ -65,9 +69,9 @@ class _RegisterPageState extends State<RegisterPage> {
               _errorMessage = null;
               // Show success message
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+                SnackBar(
                   content: Text(
-                      'Registration successful! Please check your email to verify your account before logging in.'),
+                      AppLocalizations.of(context)!.registrationSuccessful),
                   backgroundColor: Colors.green,
                 ),
               );
@@ -91,7 +95,7 @@ class _RegisterPageState extends State<RegisterPage> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'An unexpected error occurred';
+        _errorMessage = AppLocalizations.of(context)!.unexpectedError;
       });
     } finally {
       if (mounted) {
@@ -117,7 +121,7 @@ class _RegisterPageState extends State<RegisterPage> {
       });
     } catch (e) {
       setState(() {
-        _errorMessage = 'An unexpected error occurred';
+        _errorMessage = AppLocalizations.of(context)!.unexpectedError;
       });
     } finally {
       if (mounted) {
@@ -130,8 +134,15 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Register')),
+      appBar: AppBar(
+        title: Text(l10n.register),
+        actions: const [
+          LanguageSwitcherButton(),
+          SizedBox(width: 8),
+        ],
+      ),
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
@@ -149,7 +160,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Create your account',
+                  l10n.createYourAccount,
                   style: AppTheme.subtitle.copyWith(color: Colors.grey[600]),
                   textAlign: TextAlign.center,
                 ),
@@ -158,16 +169,16 @@ class _RegisterPageState extends State<RegisterPage> {
                 // Username field
                 TextFormField(
                   controller: _usernameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Username',
-                    prefixIcon: Icon(Icons.person_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.username,
+                    prefixIcon: const Icon(Icons.person_outline),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a username';
+                      return l10n.pleaseEnterUsername;
                     }
                     if (value.length < 3) {
-                      return 'Username must be at least 3 characters';
+                      return l10n.usernameTooShort;
                     }
                     return null;
                   },
@@ -177,17 +188,17 @@ class _RegisterPageState extends State<RegisterPage> {
                 // Email field
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    prefixIcon: Icon(Icons.email_outlined),
+                  decoration: InputDecoration(
+                    labelText: l10n.email,
+                    prefixIcon: const Icon(Icons.email_outlined),
                   ),
                   keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
+                      return l10n.pleaseEnterEmail;
                     }
                     if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                      return 'Please enter a valid email';
+                      return l10n.pleaseEnterValidEmail;
                     }
                     return null;
                   },
@@ -197,17 +208,29 @@ class _RegisterPageState extends State<RegisterPage> {
                 // Password field
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    prefixIcon: Icon(Icons.lock_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.password,
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
+                    ),
                   ),
-                  obscureText: true,
+                  obscureText: _obscurePassword,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a password';
+                      return l10n.pleaseEnterAPassword;
                     }
                     if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                      return l10n.passwordTooShort;
                     }
                     return null;
                   },
@@ -217,17 +240,29 @@ class _RegisterPageState extends State<RegisterPage> {
                 // Confirm Password field
                 TextFormField(
                   controller: _confirmPasswordController,
-                  decoration: const InputDecoration(
-                    labelText: 'Confirm Password',
-                    prefixIcon: Icon(Icons.lock_outline),
+                  decoration: InputDecoration(
+                    labelText: l10n.confirmPassword,
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureConfirmPassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureConfirmPassword = !_obscureConfirmPassword;
+                        });
+                      },
+                    ),
                   ),
-                  obscureText: true,
+                  obscureText: _obscureConfirmPassword,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please confirm your password';
+                      return l10n.pleaseConfirmPassword;
                     }
                     if (value != _passwordController.text) {
-                      return 'Passwords do not match';
+                      return l10n.passwordsDoNotMatch;
                     }
                     return null;
                   },
@@ -254,7 +289,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 LoadingButton(
                   onPressed: _register,
                   isLoading: _isLoading,
-                  child: const Text('Register'),
+                  child: Text(l10n.register),
                 ),
                 const SizedBox(height: 16),
 
@@ -265,7 +300,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'OR',
+                        l10n.or,
                         style: TextStyle(color: Colors.grey[600], fontSize: 14),
                       ),
                     ),
@@ -289,7 +324,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     children: [
                       const GoogleLogo(size: 24),
                       const SizedBox(width: 12),
-                      const Text('Sign in with Google'),
+                      Text(l10n.signInWithGoogle),
                     ],
                   ),
                 ),
@@ -300,14 +335,14 @@ class _RegisterPageState extends State<RegisterPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Already have an account?',
+                      l10n.alreadyHaveAccount,
                       style: TextStyle(color: Colors.grey[600]),
                     ),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: const Text('Login'),
+                      child: Text(l10n.login),
                     ),
                   ],
                 ),

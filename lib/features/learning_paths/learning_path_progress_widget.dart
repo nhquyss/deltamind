@@ -1,6 +1,7 @@
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/models/learning_path.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Enhanced widget for displaying learning path progress with detailed metrics
@@ -18,6 +19,7 @@ class LearningPathProgressWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // Calculate progress metrics
     final int totalModules = learningPath.modules.length;
     final int completedModules =
@@ -65,7 +67,7 @@ class LearningPathProgressWidget extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Learning Progress',
+                  l10n.learningProgress,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -119,21 +121,21 @@ class LearningPathProgressWidget extends StatelessWidget {
               children: [
                 _buildProgressMetric(
                   context,
-                  'Completed',
+                  l10n.completedStatus,
                   '$completedModules/$totalModules',
                   PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
                   Colors.green,
                 ),
                 _buildProgressMetric(
                   context,
-                  'In Progress',
+                  l10n.inProgressStatus,
                   '$inProgressModules/$totalModules',
                   PhosphorIcons.playCircle(PhosphorIconsStyle.fill),
                   AppColors.primary,
                 ),
                 _buildProgressMetric(
                   context,
-                  'Remaining',
+                  l10n.remaining,
                   '${totalModules - completedModules - inProgressModules}/$totalModules',
                   PhosphorIcons.lockKey(PhosphorIconsStyle.fill),
                   Colors.grey.shade600,
@@ -148,7 +150,7 @@ class LearningPathProgressWidget extends StatelessWidget {
             // Next up section
             if (nextModuleToComplete != null && !isCompleted) ...[
               Text(
-                'Continue Learning:',
+                '${l10n.continueLearning}:',
                 style: Theme.of(context).textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -174,7 +176,7 @@ class LearningPathProgressWidget extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Learning Path Completed!',
+                      l10n.learningPathCompleted,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: Colors.green,
@@ -182,7 +184,7 @@ class LearningPathProgressWidget extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Congratulations on completing this learning path',
+                      l10n.congratulationsOnCompletingThisLearningPath,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.grey.shade700,
                           ),
@@ -202,7 +204,7 @@ class LearningPathProgressWidget extends StatelessWidget {
                   icon: Icon(
                     PhosphorIcons.arrowRight(PhosphorIconsStyle.fill),
                   ),
-                  label: const Text('Continue Learning'),
+                  label: Text(l10n.continueLearning),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     foregroundColor: Colors.white,
@@ -227,13 +229,14 @@ class LearningPathProgressWidget extends StatelessWidget {
     int totalModules,
     bool isCompleted,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: [
             Text(
-              'Progress: ',
+              '${l10n.progressLabel} ',
               style: Theme.of(context).textTheme.bodySmall,
             ),
             Text(
@@ -245,7 +248,7 @@ class LearningPathProgressWidget extends StatelessWidget {
             ),
             const Spacer(),
             Text(
-              '$completedModules/$totalModules modules',
+              l10n.modulesCount(completedModules, totalModules),
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Colors.grey.shade600,
                   ),
@@ -369,7 +372,7 @@ class LearningPathProgressWidget extends StatelessWidget {
                   color: AppColors.primary,
                 ),
                 onPressed: onContinue,
-                tooltip: 'Continue',
+                tooltip: AppLocalizations.of(context)!.continueLearning,
               )
             : null,
       ),

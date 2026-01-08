@@ -7,6 +7,7 @@ import 'package:deltamind/features/gamification/widgets/streak_card.dart';
 import 'package:deltamind/services/streak_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class AchievementsPage extends ConsumerStatefulWidget {
@@ -57,6 +58,7 @@ class _AchievementsPageState extends ConsumerState<AchievementsPage>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final gamificationState = ref.watch(gamificationControllerProvider);
     final theme = Theme.of(context);
 
@@ -123,7 +125,7 @@ class _AchievementsPageState extends ConsumerState<AchievementsPage>
                         ),
                       ),
                       title: Text(
-                        'Achievements',
+                        l10n.achievements,
                         style: theme.textTheme.titleLarge?.copyWith(
                           fontFamily: 'Inter', // Brand font
                           fontWeight: FontWeight.bold,
@@ -219,7 +221,8 @@ class _AchievementsPageState extends ConsumerState<AchievementsPage>
                                               CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              'Level ${gamificationState.userLevel!.currentLevel}',
+                                              l10n.level(gamificationState
+                                                  .userLevel!.currentLevel),
                                               style: const TextStyle(
                                                 fontFamily:
                                                     'Inter', // Brand font
@@ -230,7 +233,8 @@ class _AchievementsPageState extends ConsumerState<AchievementsPage>
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
-                                              'Total XP: ${gamificationState.userLevel!.totalXpEarned}',
+                                              l10n.totalXp(gamificationState
+                                                  .userLevel!.totalXpEarned),
                                               style: TextStyle(
                                                 fontFamily:
                                                     'Inter', // Brand font
@@ -255,7 +259,11 @@ class _AchievementsPageState extends ConsumerState<AchievementsPage>
                                             MainAxisAlignment.spaceBetween,
                                         children: [
                                           Text(
-                                            '${gamificationState.userLevel!.currentXp} / ${gamificationState.userLevel!.xpNeededForNextLevel} XP',
+                                            l10n.xpProgress(
+                                                gamificationState
+                                                    .userLevel!.currentXp,
+                                                gamificationState.userLevel!
+                                                    .xpNeededForNextLevel),
                                             style: const TextStyle(
                                               fontFamily: 'Inter', // Brand font
                                               fontSize: 13,
@@ -264,7 +272,9 @@ class _AchievementsPageState extends ConsumerState<AchievementsPage>
                                             ),
                                           ),
                                           Text(
-                                            'Next: Level ${gamificationState.userLevel!.currentLevel + 1}',
+                                            l10n.nextLevel(gamificationState
+                                                    .userLevel!.currentLevel +
+                                                1),
                                             style: TextStyle(
                                               fontFamily: 'Inter', // Brand font
                                               fontSize: 13,

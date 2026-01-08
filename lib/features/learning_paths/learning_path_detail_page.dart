@@ -4,6 +4,7 @@ import 'package:deltamind/models/learning_path.dart';
 import 'package:deltamind/services/learning_path_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -80,7 +81,8 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to load learning path: $e';
+          _errorMessage =
+              '${AppLocalizations.of(context)!.failedToLoadLearningPath}: $e';
           _isLoading = false;
         });
       }
@@ -501,23 +503,35 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
     }
   }
 
+  /// Localize learning path title (replace "Learning Path: " with localized version)
+  String _localizePathTitle(String title) {
+    final l10n = AppLocalizations.of(context)!;
+    if (title.startsWith('Learning Path: ')) {
+      return title.replaceFirst('Learning Path: ', l10n.learningPathPrefix);
+    }
+    return title;
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(_path?.title ?? 'Learning Path'),
+        title: Text(_path != null
+            ? _localizePathTitle(_path!.title)
+            : l10n.learningPath),
         actions: [
           IconButton(
             icon: Icon(PhosphorIcons.arrowClockwise(PhosphorIconsStyle.fill)),
             onPressed: _loadLearningPath,
-            tooltip: 'Refresh',
+            tooltip: l10n.refresh,
           ),
         ],
         bottom: _isMobileView
             ? TabBar(
                 controller: _tabController,
                 tabs: [
-                  Tab(text: 'Overview'),
+                  Tab(text: l10n.overview),
                   // Tab(text: 'Module Graph'),
                 ],
               )
@@ -551,7 +565,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _loadLearningPath,
-            child: const Text('Try Again'),
+            child: Text(AppLocalizations.of(context)!.tryAgain),
           ),
         ],
       ),
@@ -561,7 +575,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
   /// Build the path view
   Widget _buildPathView() {
     if (_path == null) {
-      return const Center(child: Text('Path not found'));
+      return Center(child: Text(AppLocalizations.of(context)!.pathNotFound));
     }
 
     // Mobile view uses TabBarView
@@ -650,7 +664,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: Text(
-                    'Active Path',
+                    AppLocalizations.of(context)!.activePath,
                     style: TextStyle(
                       fontSize: 10, // Smaller font
                       fontWeight: FontWeight.bold,
@@ -660,7 +674,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                 ),
               Expanded(
                 child: Text(
-                  _path!.title,
+                  _localizePathTitle(_path!.title),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -707,7 +721,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                     Row(
                       children: [
                         Text(
-                          'Progress: ',
+                          '${AppLocalizations.of(context)!.progressLabel} ',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                         Text(
@@ -721,7 +735,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                         const SizedBox(width: 8),
                         // Created date
                         Text(
-                          formatDate(_path!.createdAt),
+                          formatDate(_path!.createdAt, context),
                           style:
                               Theme.of(context).textTheme.bodySmall?.copyWith(
                                     color: Colors.grey.shade600,
@@ -772,7 +786,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Learning Path Visualization',
+                  AppLocalizations.of(context)!.learningPathVisualization,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -790,8 +804,8 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                       _tabController.animateTo(0);
                     },
                     tooltip: _selectedModule == null
-                        ? 'Show Modules'
-                        : 'View Module',
+                        ? AppLocalizations.of(context)!.showModules
+                        : AppLocalizations.of(context)!.viewModule,
                     padding: EdgeInsets.zero,
                     visualDensity: VisualDensity.compact,
                   ),
@@ -869,7 +883,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
             size: 16, // Smaller icon
           ),
           hint: Text(
-            'Select a module',
+            AppLocalizations.of(context)!.selectAModule,
             style: TextStyle(fontSize: 12), // Smaller font
           ),
           value: _selectedModule?.id,
@@ -964,7 +978,8 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(
-                'This module is locked. Complete its dependencies first.',
+                AppLocalizations.of(context)!
+                    .thisModuleIsLockedCompleteItsDependenciesFirst,
               ),
               duration: const Duration(seconds: 2),
             ),
@@ -1037,10 +1052,10 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                       const SizedBox(width: 4),
                       Text(
                         module.status == ModuleStatus.done
-                            ? 'Completed'
+                            ? AppLocalizations.of(context)!.completedStatus
                             : module.status == ModuleStatus.inProgress
-                                ? 'In Progress'
-                                : 'Locked',
+                                ? AppLocalizations.of(context)!.inProgressStatus
+                                : AppLocalizations.of(context)!.lockedStatus,
                         style: const TextStyle(
                           fontSize: 9,
                           fontWeight: FontWeight.bold,
@@ -1088,8 +1103,11 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                 ),
               ),
               child: Text(
-                module.difficulty.substring(0, 1).toUpperCase() +
-                    module.difficulty.substring(1).toLowerCase(),
+                module.difficulty == 'beginner'
+                    ? AppLocalizations.of(context)!.beginner
+                    : module.difficulty == 'intermediate'
+                        ? AppLocalizations.of(context)!.intermediate
+                        : AppLocalizations.of(context)!.advanced,
                 style: TextStyle(
                   fontSize: 8,
                   fontWeight: FontWeight.bold,
@@ -1148,7 +1166,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
-                      'Depends on: ${module.dependencies.map((e) => 'M$e').join(', ')}',
+                      '${AppLocalizations.of(context)!.dependsOn}${module.dependencies.map((e) => 'M$e').join(', ')}',
                       style: TextStyle(
                         fontSize: 9,
                         color: textColor.withOpacity(0.8),
@@ -1205,7 +1223,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
         children: [
           // Module status section
           Text(
-            'Module Status:',
+            AppLocalizations.of(context)!.moduleStatus,
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.bold,
@@ -1234,8 +1252,8 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                     ),
                   ),
                   const SizedBox(width: 4),
-                  const Text(
-                    'Completed',
+                  Text(
+                    AppLocalizations.of(context)!.completedStatus,
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
@@ -1261,7 +1279,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'In Progress',
+                    AppLocalizations.of(context)!.inProgressStatus,
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
@@ -1287,7 +1305,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    'Locked',
+                    AppLocalizations.of(context)!.lockedStatus,
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w500,
@@ -1302,7 +1320,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
           // Difficulty section
           const SizedBox(height: 8),
           Text(
-            'Difficulty Level:',
+            AppLocalizations.of(context)!.difficultyLevel,
             style: TextStyle(
               fontSize: 10,
               fontWeight: FontWeight.bold,
@@ -1330,7 +1348,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                       ),
                     ),
                     child: Text(
-                      'Beginner',
+                      AppLocalizations.of(context)!.beginner,
                       style: TextStyle(
                         fontSize: 9,
                         fontWeight: FontWeight.bold,
@@ -1356,7 +1374,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                       ),
                     ),
                     child: Text(
-                      'Intermediate',
+                      AppLocalizations.of(context)!.intermediate,
                       style: TextStyle(
                         fontSize: 9,
                         fontWeight: FontWeight.bold,
@@ -1381,7 +1399,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                       ),
                     ),
                     child: Text(
-                      'Advanced',
+                      AppLocalizations.of(context)!.advanced,
                       style: TextStyle(
                         fontSize: 9,
                         fontWeight: FontWeight.bold,
@@ -1416,7 +1434,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
               ),
               const SizedBox(width: 8),
               Text(
-                'Path Overview',
+                AppLocalizations.of(context)!.pathOverview,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -1439,7 +1457,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Modules (${_path!.modules.length})',
+                AppLocalizations.of(context)!.modules(_path!.modules.length),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -1494,7 +1512,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
           _buildStatItem(
             count: completedModules,
             total: totalModules,
-            label: 'Completed',
+            label: AppLocalizations.of(context)!.completedStatus,
             color: Colors.green,
             icon: PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
           ),
@@ -1502,7 +1520,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
           _buildStatItem(
             count: inProgressModules,
             total: totalModules,
-            label: 'In Progress',
+            label: AppLocalizations.of(context)!.inProgressStatus,
             color: AppColors.primary,
             icon: PhosphorIcons.caretRight(PhosphorIconsStyle.fill),
           ),
@@ -1510,7 +1528,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
           _buildStatItem(
             count: lockedModules,
             total: totalModules,
-            label: 'Locked',
+            label: AppLocalizations.of(context)!.lockedStatus,
             color: Colors.grey.shade600,
             icon: PhosphorIcons.lock(PhosphorIconsStyle.fill),
           ),
@@ -1621,7 +1639,8 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  'This module is locked. Complete its dependencies first.',
+                  AppLocalizations.of(context)!
+                      .thisModuleIsLockedCompleteItsDependenciesFirst,
                 ),
                 duration: const Duration(seconds: 2),
               ),
@@ -1655,7 +1674,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                     Row(
                       children: [
                         Text(
-                          'Module ${module.moduleId}',
+                          '${AppLocalizations.of(context)!.module} ${module.moduleId}',
                           style: TextStyle(
                             fontSize: 12,
                             color: color,
@@ -1677,8 +1696,11 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                             ),
                           ),
                           child: Text(
-                            module.difficulty.substring(0, 1).toUpperCase() +
-                                module.difficulty.substring(1).toLowerCase(),
+                            module.difficulty == 'beginner'
+                                ? AppLocalizations.of(context)!.beginner
+                                : module.difficulty == 'intermediate'
+                                    ? AppLocalizations.of(context)!.intermediate
+                                    : AppLocalizations.of(context)!.advanced,
                             style: TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.bold,
@@ -1762,7 +1784,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                       children: [
                         Flexible(
                           child: Text(
-                            'Module ${module.moduleId}',
+                            '${AppLocalizations.of(context)!.module} ${module.moduleId}',
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium
@@ -1787,8 +1809,11 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                             ),
                           ),
                           child: Text(
-                            module.difficulty.substring(0, 1).toUpperCase() +
-                                module.difficulty.substring(1).toLowerCase(),
+                            module.difficulty == 'beginner'
+                                ? AppLocalizations.of(context)!.beginner
+                                : module.difficulty == 'intermediate'
+                                    ? AppLocalizations.of(context)!.intermediate
+                                    : AppLocalizations.of(context)!.advanced,
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
@@ -1814,7 +1839,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                 IconButton(
                   icon: Icon(PhosphorIcons.x(PhosphorIconsStyle.fill)),
                   onPressed: () => setState(() => _selectedModule = null),
-                  tooltip: 'Close',
+                  tooltip: AppLocalizations.of(context)!.close,
                   padding: EdgeInsets.zero, // Remove padding
                   visualDensity: VisualDensity.compact, // Make button compact
                 ),
@@ -1835,7 +1860,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
           const SizedBox(height: 12), // Reduced spacing
 
           // Description
-          _buildSectionHeader('Description'),
+          _buildSectionHeader(AppLocalizations.of(context)!.description),
           const SizedBox(height: 6), // Reduced spacing
           Text(
             module.description,
@@ -1846,7 +1871,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
 
           // Dependencies
           if (module.dependencies.isNotEmpty) ...[
-            _buildSectionHeader('Dependencies'),
+            _buildSectionHeader(AppLocalizations.of(context)!.dependencies),
             const SizedBox(height: 6), // Reduced spacing
             Wrap(
               spacing: 6, // Reduced spacing
@@ -1861,7 +1886,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                 return ActionChip(
                   backgroundColor: AppColors.primary.withOpacity(0.1),
                   label: Text(
-                    'Module $dep',
+                    '${AppLocalizations.of(context)!.module} $dep',
                     style: TextStyle(
                       color: AppColors.primary,
                       fontSize: 11, // Smaller font
@@ -1887,7 +1912,8 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
 
           // Learning objectives
           if (module.learningObjectives.isNotEmpty) ...[
-            _buildSectionHeader('Learning Objectives'),
+            _buildSectionHeader(
+                AppLocalizations.of(context)!.learningObjectives),
             const SizedBox(height: 6), // Reduced spacing
             ...module.learningObjectives.map((objective) {
               return Padding(
@@ -1918,7 +1944,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
 
           // Resources
           if (module.resources.isNotEmpty) ...[
-            _buildSectionHeader('Resources'),
+            _buildSectionHeader(AppLocalizations.of(context)!.resources),
             const SizedBox(height: 6), // Reduced spacing
             ...List.generate(module.resources.length, (index) {
               final resource = module.resources[index];
@@ -1995,8 +2021,12 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                               ),
                             ),
                             child: Text(
-                              difficultyLevel.substring(0, 1).toUpperCase() +
-                                  difficultyLevel.substring(1).toLowerCase(),
+                              difficultyLevel == 'beginner'
+                                  ? AppLocalizations.of(context)!.beginner
+                                  : difficultyLevel == 'intermediate'
+                                      ? AppLocalizations.of(context)!
+                                          .intermediate
+                                      : AppLocalizations.of(context)!.advanced,
                               style: TextStyle(
                                 fontSize: 9,
                                 fontWeight: FontWeight.bold,
@@ -2018,7 +2048,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
           if (module.noteId != null ||
               module.quizId != null ||
               module.deckId != null) ...[
-            _buildSectionHeader('Linked Content'),
+            _buildSectionHeader(AppLocalizations.of(context)!.linkedContent),
             const SizedBox(height: 6), // Reduced spacing
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -2034,7 +2064,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                           size: 16, // Smaller icon
                         ),
                         label: Text(
-                          'View Note',
+                          AppLocalizations.of(context)!.viewNote,
                           style: TextStyle(fontSize: 11), // Smaller font
                         ),
                         onPressed: () {
@@ -2060,7 +2090,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                           size: 16, // Smaller icon
                         ),
                         label: Text(
-                          'Take Quiz',
+                          AppLocalizations.of(context)!.takeQuiz,
                           style: TextStyle(fontSize: 11), // Smaller font
                         ),
                         onPressed: () {
@@ -2085,7 +2115,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                           size: 16, // Smaller icon
                         ),
                         label: Text(
-                          'Study Cards',
+                          AppLocalizations.of(context)!.studyCards,
                           style: TextStyle(fontSize: 11), // Smaller font
                         ),
                         onPressed: () {
@@ -2117,7 +2147,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
                 const SizedBox(width: 8), // Reduced spacing
                 Expanded(
                   child: Text(
-                    'Estimated time: ${module.estimatedDuration}',
+                    '${AppLocalizations.of(context)!.estimatedTime}${module.estimatedDuration}',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
@@ -2132,7 +2162,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
 
           // Assessment
           if (module.assessment != null) ...[
-            _buildSectionHeader('Assessment'),
+            _buildSectionHeader(AppLocalizations.of(context)!.assessment),
             const SizedBox(height: 6), // Reduced spacing
             Text(
               module.assessment!,
@@ -2144,7 +2174,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
 
           // Additional notes
           if (module.additionalNotes != null) ...[
-            _buildSectionHeader('Additional Notes'),
+            _buildSectionHeader(AppLocalizations.of(context)!.additionalNotes),
             const SizedBox(height: 6), // Reduced spacing
             Container(
               padding: const EdgeInsets.all(8), // Reduced padding
@@ -2216,7 +2246,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
             PhosphorIcons.caretLeft(PhosphorIconsStyle.fill),
             size: 16,
           ),
-          label: const Text('Previous'),
+          label: Text(AppLocalizations.of(context)!.previous),
           onPressed: canGoToPrevious
               ? () => setState(() => _selectedModule = previousModule)
               : null,
@@ -2233,7 +2263,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
             size: 20,
           ),
           onPressed: () => setState(() => _selectedModule = null),
-          tooltip: 'Show all modules',
+          tooltip: AppLocalizations.of(context)!.showAllModules,
           padding: EdgeInsets.zero,
           visualDensity: VisualDensity.compact,
         ),
@@ -2244,7 +2274,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
             PhosphorIcons.caretRight(PhosphorIconsStyle.fill),
             size: 16,
           ),
-          label: const Text('Next'),
+          label: Text(AppLocalizations.of(context)!.next),
           onPressed: canGoToNext
               ? () => setState(() => _selectedModule = nextModule)
               : null,
@@ -2351,7 +2381,7 @@ class _LearningPathDetailPageState extends State<LearningPathDetailPage>
           PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
           size: 18,
         ),
-        label: const Text('Mark as Done'),
+        label: Text(AppLocalizations.of(context)!.markAsDone),
         onPressed: () {
           _updateModuleStatus(module, ModuleStatus.done);
         },

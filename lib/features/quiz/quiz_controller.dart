@@ -182,6 +182,7 @@ class QuizController extends StateNotifier<QuizState> {
     required String difficulty,
     required String content,
     int questionCount = 5,
+    String? language,
   }) async {
     if (!mounted) return null;
 
@@ -194,6 +195,7 @@ class QuizController extends StateNotifier<QuizState> {
         difficulty: difficulty,
         content: content,
         questionCount: questionCount,
+        language: language,
       );
 
       // Reload user quizzes to update the list
@@ -309,6 +311,7 @@ class QuizController extends StateNotifier<QuizState> {
     required Uint8List fileBytes,
     required String fileName,
     int questionCount = 5,
+    String? language,
   }) async {
     if (!mounted) return null;
 
@@ -326,6 +329,7 @@ class QuizController extends StateNotifier<QuizState> {
         format: quizType,
         difficulty: difficulty,
         questionCount: questionCount,
+        language: language,
       );
 
       // Create the quiz

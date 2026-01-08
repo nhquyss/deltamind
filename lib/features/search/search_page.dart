@@ -5,6 +5,7 @@ import 'package:deltamind/features/search/search_controller.dart';
 import 'package:deltamind/services/search_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -20,6 +21,7 @@ class SearchPage extends ConsumerStatefulWidget {
 class _SearchPageState extends ConsumerState<SearchPage> {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final searchState = ref.watch(searchControllerProvider);
     final hasResults = searchState.filteredResults.isNotEmpty;
     final hasSearched = searchState.hasSearched;
@@ -30,7 +32,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Search'),
+          title: Text(l10n.search),
           elevation: 0,
           scrolledUnderElevation: 1,
         ),
@@ -47,7 +49,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
             ),
 
             // Filters
-            if (!isLoading) _buildFilters(),
+            if (!isLoading) _buildFilters(l10n),
 
             // Results or empty state
             Expanded(
@@ -56,6 +58,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 hasSearched: hasSearched,
                 isLoading: isLoading,
                 errorMessage: errorMessage,
+                l10n: l10n,
               ),
             ),
           ],
@@ -64,7 +67,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     );
   }
 
-  Widget _buildFilters() {
+  Widget _buildFilters(AppLocalizations l10n) {
     final searchState = ref.watch(searchControllerProvider);
     final activeFilters = searchState.activeFilters;
 
@@ -77,21 +80,21 @@ class _SearchPageState extends ConsumerState<SearchPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             _buildFilterChip(
-              label: 'Notes',
+              label: l10n.notes,
               type: SearchResultType.note,
               icon: Icons.note_outlined,
               isActive: activeFilters.contains(SearchResultType.note),
             ),
             const SizedBox(width: 8),
             _buildFilterChip(
-              label: 'Quizzes',
+              label: l10n.quizzes,
               type: SearchResultType.quiz,
               icon: Icons.quiz_outlined,
               isActive: activeFilters.contains(SearchResultType.quiz),
             ),
             const SizedBox(width: 8),
             _buildFilterChip(
-              label: 'Flashcards',
+              label: l10n.flashcards,
               type: SearchResultType.flashcardDeck,
               icon: Icons.layers_outlined,
               isActive: activeFilters.contains(SearchResultType.flashcardDeck),
@@ -104,7 +107,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   Icons.refresh,
                   size: 16,
                 ),
-                label: const Text('Reset'),
+                label: Text(l10n.resetFilters),
                 backgroundColor: Colors.grey.withOpacity(0.1),
                 onPressed: () {
                   ref.read(searchControllerProvider.notifier).resetFilters();
@@ -147,6 +150,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     required bool hasSearched,
     required bool isLoading,
     String? errorMessage,
+    required AppLocalizations l10n,
   }) {
     if (isLoading) {
       return const Center(
@@ -169,7 +173,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'An error occurred',
+                  l10n.errorOccurred,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 8),
@@ -183,7 +187,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                   onPressed: () {
                     ref.read(searchControllerProvider.notifier).search();
                   },
-                  child: const Text('Try Again'),
+                  child: Text(l10n.tryAgain),
                 ),
               ],
             ),
@@ -207,7 +211,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Search for notes, quizzes, or flashcards',
+                  l10n.searchNotesQuizzesFlashcards,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
                         color: Colors.grey.withOpacity(0.8),
                       ),
@@ -215,7 +219,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Type above to find any content',
+                  l10n.typeToSearch,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.grey.withOpacity(0.7),
                       ),
@@ -244,12 +248,12 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'No results found',
+                  l10n.noResultsFound,
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Try a different search term or filters',
+                  l10n.tryDifferentSearchTermOrFilters,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 if (searchState.activeFilters.length < 3)
@@ -262,7 +266,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
                             .resetFilters();
                       },
                       icon: const Icon(Icons.filter_alt_off),
-                      label: const Text('Reset filters'),
+                      label: Text(l10n.resetFilters),
                     ),
                   ),
               ],

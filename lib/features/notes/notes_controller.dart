@@ -163,6 +163,7 @@ class NotesController extends StateNotifier<NotesState> {
         tags: note.tags,
         color: note.color,
         isPinned: note.isPinned,
+        updateColor: true, // Always update color when updating a note
       );
 
       // Refresh the notes list
@@ -233,6 +234,8 @@ class NotesController extends StateNotifier<NotesState> {
       final updatedNote = await NotesService.updateNote(
         id: noteId,
         color: color,
+        updateColor:
+            true, // Always update color (even if null to reset to default)
       );
 
       if (updatedNote != null) {

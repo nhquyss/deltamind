@@ -48,14 +48,22 @@ class GeminiService {
   /// [format] is the quiz format (Multiple Choice, True/False, etc.)
   /// [difficulty] is the difficulty level (Easy, Medium, Hard)
   /// [questionCount] is the number of questions to generate
+  /// [language] is the language to generate content in (e.g., "Vietnamese", "English"). If null, defaults to English.
   static Future<String> generateQuiz({
     required String content,
     required String format,
     required String difficulty,
     int questionCount = 5,
+    String? language,
   }) async {
     try {
+      // Add language instruction if specified
+      final languageInstruction = language != null && language.isNotEmpty
+          ? 'IMPORTANT: Generate all content (questions, options, answers, explanations) in $language language. '
+          : '';
+
       final prompt = '''
+$languageInstruction
 Generate $questionCount $format questions at $difficulty difficulty level based on the following content:
 
 $content
@@ -204,9 +212,11 @@ Include examples if relevant.
   }
 
   /// Review quiz answers and provide feedback
+  /// [language] is the language to generate content in (e.g., "Vietnamese", "English"). If null, defaults to English.
   static Future<String> reviewQuizAnswers({
     required List<Map<String, dynamic>> questions,
     required List<String> userAnswers,
+    String? language,
   }) async {
     try {
       if (questions.length != userAnswers.length) {
@@ -228,7 +238,13 @@ Explanation: ${question['explanation'] ?? 'No explanation provided'}
         ''');
       }
 
+      // Add language instruction if specified
+      final languageInstruction = language != null && language.isNotEmpty
+          ? 'IMPORTANT: Generate all feedback content in $language language. '
+          : '';
+
       final prompt = '''
+$languageInstruction
 Review the following quiz answers and provide detailed feedback to the user. 
 
 ${questionsAndAnswers.join('\n')}
@@ -303,10 +319,12 @@ Error details: $e
   /// [quizData] is information about the quiz (title, type, difficulty)
   /// [userAnswers] contains the user's answers with correctness information
   /// [content] optional original content used to generate the quiz
+  /// [language] is the language to generate content in (e.g., "Vietnamese", "English"). If null, defaults to English.
   static Future<Map<String, dynamic>> generateQuizRecommendations({
     required Map<String, dynamic> quizData,
     required List<Map<String, dynamic>> userAnswers,
     String? quizContent,
+    String? language,
   }) async {
     try {
       final correctAnswers =
@@ -334,8 +352,14 @@ Explanation: ${question['explanation'] ?? 'No explanation provided'}
         ''');
       }
 
+      // Add language instruction if specified
+      final languageInstruction = language != null && language.isNotEmpty
+          ? 'IMPORTANT: Generate all recommendations and analysis content in $language language. '
+          : '';
+
       // Create a comprehensive prompt for detailed recommendations
       final prompt = '''
+$languageInstruction
 I need you to analyze a user's quiz performance and provide detailed, personalized recommendations.
 
 QUIZ INFORMATION:
@@ -457,6 +481,170 @@ Make the recommendations specific, detailed, and personalized to this user's act
     }
   }
 
+  /// Translate multiple texts to target language while preserving markdown formatting
+  /// This is more efficient than translating one by one
+  /// [texts] is a map of field names to text content
+  /// [targetLanguage] is the target language (e.g., "Vietnamese", "English")
+  /// Returns a map of field names to translated texts
+  static Future<Map<String, String>> translateMultipleTextsPreservingFormat({
+    required Map<String, String> texts,
+    required String targetLanguage,
+  }) async {
+    try {
+      if (texts.isEmpty) {
+        return {};
+      }
+
+      // Build a combined text with clear separators
+      final textEntries = texts.entries
+          .map((e) => '===FIELD:${e.key}===\n${e.value}')
+          .join('\n\n');
+
+      final prompt = '''
+You are a professional translator. Translate the following texts to $targetLanguage language.
+
+CRITICAL REQUIREMENTS:
+1. Preserve ALL markdown formatting EXACTLY as it appears (including **bold**, *italic*, bullet points (- or *), numbered lists, headers (##, ###), etc.)
+2. Only translate the actual text content, NOT the markdown syntax
+3. Keep the same structure and formatting for each field
+4. Maintain the field separators (===FIELD:field_name===)
+5. Do NOT add any explanations or notes, just return the translated texts with field separators
+
+Texts to translate:
+$textEntries
+
+Return ONLY the translated texts with all formatting preserved and field separators maintained. Format should be:
+===FIELD:field_name===
+translated text here
+
+===FIELD:next_field_name===
+translated text here
+''';
+
+      debugPrint(
+          '=== Starting batch translation to $targetLanguage (${texts.length} fields) ===');
+      final response = await model.generateContent([Content.text(prompt)]);
+      final result = response.text;
+
+      if (result == null || result.isEmpty) {
+        debugPrint(
+            'WARNING: Batch translation returned empty, returning original texts');
+        return texts;
+      }
+
+      // Parse the response to extract translated fields
+      final translatedMap = <String, String>{};
+      final fieldPattern =
+          RegExp(r'===FIELD:(\w+)===\s*\n(.*?)(?=\n===FIELD:|$)', dotAll: true);
+      final matches = fieldPattern.allMatches(result);
+
+      for (final match in matches) {
+        final fieldName = match.group(1);
+        final translatedText = match.group(2)?.trim() ?? '';
+        if (fieldName != null && translatedText.isNotEmpty) {
+          translatedMap[fieldName] = translatedText;
+        }
+      }
+
+      // If parsing failed, try to split by field markers manually
+      if (translatedMap.length != texts.length) {
+        debugPrint(
+            'Warning: Could not parse all fields, trying alternative parsing...');
+        final lines = result.split('\n');
+        String? currentField;
+        final buffer = StringBuffer();
+
+        for (final line in lines) {
+          if (line.startsWith('===FIELD:') && line.endsWith('===')) {
+            if (currentField != null && buffer.isNotEmpty) {
+              translatedMap[currentField] = buffer.toString().trim();
+              buffer.clear();
+            }
+            currentField = line.substring(9, line.length - 3);
+          } else if (currentField != null) {
+            if (buffer.isNotEmpty) buffer.writeln();
+            buffer.write(line);
+          }
+        }
+        if (currentField != null && buffer.isNotEmpty) {
+          translatedMap[currentField] = buffer.toString().trim();
+        }
+      }
+
+      // Fallback: if still can't parse, return original texts
+      if (translatedMap.length != texts.length) {
+        debugPrint(
+            'WARNING: Could not parse batch translation properly, returning original texts');
+        return texts;
+      }
+
+      debugPrint(
+          'Batch translation completed. Translated ${translatedMap.length} fields');
+      return translatedMap;
+    } catch (e) {
+      debugPrint('ERROR in batch translation: $e');
+      // Return original texts if translation fails
+      return texts;
+    }
+  }
+
+  /// Translate text to target language while preserving markdown formatting
+  /// This is used as a fallback when AI generates content in wrong language
+  /// [text] is the text to translate
+  /// [targetLanguage] is the target language (e.g., "Vietnamese", "English")
+  static Future<String> translateTextPreservingFormat({
+    required String text,
+    required String targetLanguage,
+  }) async {
+    try {
+      if (text.trim().isEmpty) {
+        debugPrint('Translation skipped: text is empty');
+        return text;
+      }
+
+      debugPrint('=== Starting translation to $targetLanguage ===');
+      debugPrint('Original text length: ${text.length}');
+      debugPrint(
+          'Original text preview: ${text.substring(0, text.length > 200 ? 200 : text.length)}...');
+
+      final prompt = '''
+You are a professional translator. Translate the following text to $targetLanguage language.
+
+CRITICAL REQUIREMENTS:
+1. Preserve ALL markdown formatting EXACTLY as it appears (including **bold**, *italic*, bullet points (- or *), numbered lists, headers (##, ###), etc.)
+2. Only translate the actual text content, NOT the markdown syntax
+3. Keep the same structure and formatting
+4. Do NOT add any explanations or notes, just return the translated text
+
+Text to translate:
+$text
+
+Return ONLY the translated text with all formatting preserved. Do not include any additional text or explanations.
+''';
+
+      final response = await model.generateContent([Content.text(prompt)]);
+      final result = response.text;
+
+      if (result == null || result.isEmpty) {
+        debugPrint(
+            'WARNING: Translation returned empty, returning original text');
+        return text;
+      }
+
+      final translated = result.trim();
+      debugPrint('Translation completed. Length: ${translated.length}');
+      debugPrint(
+          'Translated text preview: ${translated.substring(0, translated.length > 200 ? 200 : translated.length)}...');
+
+      return translated;
+    } catch (e) {
+      debugPrint('ERROR translating text: $e');
+      debugPrint('Stack trace: ${StackTrace.current}');
+      // Return original text if translation fails
+      return text;
+    }
+  }
+
   /// Generate quiz from file content
   ///
   /// [fileBytes] is the raw bytes of the file
@@ -465,6 +653,7 @@ Make the recommendations specific, detailed, and personalized to this user's act
   /// [format] is the quiz format (Multiple Choice, True/False, etc.)
   /// [difficulty] is the difficulty level (Easy, Medium, Hard)
   /// [questionCount] is the number of questions to generate
+  /// [language] is the language to generate content in (e.g., "Vietnamese", "English"). If null, defaults to English.
   static Future<String> generateQuizFromFile({
     required Uint8List fileBytes,
     required String fileName,
@@ -472,8 +661,14 @@ Make the recommendations specific, detailed, and personalized to this user's act
     required String format,
     required String difficulty,
     int questionCount = 5,
+    String? language,
   }) async {
     try {
+      // Add language instruction if specified
+      final languageInstruction = language != null && language.isNotEmpty
+          ? 'IMPORTANT: Generate all content (questions, options, answers, explanations) in $language language. '
+          : '';
+
       String promptIntro;
       // Handle different file types
       switch (fileType.toLowerCase()) {
@@ -501,6 +696,7 @@ Make the recommendations specific, detailed, and personalized to this user's act
       }
 
       final prompt = '''
+$languageInstruction
 $promptIntro
 
 [File content from: $fileName]

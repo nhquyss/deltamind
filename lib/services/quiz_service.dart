@@ -318,6 +318,7 @@ class QuizService {
     required String format,
     required String difficulty,
     int questionCount = 5,
+    String? language,
   }) async {
     try {
       final response = await GeminiService.generateQuiz(
@@ -325,6 +326,7 @@ class QuizService {
         format: format,
         difficulty: difficulty,
         questionCount: questionCount,
+        language: language,
       );
 
       final jsonResponse = jsonDecode(response);
@@ -343,6 +345,7 @@ class QuizService {
     required String difficulty,
     required String content,
     int questionCount = 5,
+    String? language,
   }) async {
     try {
       // Create the quiz first
@@ -366,6 +369,7 @@ class QuizService {
         format: quizType,
         difficulty: difficulty,
         questionCount: questionCount,
+        language: language,
       );
 
       // Parse JSON response

@@ -2,6 +2,7 @@ import 'package:deltamind/core/routing/app_router.dart';
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/features/search/search_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -36,10 +37,11 @@ class _GlobalSearchBarState extends ConsumerState<GlobalSearchBar> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return TextField(
       controller: _controller,
       decoration: InputDecoration(
-        hintText: 'Search notes, quizzes, flashcards...',
+        hintText: l10n.searchNotesQuizzesFlashcards,
         prefixIcon: const Icon(Icons.search),
         suffixIcon: _controller.text.isNotEmpty
             ? IconButton(
@@ -184,12 +186,13 @@ class _SearchBarInputState extends ConsumerState<SearchBarInput> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return TextField(
       controller: _controller,
       focusNode: _focusNode,
       autofocus: widget.autofocus,
       decoration: InputDecoration(
-        hintText: 'Search notes, quizzes, flashcards...',
+        hintText: l10n.searchNotesQuizzesFlashcards,
         prefixIcon: const Icon(Icons.search),
         suffixIcon: _controller.text.isNotEmpty
             ? IconButton(

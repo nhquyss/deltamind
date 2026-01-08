@@ -10,6 +10,7 @@ import 'package:deltamind/models/note.dart';
 import 'package:deltamind/services/supabase_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_quill/flutter_quill.dart' hide Text;
@@ -185,8 +186,9 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
     } catch (e) {
       // Handle error
       if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error loading note: $e')),
+          SnackBar(content: Text(l10n.errorLoadingNote(e.toString()))),
         );
       }
     } finally {
@@ -200,11 +202,12 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
 
   Future<bool> _saveNote(
       {bool showFeedback = true, bool popWhenDone = false}) async {
+    final l10n = AppLocalizations.of(context)!;
     // Validate title is not empty
     if (_titleController.text.trim().isEmpty) {
       if (showFeedback && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Title cannot be empty')),
+          SnackBar(content: Text(l10n.titleCannotBeEmpty)),
         );
       }
       return false;
@@ -216,7 +219,7 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
     if (userId == null) {
       if (showFeedback && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please sign in to save notes')),
+          SnackBar(content: Text(l10n.pleaseSignInToSaveNotes)),
         );
       }
       return false;
@@ -259,10 +262,11 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
       }
 
       if (showFeedback && mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              _existingNote != null ? 'Note updated' : 'Note created',
+              _existingNote != null ? l10n.noteUpdated : l10n.noteCreated,
             ),
           ),
         );
@@ -285,8 +289,9 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
       return true;
     } catch (e) {
       if (showFeedback && mounted) {
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error saving note: $e')),
+          SnackBar(content: Text(l10n.errorSavingNote(e.toString()))),
         );
       }
       return false;
@@ -296,19 +301,20 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
   Future<bool> _onWillPop() async {
     if (!_isDirty) return true;
 
+    final l10n = AppLocalizations.of(context)!;
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Unsaved changes'),
-        content: const Text('Save changes before leaving?'),
+        title: Text(l10n.unsavedChanges),
+        content: Text(l10n.saveChangesBeforeLeaving),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('DISCARD'),
+            child: Text(l10n.discard),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('SAVE'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -352,10 +358,11 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
       'Gray': 'gray',
     };
 
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Choose color'),
+        title: Text(l10n.chooseColor),
         content: Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -391,6 +398,9 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
                 break;
             }
 
+            final isSelected = (_noteColor == null && entry.value == null) ||
+                (_noteColor != null && _noteColor == entry.value);
+
             return InkWell(
               onTap: () {
                 Navigator.pop(context);
@@ -407,9 +417,7 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: _noteColor == entry.value
-                    ? const Icon(Icons.check, size: 20)
-                    : null,
+                child: isSelected ? const Icon(Icons.check, size: 20) : null,
               ),
             );
           }).toList(),
@@ -417,7 +425,7 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
         ],
       ),
@@ -427,15 +435,16 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
   void _confirmDelete() {
     if (_existingNote == null) return;
 
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete note?'),
-        content: const Text('This action cannot be undone.'),
+        title: Text(l10n.deleteNote),
+        content: Text(l10n.deleteNoteWarning),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () async {
@@ -452,7 +461,7 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
               }
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -461,6 +470,7 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     // Create a background color based on the note color
@@ -513,7 +523,7 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
         backgroundColor: backgroundColor ?? Colors.white,
         appBar: AppBar(
           title: Text(
-            _existingNote != null ? 'Edit Note' : 'New Note',
+            _existingNote != null ? l10n.editNote : l10n.newNote,
             style: const TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 18,
@@ -534,7 +544,7 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
                   _isDirty = true;
                 });
               },
-              tooltip: _isPinned ? 'Unpin' : 'Pin',
+              tooltip: _isPinned ? l10n.unpin : l10n.pin,
             ),
 
             // Color picker
@@ -544,7 +554,7 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
                 size: 22,
               ),
               onPressed: _showColorPicker,
-              tooltip: 'Change color',
+              tooltip: l10n.changeColor,
             ),
 
             // Tags
@@ -554,7 +564,7 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
                 size: 22,
               ),
               onPressed: _showTagsEditor,
-              tooltip: 'Edit tags',
+              tooltip: l10n.editTags,
             ),
 
             // Delete (only for existing notes)
@@ -565,7 +575,7 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
                   size: 22,
                 ),
                 onPressed: _confirmDelete,
-                tooltip: 'Delete',
+                tooltip: l10n.delete,
               ),
 
             // Save
@@ -575,7 +585,7 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
                 size: 22,
               ),
               onPressed: () => _saveNote(popWhenDone: true),
-              tooltip: 'Save',
+              tooltip: l10n.save,
             ),
           ],
         ),
@@ -647,7 +657,7 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
                             controller: _titleController,
                             focusNode: _titleFocusNode,
                             decoration: InputDecoration(
-                              hintText: 'Title',
+                              hintText: l10n.title,
                               hintStyle: TextStyle(
                                 color: theme.hintColor.withOpacity(0.7),
                                 fontWeight: FontWeight.w600,
@@ -676,7 +686,7 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
                           Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 20),
                             child: Text(
-                              'Ketuk di sini untuk mulai menulis...',
+                              l10n.tapHereToStartWriting,
                               style: TextStyle(
                                 color: theme.hintColor.withOpacity(0.6),
                                 fontStyle: FontStyle.italic,
@@ -722,9 +732,9 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
                             ),
                           ),
                           const SizedBox(width: 6),
-                          const Text(
-                            'Saving...',
-                            style: TextStyle(
+                          Text(
+                            l10n.saving,
+                            style: const TextStyle(
                               fontSize: 12,
                               color: Colors.white,
                             ),

@@ -4,6 +4,7 @@ import 'package:deltamind/features/gamification/gamification_controller.dart';
 import 'package:deltamind/features/gamification/widgets/streak_freeze_widget.dart';
 import 'package:deltamind/services/streak_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:go_router/go_router.dart';
@@ -17,6 +18,7 @@ class DashboardStreakSummary extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final gamificationState = ref.watch(gamificationControllerProvider);
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     // Show loading indicator if still loading
     if (gamificationState.isLoading) {
@@ -69,7 +71,7 @@ class DashboardStreakSummary extends ConsumerWidget {
                           children: [
                             // Streak count text
                             Text(
-                              '${streak.currentStreak}-Day Streak',
+                              l10n.dayStreak(streak.currentStreak),
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: FontWeight.w600,
                               ),
@@ -77,7 +79,7 @@ class DashboardStreakSummary extends ConsumerWidget {
                             const Spacer(),
                             // Best streak text
                             Text(
-                              'Best Streak: ${streak.longestStreak}',
+                              l10n.bestStreak(streak.longestStreak),
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: Colors.grey.shade600,
                                 fontWeight: FontWeight.w500,
@@ -109,7 +111,7 @@ class DashboardStreakSummary extends ConsumerWidget {
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      'Level ${level.currentLevel}',
+                                      l10n.level(level.currentLevel),
                                       style:
                                           theme.textTheme.bodySmall?.copyWith(
                                         color: AppColors.primary,
@@ -185,6 +187,7 @@ class DashboardStreakSummary extends ConsumerWidget {
     DateTime? expiryTime,
   ) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     // Check if streak freeze has expired
     if (expiryTime != null) {
@@ -214,7 +217,7 @@ class DashboardStreakSummary extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'Streak Freeze: ',
+                  l10n.streakFreeze,
                   style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w500,
                     color: Colors.blue.shade700,
@@ -236,6 +239,7 @@ class DashboardStreakSummary extends ConsumerWidget {
   }
 
   Widget _buildEmptyStreakCard(BuildContext context, ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -256,14 +260,14 @@ class DashboardStreakSummary extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '0-Day Streak',
+                      l10n.dayStreak(0),
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Complete a quiz today to start your streak!',
+                      l10n.completeAQuizTodayToStartYourStreak,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: Colors.grey.shade600,
                       ),

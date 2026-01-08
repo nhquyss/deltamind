@@ -1,5 +1,6 @@
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -13,19 +14,21 @@ class StreakAnalyticsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context);
     final currentStreak = streakData['current_streak'] ?? 0;
     final longestStreak = streakData['longest_streak'] ?? 0;
     final isStreakFreezeActive = streakData['is_streak_freeze_active'] ?? false;
     final freezesAvailable = streakData['streak_freezes_available'] ?? 0;
     final freezesUsed = streakData['streak_freezes_used'] ?? 0;
 
-    String lastActivityDate = 'No activity yet';
+    String lastActivityDate = l10n.noActivityYet;
     if (streakData['last_activity_date'] != null) {
       try {
         final date = DateTime.parse(streakData['last_activity_date']);
-        lastActivityDate = DateFormat.yMMMd().format(date);
+        lastActivityDate = DateFormat.yMMMd(locale.toString()).format(date);
       } catch (e) {
-        // Use default 'N/A'
+        // Use default
       }
     }
 
@@ -42,12 +45,12 @@ class StreakAnalyticsCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Header
-            _buildHeader(context),
+            _buildHeader(context, l10n),
 
             // Streak Freeze Info
             if (isStreakFreezeActive) ...[
               const SizedBox(height: 16),
-              _buildActiveStreakFreezeIndicator(context),
+              _buildActiveStreakFreezeIndicator(context, l10n),
             ],
 
             const SizedBox(height: 20),
@@ -59,6 +62,7 @@ class StreakAnalyticsCard extends StatelessWidget {
               longestStreak,
               freezesAvailable,
               freezesUsed,
+              l10n,
             ),
 
             const SizedBox(height: 12),
@@ -73,7 +77,7 @@ class StreakAnalyticsCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Last Active: ',
+                  l10n.lastActive,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
@@ -96,7 +100,7 @@ class StreakAnalyticsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
+  Widget _buildHeader(BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
 
     return Row(
@@ -130,7 +134,7 @@ class StreakAnalyticsCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Current Streak',
+                l10n.currentStreak,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.onSurface,
@@ -139,7 +143,7 @@ class StreakAnalyticsCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Keep practicing daily!',
+                l10n.keepPracticingDaily,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurface.withOpacity(0.7),
                 ),
@@ -158,6 +162,7 @@ class StreakAnalyticsCard extends StatelessWidget {
     int longestStreak,
     int freezesAvailable,
     int freezesUsed,
+    AppLocalizations l10n,
   ) {
     final theme = Theme.of(context);
 
@@ -167,7 +172,7 @@ class StreakAnalyticsCard extends StatelessWidget {
         Expanded(
           child: _buildStreakStat(
             context,
-            'Current',
+            l10n.current,
             currentStreak.toString(),
             PhosphorIconsFill.flame,
             AppColors.accent,
@@ -181,7 +186,7 @@ class StreakAnalyticsCard extends StatelessWidget {
         Expanded(
           child: _buildStreakStat(
             context,
-            'Longest',
+            l10n.longest,
             longestStreak.toString(),
             PhosphorIconsFill.trophy,
             Colors.amber,
@@ -239,7 +244,8 @@ class StreakAnalyticsCard extends StatelessWidget {
     );
   }
 
-  Widget _buildActiveStreakFreezeIndicator(BuildContext context) {
+  Widget _buildActiveStreakFreezeIndicator(
+      BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
 
     return Container(
@@ -287,7 +293,7 @@ class StreakAnalyticsCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Streak Freeze Active',
+                  l10n.streakFreezeActive,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.blue.shade700,
@@ -295,7 +301,7 @@ class StreakAnalyticsCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Your streak is protected for today',
+                  l10n.yourStreakIsProtectedForToday,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: Colors.blue.shade900,
                   ),

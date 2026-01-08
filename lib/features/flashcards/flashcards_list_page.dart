@@ -1,6 +1,7 @@
 import 'package:deltamind/core/routing/app_router.dart';
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/models/flashcard.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:deltamind/services/flashcard_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -27,14 +28,16 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
   bool _showFilters = false;
   final TextEditingController _searchController = TextEditingController();
 
-  // Source type filter options
-  final List<String> _sourceTypes = [
-    'All',
-    'PDF',
-    'Document',
-    'Text',
-    'Image',
-  ];
+// // Source type filter options
+//   final List<String> _sourceTypes = [
+//     'All',
+//     'PDF',
+//     'Document',
+//     'Text',
+//     'Image',
+//   ];
+  // Source type filter options - will be initialized in build method
+  List<String> _sourceTypes = [];
 
   @override
   void initState() {
@@ -62,15 +65,17 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
         _isLoading = false;
       });
     } catch (e) {
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Failed to load flashcard decks: $e';
+        _errorMessage = l10n.failedToLoadFlashcardDecks(e.toString());
       });
     }
   }
 
   /// Apply search and source type filters
   void _applyFilters() {
+    final l10n = AppLocalizations.of(context)!;
     List<FlashcardDeck> result = _decks;
 
     // Apply search filter
@@ -86,25 +91,24 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
     }
 
     // Apply source type filter
-    if (_selectedSourceType != 'All') {
+    if (_selectedSourceType != l10n.sourceTypeAll) {
       result = result.where((deck) {
         if (deck.sourceType == null) return false;
 
         final sourceType = deck.sourceType!.toLowerCase();
-        switch (_selectedSourceType.toLowerCase()) {
-          case 'pdf':
-            return sourceType.contains('pdf');
-          case 'document':
-            return sourceType.contains('doc');
-          case 'text':
-            return sourceType.contains('txt');
-          case 'image':
-            return sourceType.contains('png') ||
-                sourceType.contains('jpg') ||
-                sourceType.contains('image');
-          default:
-            return true;
+        final selectedType = _selectedSourceType.toLowerCase();
+        if (selectedType == l10n.sourceTypePdf.toLowerCase()) {
+          return sourceType.contains('pdf');
+        } else if (selectedType == l10n.sourceTypeDocument.toLowerCase()) {
+          return sourceType.contains('doc');
+        } else if (selectedType == l10n.sourceTypeText.toLowerCase()) {
+          return sourceType.contains('txt');
+        } else if (selectedType == l10n.sourceTypeImage.toLowerCase()) {
+          return sourceType.contains('png') ||
+              sourceType.contains('jpg') ||
+              sourceType.contains('image');
         }
+        return true;
       }).toList();
     }
 
@@ -122,10 +126,11 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
 
   /// Reset all filters
   void _resetFilters() {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _searchController.clear();
       _searchQuery = '';
-      _selectedSourceType = 'All';
+      _selectedSourceType = l10n.sourceTypeAll;
       _applyFilters();
     });
   }
@@ -162,19 +167,36 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Initialize source types if not already done
+    if (_sourceTypes.isEmpty) {
+      _sourceTypes = [
+        l10n.sourceTypeAll,
+        l10n.sourceTypePdf,
+        l10n.sourceTypeDocument,
+        l10n.sourceTypeText,
+        l10n.sourceTypeImage,
+      ];
+      // Initialize selected source type
+      if (_selectedSourceType == 'All') {
+        _selectedSourceType = l10n.sourceTypeAll;
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flashcards'),
+        title: Text(l10n.flashcards),
         actions: [
           IconButton(
             icon: const Icon(PhosphorIconsFill.plusCircle),
             onPressed: () => context.push(AppRoutes.createFlashcardDeck),
-            tooltip: 'Create New Deck',
+            tooltip: l10n.createNewDeck,
           ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _isLoading ? null : _loadDecks,
-            tooltip: 'Refresh',
+            tooltip: l10n.refresh,
           ),
         ],
       ),
@@ -191,7 +213,7 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
-                        hintText: 'Search flashcards...',
+                        hintText: l10n.searchFlashcards,
                         prefixIcon: const Icon(Icons.search),
                         suffixIcon: _searchQuery.isNotEmpty
                             ? IconButton(
@@ -263,7 +285,7 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
                         ],
                       ),
                       onPressed: _toggleFilters,
-                      tooltip: 'Toggle Filters',
+                      tooltip: l10n.toggleFilters,
                     ),
                   ),
                 ],
@@ -282,7 +304,7 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
                   children: [
                     // Source type label
                     Text(
-                      'Source Type:',
+                      l10n.sourceType,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.grey[800],
@@ -324,11 +346,11 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     // Only show reset button if filters are applied
-                    if (_selectedSourceType != 'All')
+                    if (_selectedSourceType != l10n.sourceTypeAll)
                       TextButton.icon(
                         onPressed: _resetFilters,
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Reset Filters'),
+                        label: Text(l10n.resetFilters),
                         style: TextButton.styleFrom(
                           foregroundColor: AppColors.primary,
                         ),
@@ -339,7 +361,7 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
             ],
 
             // Active filters display (when filters are collapsed)
-            if (!_showFilters && _selectedSourceType != 'All')
+            if (!_showFilters && _selectedSourceType != l10n.sourceTypeAll)
               Container(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 16,
@@ -356,7 +378,7 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
                 child: Row(
                   children: [
                     Text(
-                      'Active filters:',
+                      l10n.activeFilters,
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
@@ -364,14 +386,14 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    if (_selectedSourceType != 'All')
+                    if (_selectedSourceType != l10n.sourceTypeAll)
                       Chip(
                         label: Text(_selectedSourceType),
                         backgroundColor: AppColors.primary.withOpacity(0.1),
                         deleteIcon: const Icon(Icons.close, size: 16),
                         onDeleted: () {
                           setState(() {
-                            _selectedSourceType = 'All';
+                            _selectedSourceType = l10n.sourceTypeAll;
                             _applyFilters();
                           });
                         },
@@ -391,7 +413,7 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
                     const Spacer(),
                     TextButton(
                       onPressed: _resetFilters,
-                      child: const Text('Clear All'),
+                      child: Text(l10n.clearAll),
                       style: TextButton.styleFrom(
                         visualDensity: VisualDensity.compact,
                         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -418,6 +440,8 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
   }
 
   Widget _buildBody() {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -435,7 +459,7 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadDecks,
-              child: const Text('Retry'),
+              child: Text(l10n.retry),
             ),
           ],
         ),
@@ -453,20 +477,20 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
               color: Colors.grey[400],
             ),
             const SizedBox(height: 16),
-            const Text(
-              'No flashcard decks yet',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              l10n.noFlashcardDecksYet,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Create your first deck to get started',
-              style: TextStyle(color: Colors.grey),
+            Text(
+              l10n.createYourFirstDeckToGetStarted,
+              style: const TextStyle(color: Colors.grey),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () => context.push(AppRoutes.createFlashcardDeck),
               icon: const Icon(Icons.add),
-              label: const Text('Create Deck'),
+              label: Text(l10n.createDeck),
             ),
           ],
         ),
@@ -476,7 +500,7 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
     // Show empty state if filtered decks is empty
     if (_filteredDecks.isEmpty) {
       final isFiltered =
-          _searchQuery.isNotEmpty || _selectedSourceType != 'All';
+          _searchQuery.isNotEmpty || _selectedSourceType != l10n.sourceTypeAll;
 
       return Center(
         child: Column(
@@ -491,14 +515,16 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              isFiltered ? 'No matching flashcard decks' : 'No flashcard decks',
+              isFiltered
+                  ? l10n.noMatchingFlashcardDecks
+                  : l10n.noFlashcardDecks,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
               isFiltered
-                  ? 'Try adjusting your filters or search terms'
-                  : 'Create your first deck to get started',
+                  ? l10n.tryAdjustingFiltersOrSearchTermsFlashcards
+                  : l10n.createYourFirstDeckToGetStarted,
               style: const TextStyle(color: Colors.grey),
               textAlign: TextAlign.center,
             ),
@@ -507,13 +533,13 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
               OutlinedButton.icon(
                 onPressed: _resetFilters,
                 icon: const Icon(Icons.filter_list_off),
-                label: const Text('Clear Filters'),
+                label: Text(l10n.clearFilters),
               )
             else
               ElevatedButton.icon(
                 onPressed: () => context.push(AppRoutes.createFlashcardDeck),
                 icon: const Icon(Icons.add),
-                label: const Text('Create Deck'),
+                label: Text(l10n.createDeck),
               ),
           ],
         ),
@@ -531,6 +557,7 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
   }
 
   Widget _buildDeckCard(FlashcardDeck deck) {
+    final l10n = AppLocalizations.of(context)!;
     // Determine card color based on source type
     Color cardColor = Colors.blue.shade50;
     IconData sourceIcon = PhosphorIconsRegular.stackSimple;
@@ -640,7 +667,7 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '${deck.cardCount} cards',
+                              l10n.cardsCount(deck.cardCount),
                               style: TextStyle(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.w500,
@@ -681,7 +708,7 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
                             children: [
                               Icon(PhosphorIconsRegular.pencilSimple, size: 18),
                               const SizedBox(width: 8),
-                              const Text('Edit'),
+                              Text(l10n.edit),
                             ],
                           ),
                         ),
@@ -701,7 +728,7 @@ class _FlashcardsListPageState extends State<FlashcardsListPage> {
                                   size: 18, color: AppColors.primary),
                               const SizedBox(width: 8),
                               Text(
-                                'Study',
+                                l10n.study,
                                 style: TextStyle(
                                     color: AppColors.primary,
                                     fontWeight: FontWeight.w500),

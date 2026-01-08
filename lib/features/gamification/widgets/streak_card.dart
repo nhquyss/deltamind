@@ -3,6 +3,7 @@ import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/features/gamification/widgets/streak_freeze_widget.dart';
 import 'package:deltamind/services/streak_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
@@ -110,6 +111,7 @@ class _StreakCardState extends State<StreakCard> {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     // final streak = widget.streak;
     // final isStreakAchievedToday = streak.isStreakAchievedToday;
@@ -154,7 +156,7 @@ class _StreakCardState extends State<StreakCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Current Streak',
+                l10n.currentStreak,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.onSurface,
@@ -163,7 +165,7 @@ class _StreakCardState extends State<StreakCard> {
               ),
               const SizedBox(height: 4),
               Text(
-                'Keep practicing daily!',
+                l10n.keepPracticingDaily,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurface.withOpacity(0.7),
                 ),
@@ -224,6 +226,7 @@ class _StreakCardState extends State<StreakCard> {
   }
 
   Widget _buildStreakStats(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Row(
@@ -232,7 +235,7 @@ class _StreakCardState extends State<StreakCard> {
         Expanded(
           child: _buildStreakStat(
             context,
-            'Current',
+            l10n.currentStreak,
             widget.streak.currentStreak.toString(),
             PhosphorIconsFill.flame,
             AppColors.accent,
@@ -246,7 +249,7 @@ class _StreakCardState extends State<StreakCard> {
         Expanded(
           child: _buildStreakStat(
             context,
-            'Longest',
+            l10n.longest,
             widget.streak.longestStreak.toString(),
             PhosphorIconsFill.trophy,
             Colors.amber,
@@ -260,6 +263,7 @@ class _StreakCardState extends State<StreakCard> {
     BuildContext context,
     BoxConstraints constraints,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Column(
@@ -280,7 +284,7 @@ class _StreakCardState extends State<StreakCard> {
             ),
             const SizedBox(width: 8),
             Text(
-              'Last Active: ',
+              l10n.lastActive,
               style: theme.textTheme.bodyMedium?.copyWith(
                 fontWeight: FontWeight.w500,
               ),
@@ -289,9 +293,12 @@ class _StreakCardState extends State<StreakCard> {
               child: Text(
                 widget.streak.activityDateStr != null &&
                         widget.streak.activityDateStr!.isNotEmpty
-                    ? DateFormat.yMMMd()
+                    ? DateFormat.yMMMd(
+                            Localizations.localeOf(context).toString())
                         .format(DateTime.parse(widget.streak.activityDateStr!))
-                    : DateFormat.yMMMd().format(widget.streak.lastActivityDate),
+                    : DateFormat.yMMMd(
+                            Localizations.localeOf(context).toString())
+                        .format(widget.streak.lastActivityDate),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.primary,
                   fontWeight: FontWeight.w500,
@@ -313,6 +320,7 @@ class _StreakCardState extends State<StreakCard> {
     BuildContext context,
     BoxConstraints constraints,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final availableWidth = constraints.maxWidth;
     final dayWidth =
@@ -322,7 +330,7 @@ class _StreakCardState extends State<StreakCard> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Last 7 Days Activity',
+          l10n.last7DaysActivity,
           style: theme.textTheme.titleSmall?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -346,12 +354,13 @@ class _StreakCardState extends State<StreakCard> {
   ) {
     final now = DateTime.now();
     final dayWidgets = <Widget>[];
+    final locale = Localizations.localeOf(context);
 
     // Get days from most recent to 6 days ago
     for (int i = 6; i >= 0; i--) {
       final date = now.subtract(Duration(days: i));
       final isToday = i == 0;
-      final dayName = DateFormat('E').format(date);
+      final dayName = DateFormat('E', locale.toString()).format(date);
       final dateOnly = DateTime(date.year, date.month, date.day);
       final dateStr = dateOnly.toIso8601String().split('T')[0]; // YYYY-MM-DD
 
@@ -509,6 +518,7 @@ class _StreakCardState extends State<StreakCard> {
     BuildContext context,
     DateTime? expiryTime,
   ) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     // Check if already expired
@@ -565,7 +575,7 @@ class _StreakCardState extends State<StreakCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Streak Freeze Active',
+                  l10n.streakFreezeActive,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.blue.shade700,

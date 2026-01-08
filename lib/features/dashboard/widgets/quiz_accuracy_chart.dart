@@ -1,6 +1,7 @@
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 
 class QuizAccuracyChart extends StatefulWidget {
@@ -21,6 +22,8 @@ class _QuizAccuracyChartState extends State<QuizAccuracyChart> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final locale = Localizations.localeOf(context);
     return Card(
       elevation: 1,
       shape: RoundedRectangleBorder(
@@ -49,7 +52,7 @@ class _QuizAccuracyChartState extends State<QuizAccuracyChart> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Quiz Accuracy',
+                    l10n.quizAccuracy,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -63,14 +66,14 @@ class _QuizAccuracyChartState extends State<QuizAccuracyChart> {
               child: widget.accuracyData.isEmpty
                   ? Center(
                       child: Text(
-                        'No quiz data available yet',
+                        l10n.noQuizDataAvailableYet,
                         style: Theme.of(context)
                             .textTheme
                             .bodyMedium
                             ?.copyWith(color: AppColors.textSecondary),
                       ),
                     )
-                  : _buildLineChart(),
+                  : _buildLineChart(context, locale),
             ),
           ],
         ),
@@ -78,7 +81,7 @@ class _QuizAccuracyChartState extends State<QuizAccuracyChart> {
     );
   }
 
-  Widget _buildLineChart() {
+  Widget _buildLineChart(BuildContext context, Locale locale) {
     return LineChart(
       LineChartData(
         gridData: FlGridData(
@@ -105,7 +108,8 @@ class _QuizAccuracyChartState extends State<QuizAccuracyChart> {
               showTitles: true,
               reservedSize: 30,
               interval: 1.0,
-              getTitlesWidget: bottomTitleWidgets,
+              getTitlesWidget: (value, meta) =>
+                  bottomTitleWidgets(value, meta, locale),
             ),
           ),
           leftTitles: AxisTitles(
@@ -146,7 +150,7 @@ class _QuizAccuracyChartState extends State<QuizAccuracyChart> {
     );
   }
 
-  Widget bottomTitleWidgets(double value, TitleMeta meta) {
+  Widget bottomTitleWidgets(double value, TitleMeta meta, Locale locale) {
     if (value < 0 || value >= widget.accuracyData.length) {
       return const SizedBox.shrink();
     }
@@ -154,7 +158,7 @@ class _QuizAccuracyChartState extends State<QuizAccuracyChart> {
     final DateTime date = DateTime.parse(
       widget.accuracyData[value.toInt()]['attempt_date'],
     );
-    final String text = DateFormat('MM/dd').format(date);
+    final String text = DateFormat('dd/MM', locale.toString()).format(date);
 
     return Text(
       text,

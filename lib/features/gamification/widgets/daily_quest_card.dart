@@ -1,6 +1,7 @@
 import 'package:deltamind/models/daily_quest.dart';
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class DailyQuestCard extends StatelessWidget {
@@ -11,6 +12,7 @@ class DailyQuestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final completed = quest.completed;
 
@@ -84,7 +86,7 @@ class DailyQuestCard extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Text(
-                                quest.title,
+                                _getLocalizedTitle(quest.questType, l10n),
                                 style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.bold,
                                   color: completed
@@ -118,7 +120,7 @@ class DailyQuestCard extends StatelessWidget {
                                   ),
                                   const SizedBox(width: 4),
                                   Text(
-                                    '+${quest.xpReward} XP',
+                                    '+${quest.xpReward} ${l10n.xpLabel}',
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       fontWeight: completed
                                           ? FontWeight.bold
@@ -136,7 +138,8 @@ class DailyQuestCard extends StatelessWidget {
                         ),
                         const SizedBox(height: 6),
                         Text(
-                          quest.description,
+                          _getLocalizedDescription(
+                              quest.questType, quest.targetCount, l10n),
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurface.withOpacity(0.7),
                           ),
@@ -189,7 +192,7 @@ class DailyQuestCard extends StatelessWidget {
                 children: [
                   // Progress text
                   Text(
-                    '${quest.progressText} completed',
+                    '${quest.progressText} ${l10n.completedStatus}',
                     style: theme.textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.w500,
                       color: theme.colorScheme.onSurface.withOpacity(0.7),
@@ -207,7 +210,7 @@ class DailyQuestCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 6),
                         Text(
-                          'Completed',
+                          l10n.completedStatus,
                           style: theme.textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.w600,
                             color: Colors.green,
@@ -222,5 +225,36 @@ class DailyQuestCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _getLocalizedTitle(String questType, AppLocalizations l10n) {
+    switch (questType) {
+      case 'complete_quiz':
+        return l10n.completeQuizzesTitle;
+      case 'write_note':
+        return l10n.writeNotesTitle;
+      case 'review_flashcards':
+        return l10n.reviewFlashcardsTitle;
+      default:
+        return l10n.unknownQuestTitle;
+    }
+  }
+
+  String _getLocalizedDescription(
+      String questType, int targetCount, AppLocalizations l10n) {
+    switch (questType) {
+      case 'complete_quiz':
+        return targetCount == 1
+            ? l10n.completeQuizzesDescriptionSingular(targetCount)
+            : l10n.completeQuizzesDescription(targetCount);
+      case 'write_note':
+        return targetCount == 1
+            ? l10n.writeNotesDescription(targetCount)
+            : l10n.writeNotesDescriptionPlural(targetCount);
+      case 'review_flashcards':
+        return l10n.reviewFlashcardsDescription(targetCount);
+      default:
+        return l10n.unknownQuestDescription;
+    }
   }
 }

@@ -1,0 +1,1283 @@
+{
+  "@@locale": "en",
+  "appName": "DeltaMind",
+  "@appName": {
+    "description": "The application name"
+  },
+  "appDescription": "Learn and memorize effectively with \n AI-generated quizzes",
+  "@appDescription": {
+    "description": "The application description/tagline"
+  },
+  "welcome": "Welcome",
+  "signIn": "Sign In",
+  "signUp": "Sign Up",
+  "email": "Email",
+  "password": "Password",
+  "forgotPassword": "Forgot Password?",
+  "confirmPassword": "Confirm Password",
+  "alreadyHaveAccount": "Already have an account?",
+  "dontHaveAccount": "Don't have an account?",
+  "pleaseEnterEmail": "Please enter your email",
+  "pleaseEnterPassword": "Please enter your password",
+  "passwordTooShort": "Password must be at least 6 characters",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "pleaseVerifyEmail": "Please verify your email before logging in. Check your inbox for a verification link.",
+  "dashboard": "Dashboard",
+  "learningPaths": "Learning Paths",
+  "notes": "Notes",
+  "quiz": "Quiz",
+  "quizzes": "Quizzes",
+  "flashcards": "Flashcards",
+  "achievements": "Achievements",
+  "analytics": "Analytics",
+  "profile": "Profile",
+  "search": "Search",
+  "loadingAnalytics": "Loading your analytics...",
+  "errorLoadingAnalytics": "Error loading analytics",
+  "createNote": "Create a Note",
+  "createQuiz": "Create Quiz",
+  "generateLearningPath": "Generate Learning Path",
+  "tryAgain": "Try Again",
+  "goBack": "Go Back",
+  "cancel": "Cancel",
+  "save": "Save",
+  "delete": "Delete",
+  "edit": "Edit",
+  "view": "View",
+  "active": "Active",
+  "clearFilters": "Clear Filters",
+  "viewAll": "View All",
+  "noLearningPathsYet": "You don't have any learning paths yet",
+  "generateNewPath": "Generate a new AI-powered learning path to start your journey",
+  "readyToTrain": "Ready to train your mind today?",
+  "startAQuiz": "Start a Quiz",
+  "changeColor": "Change color",
+  "chooseColor": "Choose color",
+  "deleteNote": "Delete note?",
+  "deleteNoteWarning": "This action cannot be undone.",
+  "needToReview": "Need to Review",
+  "knewIt": "Knew It",
+  "howWellDidYouRemember": "How well did you remember this?",
+  "reviews": "Reviews",
+  "spacedRepetitionStats": "Spaced Repetition Statistics",
+  "totalCards": "Total Cards",
+  "dueToday": "Due Today",
+  "mastered": "Mastered",
+  "cardsDueToday": "Cards Due Today",
+  "startReview": "Start Review",
+  "numberOfFlashcards": "Number of Flashcards to Generate: {count}",
+  "@numberOfFlashcards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "flashcardTip": "Tip: Start with fewer cards for better quality. You can always add more later.",
+  "chooseDifferentFile": "Choose a different file",
+  "failedToInitialize": "Failed to initialize the app",
+  "checkConnection": "Please check your internet connection and restart the app.",
+  "error": "Error",
+  "success": "Success",
+  "loading": "Loading...",
+  "noData": "No data available",
+  "settings": "Settings",
+  "language": "Language",
+  "english": "English",
+  "vietnamese": "Vietnamese",
+  "logout": "Logout",
+  "changePassword": "Change Password",
+  "currentPassword": "Current Password",
+  "newPassword": "New Password",
+  "confirmNewPassword": "Confirm New Password",
+  "login": "Login",
+  "register": "Register",
+  "pleaseEnterValidEmail": "Please enter a valid email",
+  "unexpectedError": "An unexpected error occurred",
+  "or": "OR",
+  "signInWithGoogle": "Sign in with Google",
+  "createYourAccount": "Create your account",
+  "username": "Username",
+  "pleaseEnterUsername": "Please enter a username",
+  "usernameTooShort": "Username must be at least 3 characters",
+  "pleaseEnterAPassword": "Please enter a password",
+  "pleaseConfirmPassword": "Please confirm your password",
+  "registrationSuccessful": "Registration successful! Please check your email to verify your account before logging in.",
+  "resetYourPassword": "Reset Your Password",
+  "resetPasswordDescription": "Enter your email address and we'll send you a link to reset your password.",
+  "sendResetLink": "Send Reset Link",
+  "checkYourEmail": "Check Your Email",
+  "resetLinkSent": "We've sent a password reset link to:\n{email}",
+  "@resetLinkSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "checkInboxMessage": "Please check your inbox and click on the link to reset your password.",
+  "backToLogin": "Back to Login",
+  "resetPassword": "Reset Password",
+  "setNewPassword": "Set New Password",
+  "changeYourPassword": "Change Your Password",
+  "changePasswordDescription": "Enter your current password and choose a new one.",
+  "setNewPasswordDescription": "Please enter your new password below.",
+  "pleaseEnterCurrentPassword": "Please enter your current password",
+  "pleaseEnterANewPassword": "Please enter a new password",
+  "pleaseConfirmNewPassword": "Please confirm your new password",
+  "passwordUpdatedSuccessfully": "Password updated successfully",
+  "currentPasswordIncorrect": "Current password is incorrect",
+  "clickEmailLinkToReset": "Please click the link from your email to reset your password",
+  "userNotFound": "User not found",
+  "userID": "User ID",
+  "joined": "Joined",
+  "notAvailable": "Not available",
+  "profileInformation": "Profile Information",
+  "accountInformation": "Account Information",
+  "shortcuts": "Shortcuts",
+  "updateProfile": "Update Profile",
+  "profilePictureUpdatedSuccessfully": "Profile picture updated successfully",
+  "failedToUploadProfilePicture": "Failed to upload profile picture",
+  "errorUploadingProfilePicture": "Error uploading profile picture",
+  "profileUpdated": "Profile updated",
+  "errorUpdatingProfile": "Error updating profile",
+  "signedOutSuccessfully": "Signed out successfully",
+  "errorSigningOut": "Error signing out",
+  "user": "User",
+  "chooseFromGallery": "Choose from Gallery",
+  "takeAPhoto": "Take a Photo",
+  "uploadFile": "Upload File",
+  "errorPickingImage": "Error picking image. Please try again.",
+  "cameraNotAvailable": "Camera is not available. Please use gallery or file upload instead.",
+  "errorTakingPhoto": "Error taking photo. Please try again.",
+  "welcomeBack": "Welcome back, ",
+  "hello": "Hello, ",
+  "refresh": "Refresh",
+  "errorRefreshingDashboard": "Error refreshing dashboard",
+  "learningPath": "Learning Path",
+  "currentProgress": "Current Progress",
+  "currentModule": "Current Module",
+  "module": "Module",
+  "noModulesAvailable": "No modules available",
+  "thisPathHasNoModules": "This path has no modules.",
+  "generateAILearningPathsForAnyTopic": "Generate AI learning paths for any topic",
+  "learningAnalytics": "Learning Analytics",
+  "recentQuizzes": "Recent Quizzes",
+  "noQuizzesYet": "No quizzes yet",
+  "createYourFirstQuizToGetStarted": "Create your first quiz to get started",
+  "noDescription": "No description",
+  "goodMorning": "Good morning",
+  "todaysQuestion": "Today's question:",
+  "yourStats": "Your Stats",
+  "quizzesCompleted": "Quizzes Completed",
+  "totalScore": "Total Score",
+  "learningHours": "Learning Hours",
+  "daysActive": "Days Active",
+  "searchNotesQuizzesFlashcards": "Search notes, quizzes, flashcards...",
+  "typeToSearch": "Type above to find any content",
+  "errorOccurred": "An error occurred",
+  "noResultsFound": "No results found",
+  "tryDifferentSearchTermOrFilters": "Try a different search term or filters",
+  "dayStreak": "{count}-Day Streak",
+  "@dayStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bestStreak": "Best Streak: {count}",
+  "@bestStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "level": "Level {level}",
+  "@level": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "completeAQuizTodayToStartYourStreak": "Complete a quiz today to start your streak!",
+  "streakFreeze": "Streak Freeze: ",
+  "failedToLoadLearningPaths": "Failed to load learning paths",
+  "dashboard": "Dashboard",
+  "allPaths": "All Paths",
+  "learningPathsDashboard": "Learning Paths Dashboard",
+  "trackYourProgressAndContinueYourLearningJourney": "Track your progress and continue your learning journey",
+  "recentLearningPaths": "Recent Learning Paths",
+  "totalPaths": "Total Paths",
+  "completed": "Completed",
+  "inProgress": "In Progress",
+  "path": "path",
+  "paths": "paths",
+  "pathsFound": "{count} {count, plural, =1 {path} other {paths}} found",
+  "@pathsFound": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchLearningPaths": "Search learning paths...",
+  "category": "Category",
+  "difficulty": "Difficulty",
+  "beginner": "Beginner",
+  "intermediate": "Intermediate",
+  "advanced": "Advanced",
+  "activePath": "Active Path",
+  "failedToLoadLearningPath": "Failed to load learning path",
+  "pathNotFound": "Path not found",
+  "overview": "Overview",
+  "progressLabel": "Progress",
+  "progress": "Progress: ",
+  "pathOverview": "Path Overview",
+  "modules": "Modules ({count})",
+  "@modules": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "locked": "Locked",
+  "moduleStatus": "Module Status:",
+  "completedStatus": "Completed",
+  "inProgressStatus": "In Progress",
+  "lockedStatus": "Locked",
+  "difficultyLevel": "Difficulty Level:",
+  "selectAModule": "Select a module",
+  "thisModuleIsLockedCompleteItsDependenciesFirst": "This module is locked. Complete its dependencies first.",
+  "dependsOn": "Depends on: ",
+  "description": "Description",
+  "dependencies": "Dependencies",
+  "learningObjectives": "Learning Objectives",
+  "resources": "Resources",
+  "linkedContent": "Linked Content",
+  "viewNote": "View Note",
+  "takeQuiz": "Take Quiz",
+  "studyCards": "Study Cards",
+  "estimatedTime": "Estimated time: ",
+  "assessment": "Assessment",
+  "additionalNotes": "Additional Notes",
+  "previous": "Previous",
+  "next": "Next",
+  "showAllModules": "Show all modules",
+  "markAsDone": "Mark as Done",
+  "close": "Close",
+  "linkCopiedToClipboard": "Link copied to clipboard",
+  "resourceTextCopiedToClipboard": "Resource text copied to clipboard",
+  "generateAILearningPath": "Generate AI Learning Path",
+  "learningTopic": "Learning Topic *",
+  "learningTopicHint": "e.g. Machine Learning, Web Development, Flutter",
+  "pleaseEnterATopic": "Please enter a topic",
+  "topicIsTooShort": "Topic is too short",
+  "knowledgeLevel": "Knowledge Level *",
+  "advancedOptions": "Advanced Options",
+  "show": "Show",
+  "hide": "Hide",
+  "learningGoalsOptional": "Learning Goals (Optional)",
+  "learningGoalsHint": "What do you want to achieve with this learning path?",
+  "learningStyleOptional": "Learning Style (Optional)",
+  "generating": "Generating...",
+  "thisWillCreateAnAIPoweredPersonalizedLearningPath": "This will create an AI-powered personalized learning path",
+  "createdABasicLearningPathAIGenerationHadIssuesYouMayWantToEditThisPathLater": "Created a basic learning path. AI generation had issues. You may want to edit this path later.",
+  "balanced": "Balanced",
+  "visual": "Visual",
+  "practical": "Practical",
+  "theoretical": "Theoretical",
+  "learningPathVisualization": "Learning Path Visualization",
+  "showModules": "Show Modules",
+  "viewModule": "View Module",
+  "modulesCount": "{completed}/{total} modules",
+  "@modulesCount": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learningProgress": "Learning Progress",
+  "continueLearning": "Continue Learning",
+  "learningPathCompleted": "Learning Path Completed!",
+  "congratulationsOnCompletingThisLearningPath": "Congratulations on completing this learning path",
+  "remaining": "Remaining",
+  "learningPathPrefix": "Learning Path: ",
+  "listView": "List view",
+  "gridView": "Grid view",
+  "searchNotes": "Search notes",
+  "noNotesMatchYourFilters": "No notes match your filters",
+  "youDontHaveAnyNotesYet": "You don't have any notes yet",
+  "pin": "Pin",
+  "unpin": "Unpin",
+  "updated": "Updated: ",
+  "errorLoadingNote": "Error loading note: {error}",
+  "@errorLoadingNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "titleCannotBeEmpty": "Title cannot be empty",
+  "pleaseSignInToSaveNotes": "Please sign in to save notes",
+  "noteUpdated": "Note updated",
+  "noteCreated": "Note created",
+  "errorSavingNote": "Error saving note: {error}",
+  "@errorSavingNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unsavedChanges": "Unsaved changes",
+  "saveChangesBeforeLeaving": "Save changes before leaving?",
+  "discard": "DISCARD",
+  "editNote": "Edit Note",
+  "newNote": "New Note",
+  "editTags": "Edit tags",
+  "title": "Title",
+  "tapHereToStartWriting": "Tap here to start writing...",
+  "saving": "Saving...",
+  "deleteQuiz": "Delete Quiz",
+  "deleteQuizConfirmation": "Are you sure you want to delete this quiz? This action cannot be undone.",
+  "quizDeletedSuccessfully": "Quiz deleted successfully",
+  "errorLoadingQuizzes": "Error loading quizzes: {error}",
+  "@errorLoadingQuizzes": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingQuizzesFailed": "Error: {operation} failed. Please try again.",
+  "@loadingQuizzesFailed": {
+    "placeholders": {
+      "operation": {
+        "type": "String"
+      }
+    }
+  },
+  "noMatchingQuizzes": "No matching quizzes",
+  "noQuizzesAvailable": "No quizzes available",
+  "adjustFiltersOrSearch": "Try adjusting your filters or search terms",
+  "createYourFirstQuizHere": "Create your first quiz to see it here",
+  "clearFiltersAction": "Clear Filters",
+  "toggleFilters": "Toggle Filters",
+  "quizTypeLabel": "Quiz Type:",
+  "difficultyLabel": "Difficulty:",
+  "resetFilters": "Reset Filters",
+  "activeFilters": "Active filters:",
+  "clearAll": "Clear All",
+  "searchQuizzes": "Search quizzes...",
+  "quizTypeMultipleChoice": "Multiple Choice",
+  "quizTypeTrueFalse": "True/False",
+  "quizTypeFillInTheBlank": "Fill in the Blank",
+  "quizTypeAll": "All",
+  "quizDifficultyAll": "All",
+  "quizDifficultyEasy": "Easy",
+  "quizDifficultyMedium": "Medium",
+  "quizDifficultyHard": "Hard",
+  "quizDifficultyExpert": "Expert",
+  "generatedQuiz": "Generated quiz",
+  "generatedQuizBasedOnFile": "Generated quiz based on {fileName}",
+  "@generatedQuizBasedOnFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "generatedQuizBasedOnContent": "Generated quiz based on content",
+  "startQuiz": "Start Quiz",
+  "quizzesTab": "Quizzes",
+  "historyTab": "History",
+  "createQuizTitle": "Create Quiz",
+  "aiQuizGenerator": "AI Quiz Generator",
+  "createQuizDescription": "Create a new quiz by entering your study material or uploading a file. Our AI will generate quiz questions for you.",
+  "quizTitle": "Quiz Title",
+  "enterQuizTitle": "Enter a title for your quiz",
+  "pleaseEnterQuizTitle": "Please enter a quiz title",
+  "quizSettings": "Quiz Settings",
+  "quizType": "Quiz Type",
+  "numberOfQuestions": "Number of Questions: {count}",
+  "@numberOfQuestions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studyMaterial": "Study Material",
+  "studyMaterialHint": "Enter your notes, text, or learning material, or upload a file.",
+  "fileUpload": "File Upload",
+  "changeFile": "Change File",
+  "pasteYourNotes": "Paste your notes, text, or learning material here...",
+  "pleaseEnterContentOrUploadFile": "Please enter some content or upload a file",
+  "generatingQuiz": "Generating Quiz...",
+  "generateQuiz": "Generate Quiz",
+  "quizGeneratedSuccessfully": "Quiz generated successfully!",
+  "errorGeneratingQuiz": "Error generating quiz: {error}",
+  "@errorGeneratingQuiz": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "fileIsTooLarge": "File is too large. Maximum size is 5MB.",
+  "errorCannotAccessFileData": "Error: Cannot access file data on web platform.",
+  "unsupportedFileFormat": "Unsupported file format. Please upload a text, document, PDF, or image file.",
+  "errorPickingFile": "Error picking file: {error}",
+  "@errorPickingFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "processingFile": "Processing {extension} file...",
+  "@processingFile": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "processingPdfPage": "Processing PDF page {current} of {total}...",
+  "@processingPdfPage": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "errorProcessingPdf": "Error processing PDF: {error}",
+  "@errorProcessingPdf": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorReadingTextFile": "Error reading text file: {error}",
+  "@errorReadingTextFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedFileType": "Unsupported file type: {extension}",
+  "@unsupportedFileType": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "generatingQuizQuestions": "Generating quiz questions...",
+  "failedToGenerateQuiz": "Failed to generate quiz",
+  "failedToGenerateQuizFromFile": "Failed to generate quiz from file",
+  "question": "Question",
+  "questions": "Questions",
+  "ofSeparator": "of",
+  "next": "Next",
+  "previous": "Previous",
+  "submit": "Submit",
+  "finish": "Finish",
+  "review": "Review",
+  "reviewQuiz": "Review Quiz",
+  "quizReview": "Quiz Review",
+  "reviewTitle": "Review: {title}",
+  "@reviewTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshFeedback": "Refresh feedback",
+  "generatingPersonalizedReview": "Generating personalized review...",
+  "performanceSummary": "Performance Summary",
+  "youGotCorrect": "You got {correct} out of {total} questions correct",
+  "@youGotCorrect": {
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "questionReview": "Question Review",
+  "correct": "Correct",
+  "incorrect": "Incorrect",
+  "options": "Options:",
+  "explanation": "Explanation:",
+  "aiFeedbackAndStudyTips": "AI Feedback & Study Tips",
+  "personalizedLearningPath": "Personalized Learning Path",
+  "wantPersonalizedLearningPlan": "Want a personalized learning plan based on your quiz results?",
+  "aiCanAnalyzeStrengths": "Our AI can analyze your strengths and weaknesses to generate a tailored learning path with recommended resources and practice exercises.",
+  "generateLearningPlan": "Generate Learning Plan",
+  "generatingPersonalizedLearningPlan": "Generating your personalized learning plan...",
+  "backToResults": "Back to Results",
+  "errorLoadingReview": "Error loading review: {error}",
+  "@errorLoadingReview": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "excellent": "Excellent!",
+  "goodEffort": "Good effort!",
+  "keepPracticing": "Keep practicing!",
+  "quizAttemptNotFound": "Quiz attempt not found",
+  "correctAnswers": "Correct",
+  "totalQuestions": "Total Questions",
+  "score": "Score",
+  "timeTaken": "Time Taken",
+  "completed": "Completed",
+  "reviewDetails": "Review Details",
+  "performanceOverview": "Performance Overview",
+  "strengths": "Strengths",
+  "areasForImprovement": "Areas for Improvement",
+  "learningStrategies": "Learning Strategies",
+  "actionPlan": "Action Plan",
+  "regenerateRecommendations": "Regenerate Recommendations",
+  "generatingRecommendations": "Generating recommendations...",
+  "errorGeneratingRecommendations": "Error generating recommendations",
+  "errorLoadingRecommendations": "Error loading recommendations",
+  "readyForProcessing": "ready for processing",
+  "clickGenerateQuizToCreate": "Click \"Generate Quiz\" to create a quiz from this file content.",
+  "thisQuizHasNoQuestionsYet": "This quiz has no questions yet.",
+  "finalizingQuiz": "Finalizing Quiz",
+  "savingYourQuizResults": "Saving your quiz results...",
+  "questionsAndAnswers": "Questions & Answers",
+  "items": "items",
+  "returnToDashboard": "Return to Dashboard",
+  "viewQuizzes": "View Quizzes",
+  "veryGood": "Very Good",
+  "good": "Good",
+  "satisfactory": "Satisfactory",
+  "fair": "Fair",
+  "needsWork": "Needs Work",
+  "yourStrengths": "Your Strengths",
+  "analyzingYourQuizResults": "Analyzing your quiz results...",
+  "aiIsCreatingPersonalizedRecommendations": "Our AI is creating personalized recommendations based on your performance",
+  "aiLearningAssistant": "AI Learning Assistant",
+  "wantPersonalizedInsights": "Want personalized insights about your performance and learning strategy recommendations?",
+  "aiCanAnalyzeQuizResults": "Our AI can analyze your quiz results to identify your strengths, areas for improvement, and suggest customized learning paths.",
+  "generateAIRecommendations": "Generate AI Recommendations",
+  "thisUsesAIToProcess": "This uses AI to process your quiz responses. Your data is kept private and secure.",
+  "difficultyLabel": "difficulty",
+  "personalizedInsightsBasedOnQuizPerformance": "Personalized insights based on your quiz performance",
+  "performanceDataNotAvailable": "Performance data not available.",
+  "strengthAnalysisNotAvailable": "Strength analysis not available.",
+  "areasForImprovementNotAvailable": "Areas for improvement not available.",
+  "learningStrategiesNotAvailable": "Learning strategies not available.",
+  "actionPlanNotAvailable": "Action plan not available.",
+  "searchQuizHistory": "Search quiz history...",
+  "toggleFilters": "Toggle Filters",
+  "difficultyLabel": "Difficulty:",
+  "quizTypeLabel": "Quiz Type:",
+  "dateRange": "Date Range:",
+  "resetFilters": "Reset Filters",
+  "activeFilters": "Active filters:",
+  "clearAll": "Clear All",
+  "errorLoadingQuizHistory": "Error Loading Quiz History",
+  "tryAgain": "Try Again",
+  "noMatchingQuizAttempts": "No matching quiz attempts",
+  "noQuizHistoryYet": "No quiz history yet",
+  "tryAdjustingFiltersOrSearchTerms": "Try adjusting your filters or search terms",
+  "completeFirstQuizToSeeProgress": "Complete your first quiz to see your progress here",
+  "clearFilters": "Clear Filters",
+  "untitledQuiz": "Untitled Quiz",
+  "viewDetails": "View Details",
+  "retakeQuiz": "Retake Quiz",
+  "deleteQuizAttempt": "Delete Quiz Attempt",
+  "deleteQuizAttemptConfirmation": "Are you sure you want to delete this quiz attempt?",
+  "cancel": "CANCEL",
+  "delete": "DELETE",
+  "errorLoadingQuizHistoryMessage": "Error loading quiz history: {error}",
+  "@errorLoadingQuizHistoryMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDeletingQuizAttempt": "Error deleting quiz attempt: {error}",
+  "@errorDeletingQuizAttempt": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "allTime": "All Time",
+  "today": "Today",
+  "thisWeek": "This Week",
+  "thisMonth": "This Month",
+  "last3Months": "Last 3 Months",
+  "all": "All",
+  "scoreFormat": "Score: {score}/{total}",
+  "@scoreFormat": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "createNewDeck": "Create New Deck",
+  "searchFlashcards": "Search flashcards...",
+  "sourceType": "Source Type:",
+  "sourceTypeAll": "All",
+  "sourceTypePdf": "PDF",
+  "sourceTypeDocument": "Document",
+  "sourceTypeText": "Text",
+  "sourceTypeImage": "Image",
+  "failedToLoadFlashcardDecks": "Failed to load flashcard decks: {error}",
+  "@failedToLoadFlashcardDecks": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "retry": "Retry",
+  "noFlashcardDecksYet": "No flashcard decks yet",
+  "createYourFirstDeckToGetStarted": "Create your first deck to get started",
+  "createDeck": "Create Deck",
+  "noMatchingFlashcardDecks": "No matching flashcard decks",
+  "noFlashcardDecks": "No flashcard decks",
+  "tryAdjustingFiltersOrSearchTermsFlashcards": "Try adjusting your filters or search terms",
+  "study": "Study",
+  "cards": "cards",
+  "cardsCount": "{count} cards",
+  "@cardsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "createFlashcardDeck": "Create Flashcard Deck",
+  "errorPickingFileFlashcards": "Error picking file: {error}",
+  "@errorPickingFileFlashcards": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectFileToGenerateFlashcards": "Please select a file to generate flashcards",
+  "createdFlashcards": "Created {count} flashcards",
+  "@createdFlashcards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorCreatingFlashcards": "Error creating flashcards: {error}",
+  "@errorCreatingFlashcards": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deckTitle": "Deck Title",
+  "enterTitleForFlashcardDeck": "Enter a title for your flashcard deck",
+  "pleaseEnterTitle": "Please enter a title",
+  "descriptionOptional": "Description (Optional)",
+  "addDescriptionForFlashcards": "Add a description for your flashcards",
+  "numberOfFlashcardsToGenerate": "Number of Flashcards to Generate: {count}",
+  "@numberOfFlashcardsToGenerate": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tipStartWithFewerCards": "Tip: Start with fewer cards for better quality. You can always add more later.",
+  "generateFlashcards": "Generate Flashcards",
+  "generatingFlashcards": "Generating Flashcards...",
+  "usingAIToCreateFlashcards": "Using AI to create {count} flashcards from {fileName}",
+  "@usingAIToCreateFlashcards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "thisMayTakeAMinuteOrTwo": "This may take a minute or two depending on the file size.",
+  "uploadFileToGenerateFlashcards": "Upload File to Generate Flashcards",
+  "selectPdfTxtOrDocFile": "Select a PDF, TXT, or DOC file",
+  "selectFile": "Select File",
+  "chooseDifferentFile": "Choose a different file",
+  "removeFile": "Remove file",
+  "fileType": "{type} file",
+  "@fileType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "flashcardDeck": "Flashcard Deck",
+  "editDeck": "Edit Deck",
+  "deleteDeck": "Delete Deck",
+  "saveChanges": "Save Changes",
+  "cancelEditing": "Cancel Editing",
+  "errorLoadingDeck": "Error loading deck: {error}",
+  "@errorLoadingDeck": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deckNotFound": "Deck not found",
+  "deleteDeckConfirmation": "Are you sure you want to delete this deck? This will delete all flashcards in the deck and cannot be undone.",
+  "flashcardDeckDeleted": "Flashcard deck deleted",
+  "errorDeletingDeck": "Error deleting deck: {error}",
+  "@errorDeletingDeck": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "titleCannotBeEmpty": "Title cannot be empty",
+  "deckUpdatedSuccessfully": "Deck updated successfully",
+  "errorUpdatingDeck": "Error updating deck: {error}",
+  "@errorUpdatingDeck": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFlashcard": "Delete Flashcard",
+  "deleteFlashcardConfirmation": "Are you sure you want to delete this flashcard? This cannot be undone.",
+  "flashcardDeleted": "Flashcard deleted",
+  "errorDeletingFlashcard": "Error deleting flashcard: {error}",
+  "@errorDeletingFlashcard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "editFlashcard": "Edit Flashcard",
+  "question": "Question",
+  "frontOfFlashcard": "Front of the flashcard",
+  "answer": "Answer",
+  "backOfFlashcard": "Back of the flashcard",
+  "hintOptional": "Hint (Optional)",
+  "optionalHintToHelpRecall": "Optional hint to help recall",
+  "questionAndAnswerCannotBeEmpty": "Question and answer cannot be empty",
+  "save": "Save",
+  "flashcardUpdated": "Flashcard updated",
+  "errorUpdatingFlashcard": "Error updating flashcard: {error}",
+  "@errorUpdatingFlashcard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "add": "Add",
+  "addFlashcard": "Add Flashcard",
+  "flashcardAdded": "Flashcard added",
+  "errorAddingFlashcard": "Error adding flashcard: {error}",
+  "@errorAddingFlashcard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "description": "Description",
+  "errorLoadingFlashcards": "Error loading flashcards: {error}",
+  "@errorLoadingFlashcards": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noFlashcardsInDeck": "No flashcards in this deck",
+  "addSomeFlashcardsToGetStarted": "Add some flashcards to get started",
+  "addFlashcardButton": "Add Flashcard",
+  "hint": "Hint",
+  "shuffleCards": "Shuffle Cards",
+  "errorLoadingFlashcardsViewer": "Error loading flashcards: {error}",
+  "@errorLoadingFlashcardsViewer": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addSomeFlashcardsToStartStudying": "Add some flashcards to start studying",
+  "goBack": "Go Back",
+  "showHint": "Show Hint",
+  "hideHint": "Hide Hint",
+  "previousCard": "Previous Card",
+  "showQuestion": "Show Question",
+  "showAnswer": "Show Answer",
+  "nextCard": "Next Card",
+  "cardProgress": "Card {current} of {total}",
+  "@cardProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "completed": "Completed: {completed}/{total}",
+  "@completed": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "greatJob": "Great job!",
+  "youveCompletedAllFlashcards": "You've completed all {count} flashcards in this deck!",
+  "@youveCompletedAllFlashcards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exit": "Exit",
+  "studyAgain": "Study Again",
+  "totalXp": "Total XP: {xp}",
+  "@totalXp": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      }
+    }
+  },
+  "nextLevel": "Next: Level {level}",
+  "@nextLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "xpProgress": "{current} / {needed} XP",
+  "@xpProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "needed": {
+        "type": "int"
+      }
+    }
+  },
+  "yourProgress": "Your Progress",
+  "youHaveCompletedAchievements": "You have completed {earned} out of {total} achievements.",
+  "@youHaveCompletedAchievements": {
+    "placeholders": {
+      "earned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "loadingAchievements": "Loading achievements...",
+  "noAchievementsFound": "No achievements found",
+  "trySelectingDifferentCategory": "Try selecting a different category",
+  "completeQuizzesToUnlockAchievements": "Complete quizzes to unlock achievements",
+  "showAllAchievements": "Show all achievements",
+  "categories": "Categories",
+  "streakFreezes": "Streak Freezes",
+  "dayStreak": "{days}-Day Streak",
+  "@dayStreak": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "noActiveStreak": "No Active Streak",
+  "keepItGoing": "Keep it going!",
+  "completeQuizTodayToStartStreak": "Complete a quiz today to start a streak",
+  "streakFreezeActive": "Streak Freeze Active",
+  "howStreakFreezesWork": "How Streak Freezes Work",
+  "protection": "Protection",
+  "streakFreezesProtectDescription": "Streak freezes protect your streak for one day when you miss completing any quiz.",
+  "twentyFourHourCoverage": "24-Hour Coverage",
+  "onceActivatedDescription": "Once activated, a streak freeze protects your streak for 24 hours.",
+  "useWisely": "Use Wisely",
+  "earnStreakFreezesDescription": "You can earn streak freezes by completing special challenges and maintaining longer streaks.",
+  "usageHistory": "Usage History",
+  "noUsageHistoryYet": "No usage history yet",
+  "streakFreezeUsageHistoryWillAppear": "Your streak freeze usage history will appear here",
+  "activeStreakFreeze": "Active Streak Freeze",
+  "streakFreezeUsed": "Streak Freeze Used",
+  "usedOn": "Used on {date} at {time}",
+  "@usedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "expiredOn": "Expired on {date} at {time}",
+  "@expiredOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "expiresOn": "Expires on {date} at {time}",
+  "@expiresOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "duration": "Duration: {duration}",
+  "@duration": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "streakFreezeActivatedSuccessfully": "Streak freeze activated successfully!",
+  "failedToActivateStreakFreeze": "Failed to activate streak freeze. Please try again.",
+  "currentStreak": "Current Streak",
+  "current": "Current",
+  "keepPracticingDaily": "Keep practicing daily!",
+  "longest": "Longest",
+  "lastActive": "Last Active: ",
+  "lastActive": "Last Active: ",
+  "last7DaysActivity": "Last 7 Days Activity",
+  "protectYourStreakWhenMissDay": "Protect your streak when you miss a day",
+  "manageStreakFreezes": "Manage Streak Freezes",
+  "viewDetails": "View Details",
+  "protectYourLearningProgress": "Protect your learning progress",
+  "freezeAvailable": "Freeze Available",
+  "freezesAvailable": "Freezes Available",
+  "useStreakFreeze": "Use Streak Freeze",
+  "streakFreezesProtectDescriptionCard": "Streak freezes protect your streak when you miss a day of learning. Use them wisely!",
+  "dailyQuests": "Daily Quests",
+  "noQuestsAvailableRightNow": "No quests available right now",
+  "comeBackTomorrowForNewQuests": "Come back tomorrow for new quests",
+  "dailyProgress": "Daily Progress",
+  "questsCompleted": "{completed} of {total} quests completed",
+  "@questsCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "allQuestsCompletedToday": "All quests completed today!",
+  "completeQuestsToEarnXp": "Complete quests to earn XP",
+  "questAlreadyCompleted": "Quest already completed!",
+  "progress": "Progress: {progress}",
+  "@progress": {
+    "placeholders": {
+      "progress": {
+        "type": "String"
+      }
+    }
+  },
+  "reward": "Reward: +{xp} XP",
+  "@reward": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      }
+    }
+  },
+  "goToToMakeProgress": "Go to {action} to make progress on this quest.",
+  "@goToToMakeProgress": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "goTo": "Go to {action}",
+  "@goTo": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "completed": "completed",
+  "notYetEarned": "Not yet earned",
+  "earned": "Earned",
+  "notYetEarnedTitle": "Not Yet Earned",
+  "on": "On {date}",
+  "@on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "howToEarnThisAchievement": "How to earn this achievement",
+  "maintainStreakOfDays": "Maintain a streak of {days} days.",
+  "@maintainStreakOfDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "completeQuizzes": "Complete {count} quizzes.",
+  "@completeQuizzes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "getPerfectScores": "Get {count} perfect scores in quizzes.",
+  "@getPerfectScores": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "createQuizzes": "Create {count} quizzes.",
+  "@createQuizzes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completeQuizzesQuickly": "Complete {count} quizzes quickly.",
+  "@completeQuizzesQuickly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "maintainAccuracyAcross": "Maintain at least 90% accuracy across {count} quizzes.",
+  "@maintainAccuracyAcross": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completeQuizzesBefore10AM": "Complete {count} quizzes before 10 AM.",
+  "@completeQuizzesBefore10AM": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completeQuizzesOnWeekends": "Complete {count} quizzes on weekends.",
+  "@completeQuizzesOnWeekends": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studyForMinutesInSingleDay": "Study on the app for {minutes} minutes in a single day.",
+  "@studyForMinutesInSingleDay": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "continueUsingAppToUnlock": "Continue using the app to unlock this achievement.",
+  "yourStreak": "Your Streak",
+  "keepMomentumGoing": "Keep the momentum going!",
+  "loadingStreakData": "Loading streak data...",
+  "activityCalendar": "Activity Calendar",
+  "trackDailyLearningProgress": "Track your daily learning progress",
+  "expiresIn": "Expires in {time}",
+  "@expiresIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "active": "Active",
+  "expired": "Expired",
+  "now": "Now",
+  "quizSummary": "Quiz Summary",
+  "quizzesCreated": "Quizzes Created",
+  "quizzesCompleted": "Quizzes Completed",
+  "averageScore": "Average Score",
+  "dailyStreak": "Daily Streak",
+  "days": "days",
+  "longestStreakDays": "Longest streak: {days} days",
+  "@longestStreakDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "noStreakDataAvailable": "No streak data available",
+  "noActivityYet": "No activity yet",
+  "quizAccuracy": "Quiz Accuracy",
+  "noQuizDataAvailableYet": "No quiz data available yet",
+  "categoryPerformance": "Category Performance",
+  "noCategoryDataAvailableYet": "No category data available yet",
+  "takeMoreQuizzesToSeeCategoryPerformance": "Take more quizzes to see category performance",
+  "quiz": "quiz",
+  "quizzes": "quizzes",
+  "allCaughtUp": "All caught up!",
+  "noCardsDueForReviewToday": "No cards due for review today.",
+  "rateHowWellYouKnewThis": "Rate how well you knew this:",
+  "forgot": "Forgot",
+  "hard": "Hard",
+  "good": "Good",
+  "easy": "Easy",
+  "yourStreakIsProtectedForToday": "Your streak is protected for today",
+  "performanceOverview": "Performance Overview",
+  "updated": "Updated: ",
+  "average": "Average",
+  "questionsAnswered": "Questions Answered",
+  "correctAnswers": "Correct Answers",
+  "accuracy": "accuracy",
+  "daysAgo": "{days}d ago",
+  "@daysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{hours}h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "minutesAgo": "{minutes}m ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "justNow": "Just now",
+  "insights": "Insights",
+  "studyConsistency": "Study Consistency",
+  "basedOnActiveDaysInLastMonth": "Based on active days in the last month",
+  "strongestCategory": "Strongest Category",
+  "weakestCategory": "Weakest Category",
+  "mostImproved": "Most Improved",
+  "notEnoughData": "Not enough data",
+  "last30DaysQuizActivity": "Last 30 Days Quiz Activity",
+  "selectedDate": "Selected Date: ",
+  "completed": "completed",
+  "writeNotesTitle": "Write Notes",
+  "writeNotesDescription": "Write {count} new note today",
+  "@writeNotesDescription": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "writeNotesDescriptionPlural": "Write {count} new notes today",
+  "@writeNotesDescriptionPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewFlashcardsTitle": "Review Flashcards",
+  "reviewFlashcardsDescription": "Review {count} flashcards today",
+  "@reviewFlashcardsDescription": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completeQuizzesTitle": "Complete Quizzes",
+  "completeQuizzesDescription": "Complete {count} quizzes today",
+  "@completeQuizzesDescription": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completeQuizzesDescriptionSingular": "Complete {count} quiz today",
+  "@completeQuizzesDescriptionSingular": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unknownQuestTitle": "Unknown Quest",
+  "unknownQuestDescription": "Complete this quest to earn XP",
+  "xpLabel": "XP"
+}

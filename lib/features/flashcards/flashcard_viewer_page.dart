@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/features/gamification/gamification_controller.dart';
 import 'package:deltamind/models/flashcard.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:deltamind/services/flashcard_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -76,9 +77,10 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
         _completedCards = {};
       });
     } catch (e) {
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Error loading flashcards: $e';
+        _errorMessage = l10n.errorLoadingFlashcardsViewer(e.toString());
       });
     }
   }
@@ -187,10 +189,11 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
   }
 
   void _showCompletionDialog() {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Great job!'),
+        title: Text(l10n.greatJob),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -201,7 +204,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              'You\'ve completed all ${_flashcards.length} flashcards in this deck!',
+              l10n.youveCompletedAllFlashcards(_flashcards.length),
               textAlign: TextAlign.center,
             ),
           ],
@@ -212,7 +215,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
               Navigator.of(context).pop();
               context.pop(); // Go back to deck details
             },
-            child: const Text('Exit'),
+            child: Text(l10n.exit),
           ),
           ElevatedButton(
             onPressed: () {
@@ -223,7 +226,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Study Again'),
+            child: Text(l10n.studyAgain),
           ),
         ],
       ),
@@ -232,17 +235,18 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _deck?.title ?? 'Flashcards',
+          _deck?.title ?? l10n.flashcards,
           style: const TextStyle(fontSize: 18),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.shuffle),
             onPressed: _isLoading ? null : _resetDeck,
-            tooltip: 'Shuffle Cards',
+            tooltip: l10n.shuffleCards,
           ),
         ],
       ),
@@ -251,6 +255,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
   }
 
   Widget _buildBody() {
+    final l10n = AppLocalizations.of(context)!;
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -276,7 +281,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: _loadData,
-                child: const Text('Try Again'),
+                child: Text(l10n.tryAgain),
               ),
             ],
           ),
@@ -297,23 +302,23 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
                 color: Colors.grey[400],
               ),
               const SizedBox(height: 16),
-              const Text(
-                'No flashcards in this deck',
-                style: TextStyle(
+              Text(
+                l10n.noFlashcardsInDeck,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Add some flashcards to start studying',
+                l10n.addSomeFlashcardsToStartStudying,
                 style: TextStyle(color: Colors.grey[600]),
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
                 onPressed: () => context.pop(),
                 icon: const Icon(Icons.arrow_back),
-                label: const Text('Go Back'),
+                label: Text(l10n.goBack),
               ),
             ],
           ),
@@ -343,7 +348,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
                   color: Colors.amber[700],
                 ),
                 label: Text(
-                  _showHint ? 'Hide Hint' : 'Show Hint',
+                  _showHint ? l10n.hideHint : l10n.showHint,
                   style: TextStyle(
                     color: Colors.amber[700],
                   ),
@@ -386,6 +391,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
   }
 
   Widget _buildFlashcard(Flashcard flashcard) {
+    final l10n = AppLocalizations.of(context)!;
     return GestureDetector(
       onTap: _toggleFlip,
       child: Center(
@@ -422,7 +428,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
                         color: Colors.white,
                         iconColor: Colors.blue.shade700,
                         icon: PhosphorIconsFill.question,
-                        title: 'Question',
+                        title: l10n.question,
                         content: flashcard.question,
                         hint: _showHint ? flashcard.hint : null,
                       ),
@@ -441,7 +447,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
                         color: Colors.blue.shade50,
                         iconColor: Colors.green.shade700,
                         icon: PhosphorIconsFill.check,
-                        title: 'Answer',
+                        title: l10n.answer,
                         content: flashcard.answer,
                       ),
                     ),
@@ -464,6 +470,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
     required String content,
     String? hint,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 24),
       elevation: 4,
@@ -534,7 +541,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'Hint',
+                          l10n.hint,
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.amber[700],
@@ -562,6 +569,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
 
   // Navigation controls updated to prevent overflow
   Widget _buildNavigationControls() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Row(
@@ -574,7 +582,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
               size: 28,
               color: _currentIndex > 0 ? AppColors.primary : Colors.grey[400],
             ),
-            tooltip: 'Previous Card',
+            tooltip: l10n.previousCard,
           ),
           Flexible(
             child: OutlinedButton.icon(
@@ -584,7 +592,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
                 size: 18,
               ),
               label: Text(
-                _isFlipped ? 'Show Question' : 'Show Answer',
+                _isFlipped ? l10n.showQuestion : l10n.showAnswer,
                 overflow: TextOverflow.ellipsis,
               ),
               style: OutlinedButton.styleFrom(
@@ -605,7 +613,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
                   ? AppColors.primary
                   : Colors.grey[400],
             ),
-            tooltip: 'Next Card',
+            tooltip: l10n.nextCard,
           ),
         ],
       ),
@@ -614,6 +622,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
 
   // Progress indicator with fixed layout
   Widget _buildProgressIndicator() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Column(
@@ -630,7 +639,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Card ${_currentIndex + 1} of ${_flashcards.length}',
+                  l10n.cardProgress(_currentIndex + 1, _flashcards.length),
                   style: TextStyle(
                     color: Colors.grey[700],
                     fontWeight: FontWeight.w500,
@@ -638,7 +647,7 @@ class _FlashcardViewerPageState extends ConsumerState<FlashcardViewerPage> {
                   ),
                 ),
                 Text(
-                  'Completed: ${_completedCards.length}/${_flashcards.length}',
+                  l10n.completed(_completedCards.length, _flashcards.length),
                   style: TextStyle(
                     color: AppColors.primary,
                     fontWeight: FontWeight.w500,

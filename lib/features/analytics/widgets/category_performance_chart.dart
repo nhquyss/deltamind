@@ -1,6 +1,7 @@
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/services/analytics_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Chart displaying performance by category
@@ -8,11 +9,12 @@ class CategoryPerformanceChart extends StatelessWidget {
   final List<QuizAnalytics> categoryAnalytics;
 
   const CategoryPerformanceChart({Key? key, required this.categoryAnalytics})
-    : super(key: key);
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     // Sort by average score
     final sortedAnalytics = List<QuizAnalytics>.from(categoryAnalytics)
@@ -38,7 +40,7 @@ class CategoryPerformanceChart extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Category Performance',
+                  l10n.categoryPerformance,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -46,18 +48,17 @@ class CategoryPerformanceChart extends StatelessWidget {
               ],
             ),
             const Divider(height: 24),
-
             if (categoryAnalytics.isEmpty)
-              _buildEmptyState(context)
+              _buildEmptyState(context, l10n)
             else
-              _buildCategoryPerformance(context, sortedAnalytics),
+              _buildCategoryPerformance(context, sortedAnalytics, l10n),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildEmptyState(BuildContext context) {
+  Widget _buildEmptyState(BuildContext context, AppLocalizations l10n) {
     return Container(
       height: 200,
       alignment: Alignment.center,
@@ -71,14 +72,14 @@ class CategoryPerformanceChart extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'No category data available yet',
+            l10n.noCategoryDataAvailableYet,
             style: Theme.of(
               context,
             ).textTheme.titleMedium?.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: 8),
           Text(
-            'Take more quizzes to see category performance',
+            l10n.takeMoreQuizzesToSeeCategoryPerformance,
             style: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
@@ -91,23 +92,23 @@ class CategoryPerformanceChart extends StatelessWidget {
   Widget _buildCategoryPerformance(
     BuildContext context,
     List<QuizAnalytics> sortedAnalytics,
+    AppLocalizations l10n,
   ) {
     // Limit to top 5 categories for better visualization
-    final displayAnalytics =
-        sortedAnalytics.length > 5
-            ? sortedAnalytics.sublist(0, 5)
-            : sortedAnalytics;
+    final displayAnalytics = sortedAnalytics.length > 5
+        ? sortedAnalytics.sublist(0, 5)
+        : sortedAnalytics;
 
     return Column(
-      children:
-          displayAnalytics.map((analytics) {
-            return _buildCategoryBar(
-              context,
-              analytics.categoryName ?? 'Unknown',
-              analytics.averageScore,
-              analytics.totalAttempts,
-            );
-          }).toList(),
+      children: displayAnalytics.map((analytics) {
+        return _buildCategoryBar(
+          context,
+          analytics.categoryName ?? 'Unknown',
+          analytics.averageScore,
+          analytics.totalAttempts,
+          l10n,
+        );
+      }).toList(),
     );
   }
 
@@ -116,6 +117,7 @@ class CategoryPerformanceChart extends StatelessWidget {
     String categoryName,
     double score,
     int attempts,
+    AppLocalizations l10n,
   ) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -139,16 +141,16 @@ class CategoryPerformanceChart extends StatelessWidget {
                   Text(
                     '${score.toStringAsFixed(1)}%',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: _getScoreColor(score),
-                    ),
+                          fontWeight: FontWeight.bold,
+                          color: _getScoreColor(score),
+                        ),
                   ),
                   const SizedBox(width: 4),
                   Text(
-                    '($attempts ${attempts == 1 ? 'quiz' : 'quizzes'})',
+                    '($attempts ${attempts == 1 ? l10n.quiz : l10n.quizzes})',
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ],
               ),

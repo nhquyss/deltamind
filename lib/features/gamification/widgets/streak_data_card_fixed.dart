@@ -2,6 +2,7 @@ import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/widgets/loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// A card that displays streak data or a loading indicator while data is being fetched
@@ -47,10 +48,11 @@ class StreakDataCardFixed extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Loading streak data...',
+            l10n.loadingStreakData,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-            ),
+                  color:
+                      Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                ),
           ),
         ],
       ),
@@ -58,6 +60,7 @@ class StreakDataCardFixed extends ConsumerWidget {
   }
 
   Widget _buildDataState(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Padding(
@@ -93,14 +96,14 @@ class StreakDataCardFixed extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Your Streak',
+                      l10n.yourStreak,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Keep the momentum going!',
+                      l10n.keepMomentumGoing,
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurface.withOpacity(0.7),
                       ),
@@ -112,7 +115,7 @@ class StreakDataCardFixed extends ConsumerWidget {
                 IconButton(
                   icon: const Icon(Icons.refresh),
                   onPressed: onRefresh,
-                  tooltip: 'Refresh',
+                  tooltip: l10n.refresh,
                 ),
             ],
           ),
@@ -125,7 +128,7 @@ class StreakDataCardFixed extends ConsumerWidget {
               Expanded(
                 child: _buildStreakItem(
                   context,
-                  'Current Streak',
+                  l10n.currentStreak,
                   currentStreak?.toString() ?? '0',
                   Icons.bolt,
                   AppColors.primary,
@@ -135,7 +138,7 @@ class StreakDataCardFixed extends ConsumerWidget {
               Expanded(
                 child: _buildStreakItem(
                   context,
-                  'Best Streak',
+                  l10n.longest,
                   bestStreak?.toString() ?? '0',
                   Icons.emoji_events,
                   AppColors.accent,

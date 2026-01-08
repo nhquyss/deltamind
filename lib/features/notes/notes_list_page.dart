@@ -1,12 +1,13 @@
 import 'package:deltamind/core/routing/app_router.dart';
 import 'package:deltamind/core/theme/app_colors.dart';
+import 'package:deltamind/core/utils/formatters.dart';
 import 'package:deltamind/features/notes/notes_controller.dart';
 import 'package:deltamind/features/notes/widgets/rich_text_editor.dart';
 import 'package:deltamind/models/note.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 /// Page to display a list of notes
 class NotesListPage extends ConsumerStatefulWidget {
@@ -45,6 +46,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final notesState = ref.watch(notesControllerProvider);
     final theme = Theme.of(context);
 
@@ -53,7 +55,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notes'),
+        title: Text(l10n.notes),
         actions: [
           // Toggle grid/list view
           IconButton(
@@ -62,7 +64,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
             ),
             onPressed: () =>
                 ref.read(notesControllerProvider.notifier).toggleViewType(),
-            tooltip: notesState.isGridView ? 'List view' : 'Grid view',
+            tooltip: notesState.isGridView ? l10n.listView : l10n.gridView,
           ),
 
           // Clear all filters
@@ -75,7 +77,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
                 _searchController.clear();
                 ref.read(notesControllerProvider.notifier).loadNotes();
               },
-              tooltip: 'Clear filters',
+              tooltip: l10n.clearFilters,
             ),
 
           // Refresh
@@ -85,7 +87,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
               ref.read(notesControllerProvider.notifier).loadNotes();
               ref.read(notesControllerProvider.notifier).loadTags();
             },
-            tooltip: 'Refresh',
+            tooltip: l10n.refresh,
           ),
         ],
       ),
@@ -97,7 +99,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                hintText: 'Search notes',
+                hintText: AppLocalizations.of(context)!.searchNotes,
                 prefixIcon: const Icon(Icons.search),
                 suffixIcon: _searchController.text.isNotEmpty
                     ? IconButton(
@@ -168,6 +170,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
   }
 
   Widget _buildNotesList(List<Note> notes, NotesState state) {
+    final l10n = AppLocalizations.of(context)!;
     if (state.isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -178,7 +181,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Error: ${state.errorMessage}',
+              '${l10n.error}: ${state.errorMessage}',
               style: const TextStyle(color: Colors.red),
               textAlign: TextAlign.center,
             ),
@@ -186,7 +189,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
             ElevatedButton(
               onPressed: () =>
                   ref.read(notesControllerProvider.notifier).loadNotes(),
-              child: const Text('Try Again'),
+              child: Text(l10n.tryAgain),
             ),
           ],
         ),
@@ -202,8 +205,8 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
             const SizedBox(height: 16),
             Text(
               state.searchQuery.isNotEmpty || state.selectedTags.isNotEmpty
-                  ? 'No notes match your filters'
-                  : 'You don\'t have any notes yet',
+                  ? l10n.noNotesMatchYourFilters
+                  : l10n.youDontHaveAnyNotesYet,
               style: const TextStyle(fontSize: 18),
               textAlign: TextAlign.center,
             ),
@@ -211,7 +214,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
             ElevatedButton.icon(
               onPressed: () => context.go(AppRoutes.createNote),
               icon: const Icon(Icons.add),
-              label: const Text('Create a Note'),
+              label: Text(l10n.createNote),
             ),
           ],
         ),
@@ -248,10 +251,10 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
   }
 
   Widget _buildNoteCard(Note note, BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final dateFormat = DateFormat('MMM d, yyyy');
     final formattedDate = note.updatedAt != null
-        ? 'Updated: ${dateFormat.format(note.updatedAt!)}'
+        ? '${l10n.updated}${formatDate(note.updatedAt!, context)}'
         : '';
 
     // Note background color
@@ -328,15 +331,18 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
                         itemBuilder: (context) => [
                           PopupMenuItem(
                             value: 'pin',
-                            child: Text(note.isPinned ? 'Unpin' : 'Pin'),
+                            child: Text(note.isPinned
+                                ? AppLocalizations.of(context)!.unpin
+                                : AppLocalizations.of(context)!.pin),
                           ),
                           PopupMenuItem(
                             value: 'color',
-                            child: const Text('Change color'),
+                            child:
+                                Text(AppLocalizations.of(context)!.changeColor),
                           ),
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'delete',
-                            child: Text('Delete'),
+                            child: Text(AppLocalizations.of(context)!.delete),
                           ),
                         ],
                       ),
@@ -449,10 +455,11 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
       'Gray': 'gray',
     };
 
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Choose color'),
+        title: Text(l10n.chooseColor),
         content: Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -488,6 +495,9 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
                 break;
             }
 
+            final isSelected = (note.color == null && entry.value == null) ||
+                (note.color != null && note.color == entry.value);
+
             return InkWell(
               onTap: () {
                 Navigator.pop(context);
@@ -503,9 +513,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(20),
                 ),
-                child: note.color == entry.value
-                    ? const Icon(Icons.check, size: 20)
-                    : null,
+                child: isSelected ? const Icon(Icons.check, size: 20) : null,
               ),
             );
           }).toList(),
@@ -513,7 +521,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
         ],
       ),
@@ -521,15 +529,16 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
   }
 
   void _confirmDelete(Note note) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete note?'),
-        content: const Text('This action cannot be undone.'),
+        title: Text(l10n.deleteNote),
+        content: Text(l10n.deleteNoteWarning),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
@@ -537,7 +546,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
               ref.read(notesControllerProvider.notifier).deleteNote(note.id);
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/services/learning_path_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Dialog to generate a new AI learning path
@@ -79,12 +80,17 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
     });
 
     try {
+      // Get current locale and map to language name
+      final locale = Localizations.localeOf(context);
+      final language = _getLanguageName(locale);
+
       // First, generate the learning path content using AI
       final generatedPath = await LearningPathService.generateLearningPath(
         topic: topic,
         knowledgeLevel: _knowledgeLevel,
         learningGoals: learningGoals.isNotEmpty ? learningGoals : null,
         learningStyle: _learningStyle,
+        language: language,
         // Commented out - not currently used but kept for future use
         // timeCommitment: timeCommitment.isNotEmpty ? timeCommitment : null,
         // focusAreas: focusAreas,
@@ -107,7 +113,10 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
       }
 
       // Create the learning path in the database
-      await LearningPathService.createFromGeneratedPath(generatedPath);
+      await LearningPathService.createFromGeneratedPath(
+        generatedPath,
+        language: language,
+      );
 
       if (!mounted) return;
 
@@ -117,11 +126,12 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
       // If it was a fallback path, show a notification
       if (isFallback && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
-              'Created a basic learning path. AI generation had issues. You may want to edit this path later.',
+              AppLocalizations.of(context)!
+                  .createdABasicLearningPathAIGenerationHadIssuesYouMayWantToEditThisPathLater,
             ),
-            duration: Duration(seconds: 5),
+            duration: const Duration(seconds: 5),
           ),
         );
       }
@@ -137,6 +147,7 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
@@ -161,7 +172,7 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Generate AI Learning Path',
+                        l10n.generateAILearningPath,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
@@ -197,8 +208,8 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
                 TextFormField(
                   controller: _topicController,
                   decoration: InputDecoration(
-                    labelText: 'Learning Topic *',
-                    hintText: 'e.g. Machine Learning, Web Development, Flutter',
+                    labelText: l10n.learningTopic,
+                    hintText: l10n.learningTopicHint,
                     prefixIcon: Icon(
                         PhosphorIcons.lightbulb(PhosphorIconsStyle.regular)),
                     border: OutlineInputBorder(
@@ -208,10 +219,10 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter a topic';
+                      return l10n.pleaseEnterATopic;
                     }
                     if (value.trim().length < 3) {
-                      return 'Topic is too short';
+                      return l10n.topicIsTooShort;
                     }
                     return null;
                   },
@@ -225,7 +236,7 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
                 DropdownButtonFormField<String>(
                   value: _knowledgeLevel,
                   decoration: InputDecoration(
-                    labelText: 'Knowledge Level *',
+                    labelText: l10n.knowledgeLevel,
                     prefixIcon: Icon(
                       PhosphorIcons.graduationCap(PhosphorIconsStyle.regular),
                     ),
@@ -238,7 +249,11 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
                       .map((level) => DropdownMenuItem(
                             value: level,
                             child: Text(
-                              level[0].toUpperCase() + level.substring(1),
+                              level == 'beginner'
+                                  ? l10n.beginner
+                                  : level == 'intermediate'
+                                      ? l10n.intermediate
+                                      : l10n.advanced,
                             ),
                           ))
                       .toList(),
@@ -285,7 +300,7 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Advanced Options',
+                          l10n.advancedOptions,
                           style: TextStyle(
                             fontWeight: FontWeight.w500,
                             color: Colors.grey.shade800,
@@ -293,7 +308,7 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
                         ),
                         const Spacer(),
                         Text(
-                          _isAdvancedOptionsVisible ? 'Hide' : 'Show',
+                          _isAdvancedOptionsVisible ? l10n.hide : l10n.show,
                           style: TextStyle(
                             fontSize: 12,
                             color: Colors.grey.shade600,
@@ -335,17 +350,17 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            const Text('Generating...'),
+                            Text(l10n.generating),
                           ],
                         )
-                      : const Text('Generate Learning Path'),
+                      : Text(l10n.generateLearningPath),
                 ),
 
                 if (!_isGenerating)
                   Padding(
                     padding: const EdgeInsets.only(top: 12.0),
                     child: Text(
-                      'This will create an AI-powered personalized learning path',
+                      l10n.thisWillCreateAnAIPoweredPersonalizedLearningPath,
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 12,
@@ -363,6 +378,7 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
 
   /// Build the advanced options section
   Widget _buildAdvancedOptions() {
+    final l10n = AppLocalizations.of(context)!;
     return AnimatedSize(
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeInOut,
@@ -381,9 +397,8 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
             TextFormField(
               controller: _learningGoalsController,
               decoration: InputDecoration(
-                labelText: 'Learning Goals (Optional)',
-                hintText:
-                    'What do you want to achieve with this learning path?',
+                labelText: l10n.learningGoalsOptional,
+                hintText: l10n.learningGoalsHint,
                 prefixIcon:
                     Icon(PhosphorIcons.target(PhosphorIconsStyle.regular)),
                 border: OutlineInputBorder(
@@ -403,7 +418,7 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
             DropdownButtonFormField<String>(
               value: _learningStyle,
               decoration: InputDecoration(
-                labelText: 'Learning Style (Optional)',
+                labelText: l10n.learningStyleOptional,
                 prefixIcon:
                     Icon(PhosphorIcons.brain(PhosphorIconsStyle.regular)),
                 border: OutlineInputBorder(
@@ -415,7 +430,13 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
                   .map((style) => DropdownMenuItem(
                         value: style,
                         child: Text(
-                          style[0].toUpperCase() + style.substring(1),
+                          style == 'balanced'
+                              ? l10n.balanced
+                              : style == 'visual'
+                                  ? l10n.visual
+                                  : style == 'practical'
+                                      ? l10n.practical
+                                      : l10n.theoretical,
                         ),
                       ))
                   .toList(),
@@ -494,5 +515,17 @@ class _GeneratePathDialogState extends State<GeneratePathDialog> {
         ),
       ),
     );
+  }
+
+  /// Map locale to language name for AI generation
+  String? _getLanguageName(Locale locale) {
+    switch (locale.languageCode) {
+      case 'vi':
+        return 'Vietnamese';
+      case 'en':
+        return 'English';
+      default:
+        return 'English'; // Default to English
+    }
   }
 }

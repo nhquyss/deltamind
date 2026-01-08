@@ -1,5 +1,6 @@
 import 'package:deltamind/core/routing/app_router.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 /// A scaffold with a bottom navigation bar
@@ -58,24 +59,34 @@ class _ScaffoldWithNavBarState extends State<ScaffoldWithNavBar> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       body: widget.child,
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _calculateSelectedIndex(context),
         onTap: (index) => _onItemTapped(index, context),
         type: BottomNavigationBarType.fixed,
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+            icon: const Icon(Icons.dashboard),
+            label: l10n.dashboard,
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.quiz), label: 'Quizzes'),
-          BottomNavigationBarItem(icon: Icon(Icons.notes), label: 'Notes'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.flip_to_back),
-            label: 'Flashcards',
+            icon: const Icon(Icons.quiz),
+            label: l10n.quizzes,
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.notes),
+            label: l10n.notes,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.flip_to_back),
+            label: l10n.flashcards,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.person),
+            label: l10n.profile,
+          ),
         ],
       ),
     );

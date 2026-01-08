@@ -258,6 +258,7 @@ class LearningPathService {
   }
 
   /// Generate a learning path using Gemini AI with user preferences
+  /// [language] is the language to generate content in (e.g., "Vietnamese", "English"). If null, defaults to English.
   static Future<Map<String, dynamic>> generateLearningPath({
     required String topic,
     String knowledgeLevel = 'beginner', // beginner, intermediate, advanced
@@ -266,12 +267,19 @@ class LearningPathService {
     String? learningStyle, // e.g. "visual", "practical", "theoretical"
     List<String>? focusAreas,
     List<String>? suggestedTags,
+    String? language,
   }) async {
     try {
       SupabaseService.checkAuthentication();
 
+      // Add language instruction if specified
+      final languageInstruction = language != null && language.isNotEmpty
+          ? 'IMPORTANT: Generate all content (title, description, module titles, descriptions, learning objectives, prerequisites, resources, assessments, notes, tags, category) in $language language. '
+          : '';
+
       // Create the improved prompt for Gemini with user preferences and enhanced content guidelines
       final prompt = '''
+$languageInstruction
 Generate a comprehensive, visually structured learning path for the topic '$topic'. This will be displayed in a node-based graph visualization, with dependencies between modules shown as connecting lines.
 
 USER PREFERENCES:
@@ -883,9 +891,11 @@ Your response MUST be valid JSON that can be parsed directly. Do not include any
   }
 
   /// Create a learning path from Gemini-generated data
+  /// [language] is the language to generate quiz/flashcard content in (e.g., "Vietnamese", "English"). If null, defaults to English.
   static Future<LearningPath> createFromGeneratedPath(
-    Map<String, dynamic> generatedPath,
-  ) async {
+    Map<String, dynamic> generatedPath, {
+    String? language,
+  }) async {
     try {
       SupabaseService.checkAuthentication();
       final userId = SupabaseService.currentUser!.id;
@@ -1010,6 +1020,7 @@ Your response MUST be valid JSON that can be parsed directly. Do not include any
                   await FlashcardService.generateFlashcardsFromContent(
                 flashcardContent,
                 8, // Generate 8 flashcards per module
+                language: language,
               );
 
               final flashcardDeck = await FlashcardService.createDeck(

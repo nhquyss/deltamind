@@ -1,11 +1,12 @@
 import 'package:deltamind/core/theme/app_theme.dart';
 import 'package:deltamind/core/routing/app_router.dart';
+import 'package:deltamind/core/utils/formatters.dart';
 import 'package:deltamind/services/recommendation_service.dart';
 import 'package:deltamind/services/supabase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 
 /// Quiz Review Detail Page shows complete results of a taken quiz
@@ -155,10 +156,15 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
       // Use the quiz attempt ID, not the quiz ID
       final quizAttemptId = _quizAttempt!['id'];
 
+      // Get current locale and map to language name
+      final locale = Localizations.localeOf(context);
+      final language = _getLanguageName(locale);
+
       // Generate new recommendation
       final newRecommendation =
           await RecommendationService.generateAndSaveQuizRecommendation(
         quizAttemptId,
+        language: language,
       );
 
       if (mounted) {
@@ -173,17 +179,13 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
           _isLoadingRecommendations = false;
 
           // Create a fallback recommendation if generation fails
+          final l10n = AppLocalizations.of(context)!;
           _aiRecommendation = {
-            'performance_overview':
-                'Performance data couldn\'t be generated at this time. Please try regenerating.',
-            'strengths':
-                'Strength analysis couldn\'t be generated at this time.',
-            'areas_for_improvement':
-                'Areas for improvement couldn\'t be generated at this time.',
-            'learning_strategies':
-                'Learning strategies couldn\'t be generated at this time.',
-            'action_plan':
-                'Try reviewing your answers and looking at explanations to learn from your mistakes.',
+            'performance_overview': l10n.performanceDataNotAvailable,
+            'strengths': l10n.strengthAnalysisNotAvailable,
+            'areas_for_improvement': l10n.areasForImprovementNotAvailable,
+            'learning_strategies': l10n.learningStrategiesNotAvailable,
+            'action_plan': l10n.actionPlanNotAvailable,
           };
         });
         print('Error generating recommendation: $e');
@@ -213,10 +215,15 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
         // Continue even if deletion fails
       }
 
+      // Get current locale and map to language name
+      final locale = Localizations.localeOf(context);
+      final language = _getLanguageName(locale);
+
       // Generate new recommendation
       final newRecommendation =
           await RecommendationService.generateAndSaveQuizRecommendation(
         quizAttemptId,
+        language: language,
       );
 
       if (mounted) {
@@ -232,17 +239,13 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
 
           // Don't clear existing recommendation on regeneration failure
           if (_aiRecommendation == null) {
+            final l10n = AppLocalizations.of(context)!;
             _aiRecommendation = {
-              'performance_overview':
-                  'Performance data couldn\'t be generated at this time. Please try regenerating.',
-              'strengths':
-                  'Strength analysis couldn\'t be generated at this time.',
-              'areas_for_improvement':
-                  'Areas for improvement couldn\'t be generated at this time.',
-              'learning_strategies':
-                  'Learning strategies couldn\'t be generated at this time.',
-              'action_plan':
-                  'Try reviewing your answers and looking at explanations to learn from your mistakes.',
+              'performance_overview': l10n.performanceDataNotAvailable,
+              'strengths': l10n.strengthAnalysisNotAvailable,
+              'areas_for_improvement': l10n.areasForImprovementNotAvailable,
+              'learning_strategies': l10n.learningStrategiesNotAvailable,
+              'action_plan': l10n.actionPlanNotAvailable,
             };
           }
         });
@@ -253,12 +256,13 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(
           _quizAttempt != null
-              ? 'Review: ${_quizAttempt!['quizzes']['title']}'
-              : 'Quiz Review',
+              ? l10n.reviewTitle(_quizAttempt!['quizzes']['title'])
+              : l10n.quizReview,
         ),
         actions: [
           IconButton(
@@ -270,14 +274,15 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
-              ? Center(child: Text('Error: $_errorMessage'))
+              ? Center(child: Text('${l10n.error}: $_errorMessage'))
               : _buildContent(),
     );
   }
 
   Widget _buildContent() {
+    final l10n = AppLocalizations.of(context)!;
     if (_quizAttempt == null) {
-      return const Center(child: Text('Quiz attempt not found'));
+      return Center(child: Text(l10n.quizAttemptNotFound));
     }
 
     final quiz = _quizAttempt!['quizzes'];
@@ -286,7 +291,6 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
     final percentage =
         totalQuestions > 0 ? (score / totalQuestions * 100).round() : 0;
     final createdAt = DateTime.parse(_quizAttempt!['created_at']);
-    final dateFormat = DateFormat('MMMM d, yyyy • h:mm a');
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -349,14 +353,14 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              '${quiz['quiz_type']} • ${quiz['difficulty']} difficulty',
+                              '${_getLocalizedQuizType(quiz['quiz_type'], l10n)} • ${_getLocalizedDifficulty(quiz['difficulty'], l10n)} ${l10n.difficultyLabel}',
                               style: AppTheme.bodyText.copyWith(
                                 color: Colors.white.withOpacity(0.9),
                               ),
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              dateFormat.format(createdAt),
+                              formatDateWithTime(createdAt, context),
                               style: AppTheme.smallText.copyWith(
                                 color: Colors.white.withOpacity(0.8),
                               ),
@@ -394,7 +398,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'Correct',
+                              l10n.correctAnswers,
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.9),
                                 fontSize: 14,
@@ -423,7 +427,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              _getScoreLabel(percentage),
+                              _getScoreLabel(percentage, l10n),
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.9),
                                 fontSize: 14,
@@ -454,7 +458,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
                 Icon(PhosphorIcons.list(), color: Colors.grey.shade700),
                 const SizedBox(width: 8),
                 Text(
-                  'Questions & Answers',
+                  l10n.questionsAndAnswers,
                   style: AppTheme.subtitle.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.grey.shade800,
@@ -462,7 +466,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
                 ),
                 const Spacer(),
                 Text(
-                  '${_userAnswers.length} items',
+                  '${_userAnswers.length} ${l10n.items}',
                   style: AppTheme.smallText.copyWith(
                     color: Colors.grey.shade600,
                   ),
@@ -492,7 +496,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
               style: OutlinedButton.styleFrom(
                 side: BorderSide(color: Colors.grey.shade400),
               ),
-              label: const Text('Return to Dashboard'),
+              label: Text(l10n.returnToDashboard),
             ),
           ),
           const SizedBox(height: 16),
@@ -506,7 +510,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
               }
             },
             icon: const Icon(Icons.note_add),
-            label: const Text('Create Note'),
+            label: Text(l10n.createNote),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.purple,
               foregroundColor: Colors.white,
@@ -519,6 +523,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
   }
 
   List<Widget> _buildQuestionsAnswers() {
+    final l10n = AppLocalizations.of(context)!;
     final List<Widget> widgets = [];
 
     for (int i = 0; i < _userAnswers.length; i++) {
@@ -569,7 +574,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        'Question ${i + 1}',
+                        '${l10n.question} ${i + 1}',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: isCorrect
@@ -616,7 +621,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Options:',
+                        l10n.options,
                         style: AppTheme.smallText.copyWith(
                           fontWeight: FontWeight.bold,
                           color: Colors.grey[700],
@@ -704,7 +709,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              'Explanation:',
+                              l10n.explanation,
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blue.shade700,
@@ -773,44 +778,54 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'AI Learning Assistant',
-                            style: TextStyle(
-                              color: Colors.blue.shade800,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            'Personalized insights based on your quiz performance',
-                            style: TextStyle(
-                              color: Colors.blue.shade800.withOpacity(0.8),
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+                      child: Builder(
+                        builder: (context) {
+                          final l10n = AppLocalizations.of(context)!;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                l10n.aiLearningAssistant,
+                                style: TextStyle(
+                                  color: Colors.blue.shade800,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                l10n.personalizedInsightsBasedOnQuizPerformance,
+                                style: TextStyle(
+                                  color: Colors.blue.shade800.withOpacity(0.8),
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
-                    IconButton(
-                      onPressed: _aiRecommendation != null &&
-                              !_isLoadingRecommendations
-                          ? _regenerateRecommendations
-                          : null,
-                      tooltip: 'Regenerate recommendations',
-                      icon: Icon(
-                        PhosphorIcons.lightning(),
-                        color: Colors.blue.shade800.withOpacity(
-                          _aiRecommendation != null &&
+                    Builder(
+                      builder: (context) {
+                        final l10n = AppLocalizations.of(context)!;
+                        return IconButton(
+                          onPressed: _aiRecommendation != null &&
                                   !_isLoadingRecommendations
-                              ? 1.0
-                              : 0.5,
-                        ),
-                        size: 20,
-                      ),
+                              ? _regenerateRecommendations
+                              : null,
+                          tooltip: l10n.regenerateRecommendations,
+                          icon: Icon(
+                            PhosphorIcons.lightning(),
+                            color: Colors.blue.shade800.withOpacity(
+                              _aiRecommendation != null &&
+                                      !_isLoadingRecommendations
+                                  ? 1.0
+                                  : 0.5,
+                            ),
+                            size: 20,
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -849,6 +864,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
   }
 
   Widget _buildRecommendationCards() {
+    final l10n = AppLocalizations.of(context)!;
     // Check if recommendation has required fields
     if (_aiRecommendation == null) {
       return _buildNoRecommendationsState();
@@ -858,48 +874,58 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
     // Support both new and old field names
     final performanceOverview = _aiRecommendation!['performance_overview'] ??
         _aiRecommendation!['overall_assessment'] ??
-        'Performance data not available.';
+        l10n.performanceDataNotAvailable;
 
     final strengths = _aiRecommendation!['strengths'] ??
         _aiRecommendation!['strong_areas'] ??
-        'Strength analysis not available.';
+        l10n.strengthAnalysisNotAvailable;
 
     final areasForImprovement = _aiRecommendation!['areas_for_improvement'] ??
         _aiRecommendation!['weak_areas'] ??
-        'Areas for improvement not available.';
+        l10n.areasForImprovementNotAvailable;
 
     final learningStrategies = _aiRecommendation!['learning_strategies'] ??
         _aiRecommendation!['learning_recommendations'] ??
-        'Learning strategies not available.';
+        l10n.learningStrategiesNotAvailable;
 
     final actionPlan = _aiRecommendation!['action_plan'] ??
         _aiRecommendation!['next_steps'] ??
-        'Action plan not available.';
+        l10n.actionPlanNotAvailable;
 
     // Define action buttons for the action plan card
     final actionButtons = [
       Expanded(
-        child: OutlinedButton.icon(
-          icon: Icon(PhosphorIcons.listBullets(), size: 18),
-          label: const Text('View Quizzes'),
-          style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 10),
-            side: BorderSide(color: Colors.green.shade300),
-          ),
-          onPressed: () => context.push(AppRoutes.quizList),
+        child: Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            return OutlinedButton.icon(
+              icon: Icon(PhosphorIcons.listBullets(), size: 18),
+              label: Text(l10n.viewQuizzes),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                side: BorderSide(color: Colors.green.shade300),
+              ),
+              onPressed: () => context.push(AppRoutes.quizList),
+            );
+          },
         ),
       ),
       const SizedBox(width: 8),
       Expanded(
-        child: ElevatedButton.icon(
-          icon: Icon(PhosphorIcons.plus(), size: 18),
-          label: const Text('Create Quiz'),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green.shade600,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(vertical: 10),
-          ),
-          onPressed: () => context.push(AppRoutes.createQuiz),
+        child: Builder(
+          builder: (context) {
+            final l10n = AppLocalizations.of(context)!;
+            return ElevatedButton.icon(
+              icon: Icon(PhosphorIcons.plus(), size: 18),
+              label: Text(l10n.createQuiz),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.green.shade600,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+              ),
+              onPressed: () => context.push(AppRoutes.createQuiz),
+            );
+          },
         ),
       ),
     ];
@@ -908,6 +934,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final useHorizontalLayout = screenWidth > 768;
 
+    final l10n = AppLocalizations.of(context)!;
     if (useHorizontalLayout) {
       // Horizontal layout for larger screens (tablets, desktops)
       return Column(
@@ -915,7 +942,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
         children: [
           // Performance overview card
           _buildRecommendationCard(
-            title: 'Performance Overview',
+            title: l10n.performanceOverview,
             icon: PhosphorIcons.chartBar(),
             iconColor: Colors.blue.shade700,
             content: performanceOverview,
@@ -928,7 +955,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
             children: [
               Expanded(
                 child: _buildRecommendationCard(
-                  title: 'Your Strengths',
+                  title: l10n.yourStrengths,
                   icon: PhosphorIcons.star(),
                   iconColor: Colors.amber.shade700,
                   content: strengths,
@@ -937,7 +964,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildRecommendationCard(
-                  title: 'Areas for Improvement',
+                  title: l10n.areasForImprovement,
                   icon: PhosphorIcons.trendUp(),
                   iconColor: Colors.orange.shade700,
                   content: areasForImprovement,
@@ -953,7 +980,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
             children: [
               Expanded(
                 child: _buildRecommendationCard(
-                  title: 'Learning Strategies',
+                  title: l10n.learningStrategies,
                   icon: PhosphorIcons.lightbulb(),
                   iconColor: Colors.purple.shade700,
                   content: learningStrategies,
@@ -962,7 +989,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
               const SizedBox(width: 16),
               Expanded(
                 child: _buildRecommendationCard(
-                  title: 'Action Plan',
+                  title: l10n.actionPlan,
                   icon: PhosphorIcons.checkSquare(),
                   iconColor: Colors.green.shade700,
                   content: actionPlan,
@@ -979,35 +1006,35 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildRecommendationCard(
-            title: 'Performance Overview',
+            title: l10n.performanceOverview,
             icon: PhosphorIcons.chartBar(),
             iconColor: Colors.blue.shade700,
             content: performanceOverview,
           ),
           const SizedBox(height: 16),
           _buildRecommendationCard(
-            title: 'Your Strengths',
+            title: l10n.yourStrengths,
             icon: PhosphorIcons.star(),
             iconColor: Colors.amber.shade700,
             content: strengths,
           ),
           const SizedBox(height: 16),
           _buildRecommendationCard(
-            title: 'Areas for Improvement',
+            title: l10n.areasForImprovement,
             icon: PhosphorIcons.trendUp(),
             iconColor: Colors.orange.shade700,
             content: areasForImprovement,
           ),
           const SizedBox(height: 16),
           _buildRecommendationCard(
-            title: 'Learning Strategies',
+            title: l10n.learningStrategies,
             icon: PhosphorIcons.lightbulb(),
             iconColor: Colors.purple.shade700,
             content: learningStrategies,
           ),
           const SizedBox(height: 16),
           _buildRecommendationCard(
-            title: 'Action Plan',
+            title: l10n.actionPlan,
             icon: PhosphorIcons.checkSquare(),
             iconColor: Colors.green.shade700,
             content: actionPlan,
@@ -1233,16 +1260,17 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
     }
   }
 
-  String _getScoreLabel(int percentage) {
-    if (percentage >= 90) return 'Excellent';
-    if (percentage >= 80) return 'Very Good';
-    if (percentage >= 70) return 'Good';
-    if (percentage >= 60) return 'Satisfactory';
-    if (percentage >= 50) return 'Fair';
-    return 'Needs Work';
+  String _getScoreLabel(int percentage, AppLocalizations l10n) {
+    if (percentage >= 90) return l10n.excellent;
+    if (percentage >= 80) return l10n.veryGood;
+    if (percentage >= 70) return l10n.good;
+    if (percentage >= 60) return l10n.satisfactory;
+    if (percentage >= 50) return l10n.fair;
+    return l10n.needsWork;
   }
 
   Widget _buildLoadingState() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 32),
       child: Column(
@@ -1250,13 +1278,13 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
           const CircularProgressIndicator(),
           const SizedBox(height: 24),
           Text(
-            'Analyzing your quiz results...',
+            l10n.analyzingYourQuizResults,
             style: AppTheme.subtitle.copyWith(fontWeight: FontWeight.w500),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
-            'Our AI is creating personalized recommendations based on your performance',
+            l10n.aiIsCreatingPersonalizedRecommendations,
             style: AppTheme.bodyText.copyWith(color: Colors.grey.shade600),
             textAlign: TextAlign.center,
           ),
@@ -1266,6 +1294,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
   }
 
   Widget _buildNoRecommendationsState() {
+    final l10n = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       child: Column(
@@ -1277,7 +1306,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
           ),
           const SizedBox(height: 16),
           Text(
-            'AI Learning Assistant',
+            l10n.aiLearningAssistant,
             style: AppTheme.subtitle.copyWith(
               fontWeight: FontWeight.bold,
               fontSize: 18,
@@ -1286,7 +1315,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
           ),
           const SizedBox(height: 16),
           Text(
-            'Want personalized insights about your performance and learning strategy recommendations?',
+            l10n.wantPersonalizedInsights,
             style: AppTheme.bodyText.copyWith(
               color: Colors.grey.shade800,
               fontSize: 16,
@@ -1295,7 +1324,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Our AI can analyze your quiz results to identify your strengths, areas for improvement, and suggest customized learning paths.',
+            l10n.aiCanAnalyzeQuizResults,
             style: AppTheme.bodyText.copyWith(color: Colors.grey.shade600),
             textAlign: TextAlign.center,
           ),
@@ -1305,7 +1334,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
             child: ElevatedButton.icon(
               onPressed: _generateInitialRecommendation,
               icon: Icon(PhosphorIcons.lightning()),
-              label: const Text('Generate AI Recommendations'),
+              label: Text(l10n.generateAIRecommendations),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.purple.shade600,
                 foregroundColor: Colors.white,
@@ -1322,7 +1351,7 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
           ),
           const SizedBox(height: 16),
           Text(
-            'This uses AI to process your quiz responses. Your data is kept private and secure.',
+            l10n.thisUsesAIToProcess,
             style: AppTheme.smallText.copyWith(
               color: Colors.grey.shade500,
               fontStyle: FontStyle.italic,
@@ -1332,5 +1361,47 @@ class _QuizReviewDetailPageState extends ConsumerState<QuizReviewDetailPage> {
         ],
       ),
     );
+  }
+
+  /// Map locale to language name for AI generation
+  String? _getLanguageName(Locale locale) {
+    switch (locale.languageCode) {
+      case 'vi':
+        return 'Vietnamese';
+      case 'en':
+        return 'English';
+      default:
+        return 'English'; // Default to English
+    }
+  }
+
+  /// Get localized quiz type string
+  String _getLocalizedQuizType(String quizType, AppLocalizations l10n) {
+    switch (quizType) {
+      case 'Multiple Choice':
+        return l10n.quizTypeMultipleChoice;
+      case 'True/False':
+        return l10n.quizTypeTrueFalse;
+      case 'Fill in the Blank':
+        return l10n.quizTypeFillInTheBlank;
+      default:
+        return quizType;
+    }
+  }
+
+  /// Get localized difficulty string
+  String _getLocalizedDifficulty(String difficulty, AppLocalizations l10n) {
+    switch (difficulty) {
+      case 'Easy':
+        return l10n.quizDifficultyEasy;
+      case 'Medium':
+        return l10n.quizDifficultyMedium;
+      case 'Hard':
+        return l10n.quizDifficultyHard;
+      case 'Expert':
+        return l10n.quizDifficultyExpert;
+      default:
+        return difficulty;
+    }
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -44,8 +45,9 @@ class _StreakFreezeCountdownState extends State<StreakFreezeCountdown> {
   }
 
   void _updateCountdown() {
+    final l10n = AppLocalizations.of(context)!;
     if (widget.expiryTime == null) {
-      _countdownText = 'Active';
+      _countdownText = l10n.active;
       _remaining = Duration.zero;
       return;
     }
@@ -55,7 +57,7 @@ class _StreakFreezeCountdownState extends State<StreakFreezeCountdown> {
     _remaining = difference;
 
     if (difference.isNegative) {
-      _countdownText = 'Expired';
+      _countdownText = l10n.expired;
     } else if (difference.inDays > 0) {
       final hours = difference.inHours - (difference.inDays * 24);
       final minutes = difference.inMinutes % 60;
@@ -87,7 +89,7 @@ class _StreakFreezeCountdownState extends State<StreakFreezeCountdown> {
     } else if (difference.inSeconds > 0) {
       _countdownText = '${difference.inSeconds}s';
     } else {
-      _countdownText = 'Now';
+      _countdownText = l10n.now;
     }
 
     setState(() {});
@@ -95,6 +97,7 @@ class _StreakFreezeCountdownState extends State<StreakFreezeCountdown> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final textColor = widget.textColor ?? Colors.blue.shade700;
 
     if (widget.compact) {
@@ -120,7 +123,7 @@ class _StreakFreezeCountdownState extends State<StreakFreezeCountdown> {
         const SizedBox(width: 4),
         Expanded(
           child: Text(
-            'Expires in $_countdownText',
+            l10n.expiresIn(_countdownText),
             style: TextStyle(
               color: textColor,
               fontWeight: FontWeight.w500,

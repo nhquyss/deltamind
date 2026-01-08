@@ -2,6 +2,7 @@ import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/core/theme/app_theme.dart';
 import 'package:deltamind/services/spaced_repetition_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Page for reviewing flashcards
@@ -339,12 +340,13 @@ class _CardReviewPageState extends State<CardReviewPage> {
 
   /// Build the prompt to show after flipping the card
   Widget _buildFlipPrompt() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         children: [
           Text(
-            'How well did you remember this?',
+            l10n.howWellDidYouRemember,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 16),
@@ -358,7 +360,7 @@ class _CardReviewPageState extends State<CardReviewPage> {
                     foregroundColor: Colors.red[700],
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: const Text('Need to Review'),
+                  child: Text(l10n.needToReview),
                 ),
               ),
               const SizedBox(width: 16),
@@ -370,7 +372,7 @@ class _CardReviewPageState extends State<CardReviewPage> {
                     foregroundColor: Colors.green[700],
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  child: const Text('Knew It'),
+                  child: Text(l10n.knewIt),
                 ),
               ),
             ],
@@ -382,12 +384,13 @@ class _CardReviewPageState extends State<CardReviewPage> {
 
   /// Build the rating buttons
   Widget _buildRatingButtons() {
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         children: [
           Text(
-            'Rate how well you knew this:',
+            l10n.rateHowWellYouKnewThis,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 12),
@@ -396,10 +399,10 @@ class _CardReviewPageState extends State<CardReviewPage> {
               : Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildRatingButton(1, 'Forgot'),
-                    _buildRatingButton(3, 'Hard'),
-                    _buildRatingButton(4, 'Good'),
-                    _buildRatingButton(5, 'Easy'),
+                    _buildRatingButton(1, l10n.forgot),
+                    _buildRatingButton(3, l10n.hard),
+                    _buildRatingButton(4, l10n.good),
+                    _buildRatingButton(5, l10n.easy),
                   ],
                 ),
         ],

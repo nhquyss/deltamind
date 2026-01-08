@@ -1,5 +1,6 @@
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/models/flashcard.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:deltamind/services/flashcard_service.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -54,30 +55,29 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
       _titleController.text = deck.title;
       _descriptionController.text = deck.description ?? '';
     }).catchError((e) {
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
-        _errorMessage = 'Error loading deck: $e';
+        _errorMessage = l10n.errorLoadingDeck(e.toString());
       });
     });
   }
 
   Future<void> _deleteDeck() async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Deck'),
-        content: const Text(
-          'Are you sure you want to delete this deck? '
-          'This will delete all flashcards in the deck and cannot be undone.',
-        ),
+        title: Text(l10n.deleteDeck),
+        content: Text(l10n.deleteDeckConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -92,8 +92,8 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
         await FlashcardService.deleteDeck(widget.deckId);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Flashcard deck deleted'),
+            SnackBar(
+              content: Text(l10n.flashcardDeckDeleted),
               backgroundColor: Colors.green,
             ),
           );
@@ -102,16 +102,17 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
       } catch (e) {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Error deleting deck: $e';
+          _errorMessage = l10n.errorDeletingDeck(e.toString());
         });
       }
     }
   }
 
   Future<void> _updateDeck() async {
+    final l10n = AppLocalizations.of(context)!;
     if (_titleController.text.isEmpty) {
       setState(() {
-        _errorMessage = 'Title cannot be empty';
+        _errorMessage = l10n.titleCannotBeEmpty;
       });
       return;
     }
@@ -138,8 +139,8 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Deck updated successfully'),
+          SnackBar(
+            content: Text(l10n.deckUpdatedSuccessfully),
             backgroundColor: Colors.green,
           ),
         );
@@ -147,28 +148,27 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
     } catch (e) {
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Error updating deck: $e';
+        _errorMessage = l10n.errorUpdatingDeck(e.toString());
       });
     }
   }
 
   Future<void> _deleteFlashcard(Flashcard flashcard) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Flashcard'),
-        content: const Text(
-          'Are you sure you want to delete this flashcard? This cannot be undone.',
-        ),
+        title: Text(l10n.deleteFlashcard),
+        content: Text(l10n.deleteFlashcardConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -192,8 +192,8 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Flashcard deleted'),
+            SnackBar(
+              content: Text(l10n.flashcardDeleted),
               backgroundColor: Colors.green,
             ),
           );
@@ -201,13 +201,14 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
       } catch (e) {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Error deleting flashcard: $e';
+          _errorMessage = l10n.errorDeletingFlashcard(e.toString());
         });
       }
     }
   }
 
   Future<void> _editFlashcard(Flashcard flashcard) async {
+    final l10n = AppLocalizations.of(context)!;
     final questionController = TextEditingController(text: flashcard.question);
     final answerController = TextEditingController(text: flashcard.answer);
     final hintController = TextEditingController(text: flashcard.hint ?? '');
@@ -215,16 +216,16 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
     final result = await showDialog<Map<String, String>?>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Edit Flashcard'),
+        title: Text(l10n.editFlashcard),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: questionController,
-                decoration: const InputDecoration(
-                  labelText: 'Question',
-                  hintText: 'Front of the flashcard',
+                decoration: InputDecoration(
+                  labelText: l10n.question,
+                  hintText: l10n.frontOfFlashcard,
                 ),
                 maxLines: 3,
                 minLines: 1,
@@ -232,9 +233,9 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
               const SizedBox(height: 16),
               TextField(
                 controller: answerController,
-                decoration: const InputDecoration(
-                  labelText: 'Answer',
-                  hintText: 'Back of the flashcard',
+                decoration: InputDecoration(
+                  labelText: l10n.answer,
+                  hintText: l10n.backOfFlashcard,
                 ),
                 maxLines: 5,
                 minLines: 2,
@@ -242,9 +243,9 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
               const SizedBox(height: 16),
               TextField(
                 controller: hintController,
-                decoration: const InputDecoration(
-                  labelText: 'Hint (Optional)',
-                  hintText: 'Optional hint to help recall',
+                decoration: InputDecoration(
+                  labelText: l10n.hintOptional,
+                  hintText: l10n.optionalHintToHelpRecall,
                 ),
                 maxLines: 2,
                 minLines: 1,
@@ -255,15 +256,15 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(null),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
               if (questionController.text.isEmpty ||
                   answerController.text.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Question and answer cannot be empty'),
+                  SnackBar(
+                    content: Text(l10n.questionAndAnswerCannotBeEmpty),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -276,7 +277,7 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
                 'hint': hintController.text,
               });
             },
-            child: const Text('Save'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -304,8 +305,8 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Flashcard updated'),
+            SnackBar(
+              content: Text(l10n.flashcardUpdated),
               backgroundColor: Colors.green,
             ),
           );
@@ -313,13 +314,14 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
       } catch (e) {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Error updating flashcard: $e';
+          _errorMessage = l10n.errorUpdatingFlashcard(e.toString());
         });
       }
     }
   }
 
   Future<void> _addFlashcard() async {
+    final l10n = AppLocalizations.of(context)!;
     final questionController = TextEditingController();
     final answerController = TextEditingController();
     final hintController = TextEditingController();
@@ -327,16 +329,16 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
     final result = await showDialog<Map<String, String>?>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Add Flashcard'),
+        title: Text(l10n.addFlashcard),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: questionController,
-                decoration: const InputDecoration(
-                  labelText: 'Question',
-                  hintText: 'Front of the flashcard',
+                decoration: InputDecoration(
+                  labelText: l10n.question,
+                  hintText: l10n.frontOfFlashcard,
                 ),
                 maxLines: 3,
                 minLines: 1,
@@ -344,9 +346,9 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
               const SizedBox(height: 16),
               TextField(
                 controller: answerController,
-                decoration: const InputDecoration(
-                  labelText: 'Answer',
-                  hintText: 'Back of the flashcard',
+                decoration: InputDecoration(
+                  labelText: l10n.answer,
+                  hintText: l10n.backOfFlashcard,
                 ),
                 maxLines: 5,
                 minLines: 2,
@@ -354,9 +356,9 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
               const SizedBox(height: 16),
               TextField(
                 controller: hintController,
-                decoration: const InputDecoration(
-                  labelText: 'Hint (Optional)',
-                  hintText: 'Optional hint to help recall',
+                decoration: InputDecoration(
+                  labelText: l10n.hintOptional,
+                  hintText: l10n.optionalHintToHelpRecall,
                 ),
                 maxLines: 2,
                 minLines: 1,
@@ -367,15 +369,15 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(null),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () {
               if (questionController.text.isEmpty ||
                   answerController.text.isEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Question and answer cannot be empty'),
+                  SnackBar(
+                    content: Text(l10n.questionAndAnswerCannotBeEmpty),
                     backgroundColor: Colors.red,
                   ),
                 );
@@ -388,7 +390,7 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
                 'hint': hintController.text,
               });
             },
-            child: const Text('Add'),
+            child: Text(l10n.add),
           ),
         ],
       ),
@@ -417,8 +419,8 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Flashcard added'),
+            SnackBar(
+              content: Text(l10n.flashcardAdded),
               backgroundColor: Colors.green,
             ),
           );
@@ -426,7 +428,7 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
       } catch (e) {
         setState(() {
           _isLoading = false;
-          _errorMessage = 'Error adding flashcard: $e';
+          _errorMessage = l10n.errorAddingFlashcard(e.toString());
         });
       }
     }
@@ -434,26 +436,27 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flashcard Deck'),
+        title: Text(l10n.flashcardDeck),
         actions: [
           if (!_isEditing) ...[
             IconButton(
               icon: Icon(PhosphorIconsRegular.pencilSimple),
               onPressed: () => setState(() => _isEditing = true),
-              tooltip: 'Edit Deck',
+              tooltip: l10n.editDeck,
             ),
             IconButton(
               icon: Icon(PhosphorIconsRegular.trash),
               onPressed: _deleteDeck,
-              tooltip: 'Delete Deck',
+              tooltip: l10n.deleteDeck,
             ),
           ] else ...[
             IconButton(
               icon: Icon(PhosphorIconsRegular.checkCircle),
               onPressed: _updateDeck,
-              tooltip: 'Save Changes',
+              tooltip: l10n.saveChanges,
             ),
             IconButton(
               icon: Icon(PhosphorIconsRegular.x),
@@ -467,7 +470,7 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
                   });
                 });
               },
-              tooltip: 'Cancel Editing',
+              tooltip: l10n.cancelEditing,
             ),
           ],
         ],
@@ -505,9 +508,9 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text(
-                          'Flashcards',
-                          style: TextStyle(
+                        Text(
+                          l10n.flashcards,
+                          style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
@@ -520,7 +523,7 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
                                   .push('/flashcards/${widget.deckId}/view'),
                               icon: Icon(PhosphorIconsRegular.play,
                                   size: 18, color: AppColors.primary),
-                              label: const Text('Study'),
+                              label: Text(l10n.study),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: AppColors.primary,
                               ),
@@ -528,7 +531,7 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
                             ElevatedButton.icon(
                               onPressed: _addFlashcard,
                               icon: const Icon(Icons.add, size: 16),
-                              label: const Text('Add'),
+                              label: Text(l10n.add),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColors.primary,
                                 foregroundColor: Colors.white,
@@ -557,23 +560,24 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
   }
 
   Widget _buildDeckInfo() {
+    final l10n = AppLocalizations.of(context)!;
     if (_isEditing) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextField(
             controller: _titleController,
-            decoration: const InputDecoration(
-              labelText: 'Deck Title',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.deckTitle,
+              border: const OutlineInputBorder(),
             ),
           ),
           const SizedBox(height: 16),
           TextField(
             controller: _descriptionController,
-            decoration: const InputDecoration(
-              labelText: 'Description',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: l10n.description,
+              border: const OutlineInputBorder(),
             ),
             maxLines: 3,
           ),
@@ -657,7 +661,7 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '${deck.cardCount} cards',
+                              l10n.cardsCount(deck.cardCount),
                               style: TextStyle(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.w500,
@@ -711,9 +715,10 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
           );
         }
 
+        final l10n = AppLocalizations.of(context)!;
         if (snapshot.hasError) {
           return Text(
-            'Error loading flashcards: ${snapshot.error}',
+            l10n.errorLoadingFlashcards(snapshot.error.toString()),
             style: const TextStyle(color: Colors.red),
           );
         }
@@ -730,23 +735,23 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
                     color: Colors.grey[400],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'No flashcards in this deck',
-                    style: TextStyle(
+                  Text(
+                    l10n.noFlashcardsInDeck,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
-                  const Text(
-                    'Add some flashcards to get started',
-                    style: TextStyle(color: Colors.grey),
+                  Text(
+                    l10n.addSomeFlashcardsToGetStarted,
+                    style: const TextStyle(color: Colors.grey),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
                     onPressed: _addFlashcard,
                     icon: const Icon(Icons.add),
-                    label: const Text('Add Flashcard'),
+                    label: Text(l10n.addFlashcardButton),
                   ),
                 ],
               ),
@@ -769,6 +774,7 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
   }
 
   Widget _buildFlashcardItem(Flashcard flashcard, int index) {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       elevation: 1,
@@ -824,7 +830,7 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  'Answer',
+                                  l10n.answer,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.green[700],
@@ -867,7 +873,7 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      'Hint',
+                                      l10n.hint,
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         color: Colors.amber[700],
@@ -901,7 +907,7 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
                 TextButton.icon(
                   onPressed: () => _editFlashcard(flashcard),
                   icon: Icon(PhosphorIconsRegular.pencilSimple, size: 16),
-                  label: const Text('Edit'),
+                  label: Text(l10n.edit),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.grey[700],
                   ),
@@ -909,7 +915,7 @@ class _FlashcardDeckDetailPageState extends State<FlashcardDeckDetailPage> {
                 TextButton.icon(
                   onPressed: () => _deleteFlashcard(flashcard),
                   icon: Icon(PhosphorIconsRegular.trash, size: 16),
-                  label: const Text('Delete'),
+                  label: Text(l10n.delete),
                   style: TextButton.styleFrom(
                     foregroundColor: Colors.red,
                   ),

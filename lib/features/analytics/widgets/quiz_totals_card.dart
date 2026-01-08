@@ -2,6 +2,7 @@ import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/services/analytics_service.dart';
 import 'package:deltamind/services/supabase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Card to display total quizzes created and completed
@@ -53,6 +54,7 @@ class _QuizTotalsCardState extends State<QuizTotalsCard> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Card(
       elevation: 1,
@@ -78,7 +80,7 @@ class _QuizTotalsCardState extends State<QuizTotalsCard> {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Quiz Summary',
+                  l10n.quizSummary,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -94,7 +96,7 @@ class _QuizTotalsCardState extends State<QuizTotalsCard> {
                 Expanded(
                   child: _buildTotalItem(
                     context,
-                    'Quizzes Created',
+                    l10n.quizzesCreated,
                     widget.totalCreated.toString(),
                     PhosphorIconsFill.notepad,
                     AppColors.primary,
@@ -104,7 +106,7 @@ class _QuizTotalsCardState extends State<QuizTotalsCard> {
                 Expanded(
                   child: _buildTotalItem(
                     context,
-                    'Quizzes Completed',
+                    l10n.quizzesCompleted,
                     widget.totalCompleted.toString(),
                     PhosphorIconsFill.checkSquare,
                     AppColors.success,
@@ -121,7 +123,7 @@ class _QuizTotalsCardState extends State<QuizTotalsCard> {
                 Expanded(
                   child: _buildTotalItem(
                     context,
-                    'Average Score',
+                    l10n.averageScore,
                     _isLoading ? '...' : '${_averageScore.toStringAsFixed(1)}%',
                     PhosphorIconsFill.chartBar,
                     Colors.orange.shade700,

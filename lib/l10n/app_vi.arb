@@ -1,0 +1,1277 @@
+{
+  "@@locale": "vi",
+  "appName": "DeltaMind",
+  "appDescription": "Học tập và ghi nhớ hiệu quả với câu hỏi \n được tạo bởi AI",
+  "welcome": "Chào mừng",
+  "signIn": "Đăng nhập",
+  "signUp": "Đăng ký",
+  "email": "Email",
+  "password": "Mật khẩu",
+  "forgotPassword": "Quên mật khẩu?",
+  "confirmPassword": "Xác nhận mật khẩu",
+  "alreadyHaveAccount": "Đã có tài khoản?",
+  "dontHaveAccount": "Chưa có tài khoản?",
+  "pleaseEnterEmail": "Vui lòng nhập email",
+  "pleaseEnterPassword": "Vui lòng nhập mật khẩu",
+  "passwordTooShort": "Mật khẩu phải có ít nhất 6 ký tự",
+  "passwordsDoNotMatch": "Mật khẩu không khớp",
+  "pleaseVerifyEmail": "Vui lòng xác thực email trước khi đăng nhập. Kiểm tra hộp thư của bạn để tìm liên kết xác thực.",
+  "dashboard": "Trang chủ",
+  "learningPaths": "Lộ trình học",
+  "notes": "Ghi chú",
+  "quiz": "Câu hỏi",
+  "quizzes": "Câu hỏi",
+  "flashcards": "Thẻ ghi nhớ",
+  "achievements": "Thành tích",
+  "analytics": "Phân tích học tập",
+  "profile": "Hồ sơ",
+  "search": "Tìm kiếm",
+  "loadingAnalytics": "Đang tải thống kê của bạn...",
+  "errorLoadingAnalytics": "Lỗi khi tải thống kê",
+  "createNote": "Tạo ghi chú",
+  "createQuiz": "Tạo câu hỏi",
+  "generateLearningPath": "Tạo lộ trình học",
+  "tryAgain": "Thử lại",
+  "goBack": "Quay lại",
+  "cancel": "Hủy",
+  "save": "Lưu",
+  "delete": "Xóa",
+  "edit": "Chỉnh sửa",
+  "view": "Xem",
+  "active": "Đang hoạt động",
+  "clearFilters": "Xóa bộ lọc",
+  "viewAll": "Xem tất cả",
+  "noLearningPathsYet": "Bạn chưa có lộ trình học nào",
+  "generateNewPath": "Tạo lộ trình học mới được hỗ trợ bởi AI để bắt đầu hành trình của bạn",
+  "readyToTrain": "Bạn đã sẵn sàng luyện tập rồi chứ?",
+  "startAQuiz": "Luyện câu hỏi",
+  "changeColor": "Đổi màu",
+  "chooseColor": "Chọn màu",
+  "deleteNote": "Xóa ghi chú?",
+  "deleteNoteWarning": "Hành động này không thể hoàn tác.",
+  "needToReview": "Cần xem lại",
+  "knewIt": "Đã biết",
+  "howWellDidYouRemember": "Bạn nhớ được bao nhiêu?",
+  "reviews": "Ôn tập",
+  "spacedRepetitionStats": "Thống kê lặp lại ngắt quãng",
+  "totalCards": "Tổng số thẻ",
+  "dueToday": "Đến hạn hôm nay",
+  "mastered": "Đã thành thạo",
+  "cardsDueToday": "Thẻ đến hạn hôm nay",
+  "startReview": "Bắt đầu ôn tập",
+  "numberOfFlashcards": "Số lượng thẻ ghi nhớ cần tạo: {count}",
+  "@numberOfFlashcards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "flashcardTip": "Mẹo: Bắt đầu với ít thẻ hơn để có chất lượng tốt hơn. Bạn luôn có thể thêm sau.",
+  "chooseDifferentFile": "Chọn file khác",
+  "failedToInitialize": "Khởi tạo ứng dụng thất bại",
+  "checkConnection": "Vui lòng kiểm tra kết nối internet và khởi động lại ứng dụng.",
+  "error": "Lỗi",
+  "success": "Thành công",
+  "loading": "Đang tải...",
+  "noData": "Không có dữ liệu",
+  "settings": "Cài đặt",
+  "language": "Ngôn ngữ",
+  "english": "Tiếng Anh",
+  "vietnamese": "Tiếng Việt",
+  "logout": "Đăng xuất",
+  "changePassword": "Đổi mật khẩu",
+  "currentPassword": "Mật khẩu hiện tại",
+  "newPassword": "Mật khẩu mới",
+  "confirmNewPassword": "Xác nhận mật khẩu mới",
+  "login": "Đăng nhập",
+  "register": "Đăng ký",
+  "pleaseEnterValidEmail": "Vui lòng nhập email hợp lệ",
+  "unexpectedError": "Đã xảy ra lỗi không mong muốn",
+  "or": "HOẶC",
+  "signInWithGoogle": "Đăng nhập bằng Google",
+  "createYourAccount": "Tạo tài khoản của bạn",
+  "username": "Tên người dùng",
+  "pleaseEnterUsername": "Vui lòng nhập tên người dùng",
+  "usernameTooShort": "Tên người dùng phải có ít nhất 3 ký tự",
+  "pleaseEnterAPassword": "Vui lòng nhập mật khẩu",
+  "pleaseConfirmPassword": "Vui lòng xác nhận mật khẩu",
+  "registrationSuccessful": "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản trước khi đăng nhập.",
+  "resetYourPassword": "Đặt lại mật khẩu",
+  "resetPasswordDescription": "Nhập địa chỉ email của bạn và chúng tôi sẽ gửi liên kết để đặt lại mật khẩu.",
+  "sendResetLink": "Gửi liên kết đặt lại",
+  "checkYourEmail": "Kiểm tra email của bạn",
+  "resetLinkSent": "Chúng tôi đã gửi liên kết đặt lại mật khẩu đến:\n{email}",
+  "@resetLinkSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "checkInboxMessage": "Vui lòng kiểm tra hộp thư và nhấp vào liên kết để đặt lại mật khẩu.",
+  "backToLogin": "Quay lại đăng nhập",
+  "resetPassword": "Đặt lại mật khẩu",
+  "setNewPassword": "Đặt mật khẩu mới",
+  "changeYourPassword": "Thay đổi mật khẩu",
+  "changePasswordDescription": "Nhập mật khẩu hiện tại và chọn mật khẩu mới.",
+  "setNewPasswordDescription": "Vui lòng nhập mật khẩu mới bên dưới.",
+  "pleaseEnterCurrentPassword": "Vui lòng nhập mật khẩu hiện tại",
+  "pleaseEnterANewPassword": "Vui lòng nhập mật khẩu mới",
+  "pleaseConfirmNewPassword": "Vui lòng xác nhận mật khẩu mới",
+  "passwordUpdatedSuccessfully": "Mật khẩu đã được cập nhật thành công",
+  "currentPasswordIncorrect": "Mật khẩu hiện tại không đúng",
+  "clickEmailLinkToReset": "Vui lòng nhấp vào liên kết trong email để đặt lại mật khẩu",
+  "userNotFound": "Không tìm thấy người dùng",
+  "userID": "ID người dùng",
+  "joined": "Tham gia",
+  "notAvailable": "Không có sẵn",
+  "profileInformation": "Thông tin hồ sơ",
+  "accountInformation": "Thông tin tài khoản",
+  "shortcuts": "Lối tắt",
+  "updateProfile": "Cập nhật hồ sơ",
+  "profilePictureUpdatedSuccessfully": "Ảnh đại diện đã được cập nhật thành công",
+  "failedToUploadProfilePicture": "Tải lên ảnh đại diện thất bại",
+  "errorUploadingProfilePicture": "Lỗi khi tải lên ảnh đại diện",
+  "profileUpdated": "Hồ sơ đã được cập nhật",
+  "errorUpdatingProfile": "Lỗi khi cập nhật hồ sơ",
+  "signedOutSuccessfully": "Đăng xuất thành công",
+  "errorSigningOut": "Lỗi khi đăng xuất",
+  "user": "Người dùng",
+  "chooseFromGallery": "Chọn từ thư viện",
+  "takeAPhoto": "Chụp ảnh",
+  "uploadFile": "Tải file lên",
+  "errorPickingImage": "Lỗi khi chọn ảnh. Vui lòng thử lại.",
+  "cameraNotAvailable": "Camera không khả dụng. Vui lòng sử dụng thư viện hoặc tải file lên.",
+  "errorTakingPhoto": "Lỗi khi chụp ảnh. Vui lòng thử lại.",
+  "welcomeBack": "Chào mừng trở lại, ",
+  "hello": "Xin chào, ",
+  "refresh": "Làm mới",
+  "errorRefreshingDashboard": "Lỗi khi làm mới bảng điều khiển",
+  "learningPath": "Lộ trình học",
+  "currentProgress": "Tiến độ hiện tại",
+  "currentModule": "Module hiện tại",
+  "module": "Module",
+  "noModulesAvailable": "Không có module nào",
+  "thisPathHasNoModules": "Lộ trình này không có module nào.",
+  "generateAILearningPathsForAnyTopic": "Tạo lộ trình học AI cho bất kỳ chủ đề nào",
+  "learningAnalytics": "Phân tích học tập",
+  "recentQuizzes": "Câu hỏi gần đây",
+  "noQuizzesYet": "Chưa có câu hỏi nào",
+  "createYourFirstQuizToGetStarted": "Tạo câu hỏi đầu tiên để bắt đầu",
+  "noDescription": "Không có mô tả",
+  "goodMorning": "Chào buổi sáng",
+  "todaysQuestion": "Câu hỏi hôm nay:",
+  "yourStats": "Thống kê của bạn",
+  "quizzesCompleted": "Câu hỏi đã hoàn thành",
+  "totalScore": "Tổng điểm",
+  "learningHours": "Giờ học",
+  "daysActive": "Ngày hoạt động",
+  "searchNotesQuizzesFlashcards": "Tìm kiếm ghi chú, câu hỏi, thẻ ghi nhớ...",
+  "typeToSearch": "Nhập ở trên để tìm bất kỳ nội dung nào",
+  "errorOccurred": "Đã xảy ra lỗi",
+  "noResultsFound": "Không tìm thấy kết quả",
+  "tryDifferentSearchTermOrFilters": "Hãy thử từ khóa hoặc bộ lọc khác",
+  "dayStreak": "Chuỗi {count} ngày",
+  "@dayStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "bestStreak": "Chuỗi dài nhất: {count}",
+  "@bestStreak": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "level": "Cấp độ {level}",
+  "@level": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "completeAQuizTodayToStartYourStreak": "Hoàn thành một câu hỏi hôm nay để bắt đầu chuỗi của bạn!",
+  "streakFreeze": "Bảo vệ chuỗi: ",
+  "failedToLoadLearningPaths": "Không thể tải lộ trình học",
+  "dashboard": "Trang chủ",
+  "allPaths": "Tất cả lộ trình",
+  "learningPathsDashboard": "Tổng quan lộ trình học",
+  "trackYourProgressAndContinueYourLearningJourney": "Theo dõi tiến độ và tiếp tục hành trình học tập của bạn",
+  "recentLearningPaths": "Lộ trình học gần đây",
+  "totalPaths": "Tổng lộ trình",
+  "completed": "Đã xong",
+  "inProgress": "Đang học",
+  "path": "lộ trình",
+  "paths": "lộ trình",
+  "pathsFound": "Tìm thấy {count} {count, plural, =1 {lộ trình} other {lộ trình}}",
+  "@pathsFound": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "searchLearningPaths": "Tìm kiếm lộ trình học...",
+  "category": "Danh mục",
+  "difficulty": "Độ khó",
+  "beginner": "Cơ bản",
+  "intermediate": "Trung bình",
+  "advanced": "Nâng cao",
+  "activePath": "Lộ trình đang hoạt động",
+  "failedToLoadLearningPath": "Không thể tải lộ trình học",
+  "pathNotFound": "Không tìm thấy lộ trình",
+  "overview": "Tổng quan",
+  "progressLabel": "Tiến độ",
+  "progress": "Tiến độ: ",
+  "pathOverview": "Tổng quan lộ trình",
+  "modules": "Module ({count})",
+  "@modules": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "locked": "Đã khóa",
+  "moduleStatus": "Trạng thái Module:",
+  "completedStatus": "Đã xong",
+  "inProgressStatus": "Đang học",
+  "lockedStatus": "Đã khóa",
+  "difficultyLevel": "Mức độ khó:",
+  "selectAModule": "Chọn một module",
+  "thisModuleIsLockedCompleteItsDependenciesFirst": "Module này đã bị khóa. Hãy hoàn thành các module phụ thuộc trước.",
+  "dependsOn": "Phụ thuộc vào: ",
+  "description": "Mô tả",
+  "dependencies": "Phụ thuộc",
+  "learningObjectives": "Mục tiêu học tập",
+  "resources": "Tài nguyên",
+  "linkedContent": "Nội dung liên kết",
+  "viewNote": "Xem ghi chú",
+  "takeQuiz": "Làm câu hỏi",
+  "studyCards": "Học thẻ",
+  "estimatedTime": "Thời gian ước tính: ",
+  "assessment": "Đánh giá",
+  "additionalNotes": "Ghi chú bổ sung",
+  "previous": "Trước",
+  "next": "Tiếp theo",
+  "showAllModules": "Hiển thị tất cả module",
+  "markAsDone": "Đánh dấu hoàn thành",
+  "close": "Đóng",
+  "linkCopiedToClipboard": "Đã sao chép liên kết",
+  "resourceTextCopiedToClipboard": "Đã sao chép văn bản tài nguyên",
+  "generateAILearningPath": "Tạo lộ trình học với AI",
+  "learningTopic": "Chủ đề học tập *",
+  "learningTopicHint": "ví dụ: Machine Learning, Web Development, Flutter",
+  "pleaseEnterATopic": "Vui lòng nhập chủ đề",
+  "topicIsTooShort": "Chủ đề quá ngắn",
+  "knowledgeLevel": "Mức độ kiến thức *",
+  "advancedOptions": "Tùy chọn nâng cao",
+  "show": "Hiển thị",
+  "hide": "Ẩn",
+  "learningGoalsOptional": "Mục tiêu học tập (Tùy chọn)",
+  "learningGoalsHint": "Bạn muốn đạt được gì với lộ trình học này?",
+  "learningStyleOptional": "Phong cách học tập (Tùy chọn)",
+  "generating": "Đang tạo...",
+  "thisWillCreateAnAIPoweredPersonalizedLearningPath": "Điều này sẽ tạo một lộ trình học tập được cá nhân hóa bởi AI",
+  "createdABasicLearningPathAIGenerationHadIssuesYouMayWantToEditThisPathLater": "Đã tạo một lộ trình học cơ bản. Việc tạo AI gặp sự cố. Bạn có thể muốn chỉnh sửa lộ trình này sau.",
+  "balanced": "Cân bằng",
+  "visual": "Trực quan",
+  "practical": "Thực hành",
+  "theoretical": "Lý thuyết",
+  "learningPathVisualization": "Trực quan hóa lộ trình học",
+  "showModules": "Hiển thị module",
+  "viewModule": "Xem module",
+  "modulesCount": "{completed}/{total} module",
+  "@modulesCount": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "learningProgress": "Tiến độ học tập",
+  "continueLearning": "Tiếp tục học",
+  "learningPathCompleted": "Đã hoàn thành lộ trình học!",
+  "congratulationsOnCompletingThisLearningPath": "Chúc mừng bạn đã hoàn thành lộ trình học này",
+  "remaining": "Còn lại",
+  "learningPathPrefix": "Lộ trình học: ",
+  "listView": "Xem danh sách",
+  "gridView": "Xem lưới",
+  "searchNotes": "Tìm kiếm ghi chú",
+  "noNotesMatchYourFilters": "Không có ghi chú nào khớp với bộ lọc của bạn",
+  "youDontHaveAnyNotesYet": "Bạn chưa có ghi chú nào",
+  "pin": "Ghim",
+  "unpin": "Bỏ ghim",
+  "updated": "Cập nhật: ",
+  "errorLoadingNote": "Lỗi khi tải ghi chú: {error}",
+  "@errorLoadingNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "titleCannotBeEmpty": "Tiêu đề không được để trống",
+  "pleaseSignInToSaveNotes": "Vui lòng đăng nhập để lưu ghi chú",
+  "noteUpdated": "Ghi chú đã được cập nhật",
+  "noteCreated": "Ghi chú đã được tạo",
+  "errorSavingNote": "Lỗi khi lưu ghi chú: {error}",
+  "@errorSavingNote": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unsavedChanges": "Thay đổi chưa lưu",
+  "saveChangesBeforeLeaving": "Lưu thay đổi trước khi rời khỏi?",
+  "discard": "HỦY",
+  "editNote": "Chỉnh sửa ghi chú",
+  "newNote": "Ghi chú mới",
+  "editTags": "Chỉnh sửa thẻ",
+  "title": "Tiêu đề",
+  "tapHereToStartWriting": "Nhấn vào đây để bắt đầu viết...",
+  "saving": "Đang lưu...",
+  "deleteQuiz": "Xóa câu hỏi",
+  "deleteQuizConfirmation": "Bạn có chắc chắn muốn xóa câu hỏi này không? Hành động này không thể hoàn tác.",
+  "quizDeletedSuccessfully": "Đã xóa câu hỏi thành công",
+  "errorLoadingQuizzes": "Lỗi khi tải câu hỏi: {error}",
+  "@errorLoadingQuizzes": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingQuizzesFailed": "Lỗi: {operation} thất bại. Vui lòng thử lại.",
+  "@loadingQuizzesFailed": {
+    "placeholders": {
+      "operation": {
+        "type": "String"
+      }
+    }
+  },
+  "noMatchingQuizzes": "Không có câu hỏi nào khớp",
+  "noQuizzesAvailable": "Không có câu hỏi nào",
+  "adjustFiltersOrSearch": "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm",
+  "createYourFirstQuizHere": "Tạo câu hỏi đầu tiên để xem ở đây",
+  "clearFiltersAction": "Xóa bộ lọc",
+  "toggleFilters": "Bật/Tắt bộ lọc",
+  "quizTypeLabel": "Loại câu hỏi:",
+  "difficultyLabel": "Độ khó:",
+  "resetFilters": "Đặt lại bộ lọc",
+  "activeFilters": "Bộ lọc đang hoạt động:",
+  "clearAll": "Xóa tất cả",
+  "searchQuizzes": "Tìm kiếm câu hỏi...",
+  "quizTypeMultipleChoice": "Trắc nghiệm",
+  "quizTypeTrueFalse": "Đúng/Sai",
+  "quizTypeFillInTheBlank": "Điền vào chỗ trống",
+  "quizTypeAll": "Tất cả",
+  "quizDifficultyAll": "Tất cả",
+  "quizDifficultyEasy": "Dễ",
+  "quizDifficultyMedium": "Trung bình",
+  "quizDifficultyHard": "Khó",
+  "quizDifficultyExpert": "Chuyên gia",
+  "generatedQuiz": "Câu hỏi đã tạo",
+  "generatedQuizBasedOnFile": "Câu hỏi đã tạo dựa trên {fileName}",
+  "@generatedQuizBasedOnFile": {
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "generatedQuizBasedOnContent": "Câu hỏi đã tạo dựa trên nội dung",
+  "startQuiz": "Bắt đầu làm bài",
+  "quizzesTab": "Câu hỏi",
+  "historyTab": "Lịch sử",
+  "createQuizTitle": "Tạo câu hỏi",
+  "aiQuizGenerator": "Trình tạo câu hỏi AI",
+  "createQuizDescription": "Tạo câu hỏi mới bằng cách nhập tài liệu học tập hoặc tải lên file. AI của chúng tôi sẽ tạo câu hỏi cho bạn.",
+  "quizTitle": "Tiêu đề câu hỏi",
+  "enterQuizTitle": "Nhập tiêu đề cho câu hỏi của bạn",
+  "pleaseEnterQuizTitle": "Vui lòng nhập tiêu đề câu hỏi",
+  "quizSettings": "Cài đặt câu hỏi",
+  "quizType": "Loại câu hỏi",
+  "numberOfQuestions": "Số lượng câu hỏi: {count}",
+  "@numberOfQuestions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studyMaterial": "Tài liệu học tập",
+  "studyMaterialHint": "Nhập ghi chú, văn bản hoặc tài liệu học tập, hoặc tải lên file.",
+  "fileUpload": "Tải file lên",
+  "changeFile": "Đổi file",
+  "pasteYourNotes": "Dán ghi chú, văn bản hoặc tài liệu học tập của bạn vào đây...",
+  "pleaseEnterContentOrUploadFile": "Vui lòng nhập nội dung hoặc tải lên file",
+  "generatingQuiz": "Đang tạo câu hỏi...",
+  "generateQuiz": "Tạo câu hỏi",
+  "quizGeneratedSuccessfully": "Đã tạo câu hỏi thành công!",
+  "errorGeneratingQuiz": "Lỗi khi tạo câu hỏi: {error}",
+  "@errorGeneratingQuiz": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "fileIsTooLarge": "File quá lớn. Kích thước tối đa là 5MB.",
+  "errorCannotAccessFileData": "Lỗi: Không thể truy cập dữ liệu file trên nền tảng web.",
+  "unsupportedFileFormat": "Định dạng file không được hỗ trợ. Vui lòng tải lên file văn bản, tài liệu, PDF hoặc hình ảnh.",
+  "errorPickingFile": "Lỗi khi chọn file: {error}",
+  "@errorPickingFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "processingFile": "Đang xử lý file {extension}...",
+  "@processingFile": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "processingPdfPage": "Đang xử lý trang PDF {current} / {total}...",
+  "@processingPdfPage": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "errorProcessingPdf": "Lỗi khi xử lý PDF: {error}",
+  "@errorProcessingPdf": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorReadingTextFile": "Lỗi khi đọc file văn bản: {error}",
+  "@errorReadingTextFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "unsupportedFileType": "Loại file không được hỗ trợ: {extension}",
+  "@unsupportedFileType": {
+    "placeholders": {
+      "extension": {
+        "type": "String"
+      }
+    }
+  },
+  "generatingQuizQuestions": "Đang tạo câu hỏi...",
+  "failedToGenerateQuiz": "Không thể tạo câu hỏi",
+  "failedToGenerateQuizFromFile": "Không thể tạo câu hỏi từ file",
+  "question": "Câu hỏi",
+  "questions": "Câu hỏi",
+  "ofSeparator": "của",
+  "next": "Tiếp theo",
+  "previous": "Trước",
+  "submit": "Nộp bài",
+  "finish": "Hoàn thành",
+  "review": "Xem lại",
+  "reviewQuiz": "Xem lại câu hỏi",
+  "quizReview": "Xem lại câu hỏi",
+  "reviewTitle": "Xem lại: {title}",
+  "@reviewTitle": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "refreshFeedback": "Làm mới phản hồi",
+  "generatingPersonalizedReview": "Đang tạo đánh giá cá nhân hóa...",
+  "performanceSummary": "Tóm tắt hiệu suất",
+  "youGotCorrect": "Bạn đã trả lời đúng {correct} / {total} câu hỏi",
+  "@youGotCorrect": {
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "questionReview": "Xem lại câu hỏi",
+  "correct": "Đúng",
+  "incorrect": "Sai",
+  "options": "Tùy chọn:",
+  "explanation": "Giải thích:",
+  "aiFeedbackAndStudyTips": "Phản hồi AI & Mẹo học tập",
+  "personalizedLearningPath": "Lộ trình học tập cá nhân hóa",
+  "wantPersonalizedLearningPlan": "Bạn muốn có kế hoạch học tập cá nhân hóa dựa trên kết quả câu hỏi của bạn?",
+  "aiCanAnalyzeStrengths": "AI của chúng tôi có thể phân tích điểm mạnh và điểm yếu của bạn để tạo lộ trình học tập phù hợp với tài nguyên và bài tập thực hành được đề xuất.",
+  "generateLearningPlan": "Tạo kế hoạch học tập",
+  "generatingPersonalizedLearningPlan": "Đang tạo kế hoạch học tập cá nhân hóa của bạn...",
+  "backToResults": "Quay lại kết quả",
+  "errorLoadingReview": "Lỗi khi tải đánh giá: {error}",
+  "@errorLoadingReview": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "excellent": "Xuất sắc!",
+  "goodEffort": "Cố gắng tốt!",
+  "keepPracticing": "Tiếp tục luyện tập!",
+  "quizAttemptNotFound": "Không tìm thấy lần làm bài",
+  "correctAnswers": "Đúng",
+  "totalQuestions": "Tổng số câu hỏi",
+  "score": "Điểm",
+  "timeTaken": "Thời gian",
+  "completed": "Đã hoàn thành",
+  "reviewDetails": "Chi tiết xem lại",
+  "performanceOverview": "Tổng quan hiệu suất",
+  "strengths": "Điểm mạnh",
+  "areasForImprovement": "Cần cải thiện",
+  "learningStrategies": "Chiến lược học tập",
+  "actionPlan": "Kế hoạch hành động",
+  "regenerateRecommendations": "Tạo lại đề xuất",
+  "generatingRecommendations": "Đang tạo đề xuất...",
+  "errorGeneratingRecommendations": "Lỗi khi tạo đề xuất",
+  "errorLoadingRecommendations": "Lỗi khi tải đề xuất",
+  "readyForProcessing": "sẵn sàng để xử lý",
+  "clickGenerateQuizToCreate": "Nhấn \"Tạo câu hỏi\" để tạo câu hỏi từ nội dung file này.",
+  "thisQuizHasNoQuestionsYet": "Câu hỏi này chưa có câu hỏi nào.",
+  "finalizingQuiz": "Đang hoàn tất câu hỏi",
+  "savingYourQuizResults": "Đang lưu kết quả câu hỏi của bạn...",
+  "questionsAndAnswers": "Câu hỏi & Trả lời",
+  "items": "mục",
+  "returnToDashboard": "Quay lại Trang chủ",
+  "viewQuizzes": "Xem câu hỏi",
+  "veryGood": "Rất tốt",
+  "good": "Tốt",
+  "satisfactory": "Đạt yêu cầu",
+  "fair": "Khá",
+  "needsWork": "Cần cải thiện",
+  "yourStrengths": "Điểm mạnh của bạn",
+  "analyzingYourQuizResults": "Đang phân tích kết quả câu hỏi của bạn...",
+  "aiIsCreatingPersonalizedRecommendations": "AI của chúng tôi đang tạo đề xuất cá nhân hóa dựa trên hiệu suất của bạn",
+  "aiLearningAssistant": "Trợ lý học tập AI",
+  "wantPersonalizedInsights": "Bạn muốn có thông tin chi tiết cá nhân hóa về hiệu suất và đề xuất chiến lược học tập?",
+  "aiCanAnalyzeQuizResults": "AI của chúng tôi có thể phân tích kết quả câu hỏi của bạn để xác định điểm mạnh, lĩnh vực cần cải thiện và đề xuất lộ trình học tập tùy chỉnh.",
+  "generateAIRecommendations": "Tạo đề xuất AI",
+  "thisUsesAIToProcess": "Điều này sử dụng AI để xử lý phản hồi câu hỏi của bạn. Dữ liệu của bạn được giữ riêng tư và an toàn.",
+  "difficultyLabel": "Độ khó",
+  "personalizedInsightsBasedOnQuizPerformance": "Thông tin chi tiết cá nhân hóa dựa trên hiệu suất câu hỏi của bạn",
+  "performanceDataNotAvailable": "Dữ liệu hiệu suất không có sẵn.",
+  "strengthAnalysisNotAvailable": "Phân tích điểm mạnh không có sẵn.",
+  "areasForImprovementNotAvailable": "Lĩnh vực cần cải thiện không có sẵn.",
+  "learningStrategiesNotAvailable": "Chiến lược học tập không có sẵn.",
+  "actionPlanNotAvailable": "Kế hoạch hành động không có sẵn.",
+  "searchQuizHistory": "Tìm kiếm lịch sử câu hỏi...",
+  "toggleFilters": "Bật/Tắt bộ lọc",
+  "difficultyLabel": "Độ khó:",
+  "quizTypeLabel": "Loại câu hỏi:",
+  "dateRange": "Khoảng thời gian:",
+  "resetFilters": "Đặt lại bộ lọc",
+  "activeFilters": "Bộ lọc đang hoạt động:",
+  "clearAll": "Xóa tất cả",
+  "errorLoadingQuizHistory": "Lỗi khi tải lịch sử câu hỏi",
+  "tryAgain": "Thử lại",
+  "noMatchingQuizAttempts": "Không có lần làm bài nào khớp",
+  "noQuizHistoryYet": "Chưa có lịch sử câu hỏi",
+  "tryAdjustingFiltersOrSearchTerms": "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm",
+  "completeFirstQuizToSeeProgress": "Hoàn thành câu hỏi đầu tiên để xem tiến độ của bạn ở đây",
+  "clearFilters": "Xóa bộ lọc",
+  "untitledQuiz": "Câu hỏi chưa có tiêu đề",
+  "viewDetails": "Xem chi tiết",
+  "retakeQuiz": "Làm lại câu hỏi",
+  "deleteQuizAttempt": "Xóa lần làm bài",
+  "deleteQuizAttemptConfirmation": "Bạn có chắc chắn muốn xóa lần làm bài này không?",
+  "cancel": "HỦY",
+  "delete": "XÓA",
+  "errorLoadingQuizHistoryMessage": "Lỗi khi tải lịch sử câu hỏi: {error}",
+  "@errorLoadingQuizHistoryMessage": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorDeletingQuizAttempt": "Lỗi khi xóa lần làm bài: {error}",
+  "@errorDeletingQuizAttempt": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "allTime": "Tất cả thời gian",
+  "today": "Hôm nay",
+  "thisWeek": "Tuần này",
+  "thisMonth": "Tháng này",
+  "last3Months": "3 tháng qua",
+  "all": "Tất cả",
+  "scoreFormat": "Điểm: {score}/{total}",
+  "@scoreFormat": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "createNewDeck": "Tạo bộ thẻ mới",
+  "searchFlashcards": "Tìm kiếm thẻ ghi nhớ...",
+  "sourceType": "Loại nguồn:",
+  "sourceTypeAll": "Tất cả",
+  "sourceTypePdf": "PDF",
+  "sourceTypeDocument": "Tài liệu",
+  "sourceTypeText": "Văn bản",
+  "sourceTypeImage": "Hình ảnh",
+  "failedToLoadFlashcardDecks": "Lỗi khi tải bộ thẻ ghi nhớ: {error}",
+  "@failedToLoadFlashcardDecks": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "retry": "Thử lại",
+  "noFlashcardDecksYet": "Chưa có bộ thẻ ghi nhớ nào",
+  "createYourFirstDeckToGetStarted": "Tạo bộ thẻ đầu tiên để bắt đầu",
+  "createDeck": "Tạo bộ thẻ",
+  "noMatchingFlashcardDecks": "Không có bộ thẻ nào khớp",
+  "noFlashcardDecks": "Không có bộ thẻ ghi nhớ",
+  "tryAdjustingFiltersOrSearchTermsFlashcards": "Thử điều chỉnh bộ lọc hoặc từ khóa tìm kiếm",
+  "study": "Học",
+  "cards": "thẻ",
+  "cardsCount": "{count} thẻ",
+  "@cardsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "createFlashcardDeck": "Tạo bộ thẻ ghi nhớ",
+  "errorPickingFileFlashcards": "Lỗi khi chọn file: {error}",
+  "@errorPickingFileFlashcards": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectFileToGenerateFlashcards": "Vui lòng chọn file để tạo thẻ ghi nhớ",
+  "createdFlashcards": "Đã tạo {count} thẻ ghi nhớ",
+  "@createdFlashcards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorCreatingFlashcards": "Lỗi khi tạo thẻ ghi nhớ: {error}",
+  "@errorCreatingFlashcards": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deckTitle": "Tiêu đề bộ thẻ",
+  "enterTitleForFlashcardDeck": "Nhập tiêu đề cho bộ thẻ ghi nhớ của bạn",
+  "pleaseEnterTitle": "Vui lòng nhập tiêu đề",
+  "descriptionOptional": "Mô tả (Tùy chọn)",
+  "addDescriptionForFlashcards": "Thêm mô tả cho thẻ ghi nhớ của bạn",
+  "numberOfFlashcardsToGenerate": "Số lượng thẻ ghi nhớ cần tạo: {count}",
+  "@numberOfFlashcardsToGenerate": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "tipStartWithFewerCards": "Mẹo: Bắt đầu với ít thẻ hơn để có chất lượng tốt hơn. Bạn luôn có thể thêm nhiều thẻ sau.",
+  "generateFlashcards": "Tạo thẻ ghi nhớ",
+  "generatingFlashcards": "Đang tạo thẻ ghi nhớ...",
+  "usingAIToCreateFlashcards": "Sử dụng AI để tạo {count} thẻ ghi nhớ từ {fileName}",
+  "@usingAIToCreateFlashcards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "thisMayTakeAMinuteOrTwo": "Quá trình này có thể mất một hoặc hai phút tùy thuộc vào kích thước file.",
+  "uploadFileToGenerateFlashcards": "Tải file lên để tạo thẻ ghi nhớ",
+  "selectPdfTxtOrDocFile": "Chọn file PDF, TXT hoặc DOC",
+  "selectFile": "Chọn file",
+  "chooseDifferentFile": "Chọn file khác",
+  "removeFile": "Xóa file",
+  "fileType": "File {type}",
+  "@fileType": {
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
+  },
+  "flashcardDeck": "Bộ thẻ ghi nhớ",
+  "editDeck": "Chỉnh sửa bộ thẻ",
+  "deleteDeck": "Xóa bộ thẻ",
+  "saveChanges": "Lưu thay đổi",
+  "cancelEditing": "Hủy chỉnh sửa",
+  "errorLoadingDeck": "Lỗi khi tải bộ thẻ: {error}",
+  "@errorLoadingDeck": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deckNotFound": "Không tìm thấy bộ thẻ",
+  "deleteDeckConfirmation": "Bạn có chắc chắn muốn xóa bộ thẻ này không? Hành động này sẽ xóa tất cả thẻ ghi nhớ trong bộ thẻ và không thể hoàn tác.",
+  "flashcardDeckDeleted": "Đã xóa bộ thẻ ghi nhớ",
+  "errorDeletingDeck": "Lỗi khi xóa bộ thẻ: {error}",
+  "@errorDeletingDeck": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "titleCannotBeEmpty": "Tiêu đề không được để trống",
+  "deckUpdatedSuccessfully": "Đã cập nhật bộ thẻ thành công",
+  "errorUpdatingDeck": "Lỗi khi cập nhật bộ thẻ: {error}",
+  "@errorUpdatingDeck": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteFlashcard": "Xóa thẻ ghi nhớ",
+  "deleteFlashcardConfirmation": "Bạn có chắc chắn muốn xóa thẻ ghi nhớ này không? Hành động này không thể hoàn tác.",
+  "flashcardDeleted": "Đã xóa thẻ ghi nhớ",
+  "errorDeletingFlashcard": "Lỗi khi xóa thẻ ghi nhớ: {error}",
+  "@errorDeletingFlashcard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "editFlashcard": "Chỉnh sửa thẻ ghi nhớ",
+  "question": "Câu hỏi",
+  "frontOfFlashcard": "Mặt trước của thẻ",
+  "answer": "Câu trả lời",
+  "backOfFlashcard": "Mặt sau của thẻ",
+  "hintOptional": "Gợi ý (Tùy chọn)",
+  "optionalHintToHelpRecall": "Gợi ý tùy chọn để giúp gợi nhớ",
+  "questionAndAnswerCannotBeEmpty": "Câu hỏi và câu trả lời không được để trống",
+  "save": "Lưu",
+  "flashcardUpdated": "Đã cập nhật thẻ ghi nhớ",
+  "errorUpdatingFlashcard": "Lỗi khi cập nhật thẻ ghi nhớ: {error}",
+  "@errorUpdatingFlashcard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "add": "Thêm",
+  "addFlashcard": "Thêm thẻ ghi nhớ",
+  "flashcardAdded": "Đã thêm thẻ ghi nhớ",
+  "errorAddingFlashcard": "Lỗi khi thêm thẻ ghi nhớ: {error}",
+  "@errorAddingFlashcard": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "description": "Mô tả",
+  "errorLoadingFlashcards": "Lỗi khi tải thẻ ghi nhớ: {error}",
+  "@errorLoadingFlashcards": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "noFlashcardsInDeck": "Không có thẻ ghi nhớ nào trong bộ thẻ này",
+  "addSomeFlashcardsToGetStarted": "Thêm một số thẻ ghi nhớ để bắt đầu",
+  "addFlashcardButton": "Thêm thẻ ghi nhớ",
+  "hint": "Gợi ý",
+  "shuffleCards": "Xáo trộn thẻ",
+  "errorLoadingFlashcardsViewer": "Lỗi khi tải thẻ ghi nhớ: {error}",
+  "@errorLoadingFlashcardsViewer": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "addSomeFlashcardsToStartStudying": "Thêm một số thẻ ghi nhớ để bắt đầu học",
+  "goBack": "Quay lại",
+  "showHint": "Hiển thị gợi ý",
+  "hideHint": "Ẩn gợi ý",
+  "previousCard": "Thẻ trước",
+  "showQuestion": "Hiển thị câu hỏi",
+  "showAnswer": "Hiển thị câu trả lời",
+  "nextCard": "Thẻ tiếp theo",
+  "cardProgress": "Thẻ {current}/{total}",
+  "@cardProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "completed": "Đã hoàn thành: {completed}/{total}",
+  "@completed": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "greatJob": "Làm tốt lắm!",
+  "youveCompletedAllFlashcards": "Bạn đã hoàn thành tất cả {count} thẻ ghi nhớ trong bộ thẻ này!",
+  "@youveCompletedAllFlashcards": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exit": "Thoát",
+  "studyAgain": "Học lại",
+  "totalXp": "Tổng XP: {xp}",
+  "@totalXp": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      }
+    }
+  },
+  "nextLevel": "Tiếp theo: Cấp độ {level}",
+  "@nextLevel": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      }
+    }
+  },
+  "xpProgress": "{current} / {needed} XP",
+  "@xpProgress": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "needed": {
+        "type": "int"
+      }
+    }
+  },
+  "yourProgress": "Tiến độ của bạn",
+  "youHaveCompletedAchievements": "Bạn đã hoàn thành {earned} trong số {total} thành tựu.",
+  "@youHaveCompletedAchievements": {
+    "placeholders": {
+      "earned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "loadingAchievements": "Đang tải thành tựu...",
+  "noAchievementsFound": "Không tìm thấy thành tựu",
+  "trySelectingDifferentCategory": "Thử chọn danh mục khác",
+  "completeQuizzesToUnlockAchievements": "Hoàn thành câu hỏi để mở khóa thành tựu",
+  "showAllAchievements": "Hiển thị tất cả thành tựu",
+  "categories": "Danh mục",
+  "streakFreezes": "Đóng băng chuỗi",
+  "dayStreak": "Chuỗi {days} ngày",
+  "@dayStreak": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "noActiveStreak": "Không có chuỗi hoạt động",
+  "keepItGoing": "Tiếp tục phát huy!",
+  "completeQuizTodayToStartStreak": "Hoàn thành câu hỏi hôm nay để bắt đầu chuỗi",
+  "streakFreezeActive": "Đóng băng chuỗi đang hoạt động",
+  "howStreakFreezesWork": "Cách hoạt động của đóng băng chuỗi",
+  "protection": "Bảo vệ",
+  "streakFreezesProtectDescription": "Đóng băng chuỗi bảo vệ chuỗi của bạn trong một ngày khi bạn bỏ lỡ việc hoàn thành bất kỳ câu hỏi nào.",
+  "twentyFourHourCoverage": "Bảo vệ 24 giờ",
+  "onceActivatedDescription": "Sau khi kích hoạt, đóng băng chuỗi bảo vệ chuỗi của bạn trong 24 giờ.",
+  "useWisely": "Sử dụng khôn ngoan",
+  "earnStreakFreezesDescription": "Bạn có thể kiếm đóng băng chuỗi bằng cách hoàn thành các thử thách đặc biệt và duy trì chuỗi dài hơn.",
+  "usageHistory": "Lịch sử sử dụng",
+  "noUsageHistoryYet": "Chưa có lịch sử sử dụng",
+  "streakFreezeUsageHistoryWillAppear": "Lịch sử sử dụng đóng băng chuỗi của bạn sẽ xuất hiện ở đây",
+  "activeStreakFreeze": "Đóng băng chuỗi đang hoạt động",
+  "streakFreezeUsed": "Đã sử dụng đóng băng chuỗi",
+  "usedOn": "Đã sử dụng vào {date} lúc {time}",
+  "@usedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "expiredOn": "Hết hạn vào {date} lúc {time}",
+  "@expiredOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "expiresOn": "Hết hạn vào {date} lúc {time}",
+  "@expiresOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "duration": "Thời lượng: {duration}",
+  "@duration": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "streakFreezeActivatedSuccessfully": "Đã kích hoạt đóng băng chuỗi thành công!",
+  "failedToActivateStreakFreeze": "Không thể kích hoạt đóng băng chuỗi. Vui lòng thử lại.",
+  "currentStreak": "Chuỗi hiện tại",
+  "current": "Hiện tại",
+  "keepPracticingDaily": "Tiếp tục luyện tập hàng ngày!",
+  "longest": "Dài nhất",
+  "lastActive": "Hoạt động cuối: ",
+  "lastActive": "Hoạt động lần cuối: ",
+  "last7DaysActivity": "Hoạt động 7 ngày qua",
+  "protectYourStreakWhenMissDay": "Bảo vệ chuỗi của bạn khi bạn bỏ lỡ một ngày",
+  "manageStreakFreezes": "Quản lý đóng băng chuỗi",
+  "viewDetails": "Xem chi tiết",
+  "protectYourLearningProgress": "Bảo vệ tiến độ học tập của bạn",
+  "freezeAvailable": "Có sẵn đóng băng",
+  "freezesAvailable": "Có sẵn đóng băng",
+  "useStreakFreeze": "Sử dụng đóng băng chuỗi",
+  "streakFreezesProtectDescriptionCard": "Đóng băng chuỗi bảo vệ chuỗi của bạn khi bạn bỏ lỡ một ngày học tập. Hãy sử dụng một cách khôn ngoan!",
+  "dailyQuests": "Nhiệm vụ hàng ngày",
+  "noQuestsAvailableRightNow": "Hiện không có nhiệm vụ nào",
+  "comeBackTomorrowForNewQuests": "Quay lại vào ngày mai để có nhiệm vụ mới",
+  "dailyProgress": "Tiến độ hàng ngày",
+  "questsCompleted": "{completed} trong số {total} nhiệm vụ đã hoàn thành",
+  "@questsCompleted": {
+    "placeholders": {
+      "completed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "allQuestsCompletedToday": "Đã hoàn thành tất cả nhiệm vụ hôm nay!",
+  "completeQuestsToEarnXp": "Hoàn thành nhiệm vụ để kiếm XP",
+  "questAlreadyCompleted": "Nhiệm vụ đã hoàn thành!",
+  "progress": "Tiến độ: {progress}",
+  "@progress": {
+    "placeholders": {
+      "progress": {
+        "type": "String"
+      }
+    }
+  },
+  "reward": "Phần thưởng: +{xp} XP",
+  "@reward": {
+    "placeholders": {
+      "xp": {
+        "type": "int"
+      }
+    }
+  },
+  "goToToMakeProgress": "Đi đến {action} để thực hiện tiến độ cho nhiệm vụ này.",
+  "@goToToMakeProgress": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "goTo": "Đi đến {action}",
+  "@goTo": {
+    "placeholders": {
+      "action": {
+        "type": "String"
+      }
+    }
+  },
+  "completed": "đã hoàn thành",
+  "notYetEarned": "Chưa đạt được",
+  "earned": "Đã đạt được",
+  "notYetEarnedTitle": "Chưa đạt được",
+  "on": "Vào {date}",
+  "@on": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "howToEarnThisAchievement": "Cách đạt được thành tựu này",
+  "maintainStreakOfDays": "Duy trì chuỗi {days} ngày.",
+  "@maintainStreakOfDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "completeQuizzes": "Hoàn thành {count} câu hỏi.",
+  "@completeQuizzes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "getPerfectScores": "Đạt {count} điểm tuyệt đối trong câu hỏi.",
+  "@getPerfectScores": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "createQuizzes": "Tạo {count} câu hỏi.",
+  "@createQuizzes": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completeQuizzesQuickly": "Hoàn thành {count} câu hỏi nhanh chóng.",
+  "@completeQuizzesQuickly": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "maintainAccuracyAcross": "Duy trì ít nhất 90% độ chính xác trong {count} câu hỏi.",
+  "@maintainAccuracyAcross": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completeQuizzesBefore10AM": "Hoàn thành {count} câu hỏi trước 10 giờ sáng.",
+  "@completeQuizzesBefore10AM": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completeQuizzesOnWeekends": "Hoàn thành {count} câu hỏi vào cuối tuần.",
+  "@completeQuizzesOnWeekends": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "studyForMinutesInSingleDay": "Học trên ứng dụng trong {minutes} phút trong một ngày.",
+  "@studyForMinutesInSingleDay": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "continueUsingAppToUnlock": "Tiếp tục sử dụng ứng dụng để mở khóa thành tựu này.",
+  "yourStreak": "Chuỗi của bạn",
+  "keepMomentumGoing": "Tiếp tục phát huy động lực!",
+  "loadingStreakData": "Đang tải dữ liệu chuỗi...",
+  "activityCalendar": "Lịch hoạt động",
+  "trackDailyLearningProgress": "Theo dõi tiến độ học tập hàng ngày của bạn",
+  "expiresIn": "Hết hạn trong {time}",
+  "@expiresIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "active": "Đang hoạt động",
+  "expired": "Đã hết hạn",
+  "now": "Bây giờ",
+  "quizSummary": "Tóm tắt câu hỏi",
+  "quizzesCreated": "Câu hỏi đã tạo",
+  "quizzesCompleted": "Câu hỏi đã hoàn thành",
+  "averageScore": "Điểm trung bình",
+  "dailyStreak": "Chuỗi hàng ngày",
+  "days": "ngày",
+  "longestStreakDays": "Chuỗi dài nhất: {days} ngày",
+  "@longestStreakDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "noStreakDataAvailable": "Không có dữ liệu chuỗi",
+  "noActivityYet": "Chưa có hoạt động",
+  "quizAccuracy": "Độ chính xác câu hỏi",
+  "noQuizDataAvailableYet": "Chưa có dữ liệu câu hỏi",
+  "categoryPerformance": "Hiệu suất theo danh mục",
+  "noCategoryDataAvailableYet": "Chưa có dữ liệu danh mục",
+  "takeMoreQuizzesToSeeCategoryPerformance": "Làm thêm câu hỏi để xem hiệu suất theo danh mục",
+  "quiz": "câu hỏi",
+  "quizzes": "câu hỏi",
+  "allCaughtUp": "Đã hoàn thành tất cả!",
+  "noCardsDueForReviewToday": "Không có thẻ nào đến hạn ôn tập hôm nay.",
+  "rateHowWellYouKnewThis": "Đánh giá mức độ bạn nhớ được:",
+  "forgot": "Quên",
+  "hard": "Khó",
+  "good": "Tốt",
+  "easy": "Dễ",
+  "yourStreakIsProtectedForToday": "Chuỗi của bạn được bảo vệ cho hôm nay",
+  "performanceOverview": "Tổng quan hiệu suất",
+  "updated": "Cập nhật: ",
+  "average": "Trung bình",
+  "questionsAnswered": "Câu hỏi đã trả lời",
+  "correctAnswers": "Câu trả lời đúng",
+  "accuracy": "độ chính xác",
+  "daysAgo": "{days} ngày trước",
+  "@daysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{hours} giờ trước",
+  "@hoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "minutesAgo": "{minutes} phút trước",
+  "@minutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "justNow": "Vừa xong",
+  "insights": "Thông tin chi tiết",
+  "studyConsistency": "Tính nhất quán học tập",
+  "basedOnActiveDaysInLastMonth": "Dựa trên số ngày hoạt động trong tháng qua",
+  "strongestCategory": "Danh mục mạnh nhất",
+  "weakestCategory": "Danh mục yếu nhất",
+  "mostImproved": "Cải thiện nhiều nhất",
+  "notEnoughData": "Chưa đủ dữ liệu",
+  "last30DaysQuizActivity": "Hoạt động câu hỏi 30 ngày qua",
+  "selectedDate": "Ngày đã chọn: ",
+  "completed": "đã hoàn thành",
+  "writeNotesTitle": "Viết ghi chú",
+  "writeNotesDescription": "Viết {count} ghi chú mới hôm nay",
+  "@writeNotesDescription": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "writeNotesDescriptionPlural": "Viết {count} ghi chú mới hôm nay",
+  "@writeNotesDescriptionPlural": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewFlashcardsTitle": "Ôn tập thẻ ghi nhớ",
+  "reviewFlashcardsDescription": "Ôn tập {count} thẻ ghi nhớ hôm nay",
+  "@reviewFlashcardsDescription": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completeQuizzesTitle": "Hoàn thành câu hỏi",
+  "completeQuizzesDescription": "Hoàn thành {count} câu hỏi hôm nay",
+  "@completeQuizzesDescription": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completeQuizzesDescriptionSingular": "Hoàn thành {count} câu hỏi hôm nay",
+  "@completeQuizzesDescriptionSingular": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unknownQuestTitle": "Nhiệm vụ không xác định",
+  "unknownQuestDescription": "Hoàn thành nhiệm vụ này để kiếm XP",
+  "xpLabel": "XP"
+}

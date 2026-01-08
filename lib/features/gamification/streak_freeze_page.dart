@@ -5,6 +5,7 @@ import 'package:deltamind/features/gamification/widgets/streak_freeze_countdown.
 import 'package:deltamind/services/streak_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -20,12 +21,13 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final gamificationState = ref.watch(gamificationControllerProvider);
     final streakFreeze = gamificationState.streakFreeze;
     final userStreak = gamificationState.userStreak;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Streak Freezes'), centerTitle: true),
+      appBar: AppBar(title: Text(l10n.streakFreezes), centerTitle: true),
       body: RefreshIndicator(
         onRefresh: () async {
           await ref
@@ -68,6 +70,7 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
   }
 
   Widget _buildCurrentStreakInfo(BuildContext context, UserStreak streak) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isStreakActive = streak.currentStreak > 0;
 
@@ -112,8 +115,8 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
                 children: [
                   Text(
                     isStreakActive
-                        ? '${streak.currentStreak}-Day Streak'
-                        : 'No Active Streak',
+                        ? l10n.dayStreak(streak.currentStreak)
+                        : l10n.noActiveStreak,
                     style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -122,8 +125,8 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
                   const SizedBox(height: 4),
                   Text(
                     isStreakActive
-                        ? 'Keep it going!'
-                        : 'Complete a quiz today to start a streak',
+                        ? l10n.keepItGoing
+                        : l10n.completeQuizTodayToStartStreak,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: Colors.white.withOpacity(0.9),
                     ),
@@ -156,7 +159,7 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Streak Freeze Active',
+                          l10n.streakFreezeActive,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: Colors.white,
                             fontWeight: FontWeight.w600,
@@ -181,13 +184,14 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
   }
 
   Widget _buildInfoSection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'How Streak Freezes Work',
+          l10n.howStreakFreezesWork,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -195,25 +199,22 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
         const SizedBox(height: 12),
         _buildInfoCard(
           icon: PhosphorIconsFill.shieldCheck,
-          title: 'Protection',
-          description:
-              'Streak freezes protect your streak for one day when you miss completing any quiz.',
+          title: l10n.protection,
+          description: l10n.streakFreezesProtectDescription,
           color: Colors.green,
         ),
         const SizedBox(height: 12),
         _buildInfoCard(
           icon: PhosphorIconsFill.clock,
-          title: '24-Hour Coverage',
-          description:
-              'Once activated, a streak freeze protects your streak for 24 hours.',
+          title: l10n.twentyFourHourCoverage,
+          description: l10n.onceActivatedDescription,
           color: Colors.blue,
         ),
         const SizedBox(height: 12),
         _buildInfoCard(
           icon: PhosphorIconsFill.lightbulb,
-          title: 'Use Wisely',
-          description:
-              'You can earn streak freezes by completing special challenges and maintaining longer streaks.',
+          title: l10n.useWisely,
+          description: l10n.earnStreakFreezesDescription,
           color: Colors.orange,
         ),
       ],
@@ -281,6 +282,7 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
   }
 
   Widget _buildUsageHistorySection(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final gamificationState = ref.watch(gamificationControllerProvider);
     final history = gamificationState.freezeHistory;
@@ -289,7 +291,7 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Usage History',
+          l10n.usageHistory,
           style: theme.textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
           ),
@@ -304,6 +306,7 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
   }
 
   Widget _buildEmptyHistoryCard(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Container(
@@ -325,7 +328,7 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
           ),
           const SizedBox(height: 12),
           Text(
-            'No usage history yet',
+            l10n.noUsageHistoryYet,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w500,
             ),
@@ -333,7 +336,7 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
           ),
           const SizedBox(height: 8),
           Text(
-            'Your streak freeze usage history will appear here',
+            l10n.streakFreezeUsageHistoryWillAppear,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurface.withOpacity(0.7),
             ),
@@ -366,6 +369,7 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
   }
 
   Widget _buildHistoryItem(BuildContext context, StreakFreezeHistory item) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isActive = item.isActive;
     final dateFormat = DateFormat('MMM d, yyyy');
@@ -400,7 +404,9 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      isActive ? 'Active Streak Freeze' : 'Streak Freeze Used',
+                      isActive
+                          ? l10n.activeStreakFreeze
+                          : l10n.streakFreezeUsed,
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: isActive ? theme.colorScheme.primary : null,
@@ -408,7 +414,8 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Used on ${dateFormat.format(item.usedAt)} at ${timeFormat.format(item.usedAt)}',
+                      l10n.usedOn(dateFormat.format(item.usedAt),
+                          timeFormat.format(item.usedAt)),
                       style: theme.textTheme.bodySmall?.copyWith(
                         color: theme.colorScheme.onSurface.withOpacity(0.7),
                       ),
@@ -416,7 +423,8 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
                     if (!isActive && item.expiredAt != null) ...[
                       const SizedBox(height: 2),
                       Text(
-                        'Expired on ${dateFormat.format(item.expiredAt!)} at ${timeFormat.format(item.expiredAt!)}',
+                        l10n.expiredOn(dateFormat.format(item.expiredAt!),
+                            timeFormat.format(item.expiredAt!)),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurface.withOpacity(0.7),
                         ),
@@ -424,7 +432,8 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
                     ] else if (isActive && item.expiredAt != null) ...[
                       const SizedBox(height: 2),
                       Text(
-                        'Expires on ${dateFormat.format(item.expiredAt!)} at ${timeFormat.format(item.expiredAt!)}',
+                        l10n.expiresOn(dateFormat.format(item.expiredAt!),
+                            timeFormat.format(item.expiredAt!)),
                         style: theme.textTheme.bodySmall?.copyWith(
                           fontWeight: FontWeight.w500,
                           color: theme.colorScheme.primary,
@@ -452,7 +461,7 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
                         ),
                         const SizedBox(width: 4),
                         Text(
-                          'Duration: ${item.durationText}',
+                          l10n.duration(item.durationText),
                           style: theme.textTheme.bodySmall?.copyWith(
                             fontWeight: FontWeight.w500,
                             color: isActive
@@ -488,21 +497,24 @@ class _StreakFreezePageState extends ConsumerState<StreakFreezePage> {
 
       if (!mounted) return;
 
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
             success
-                ? 'Streak freeze activated successfully!'
-                : 'Failed to activate streak freeze. Please try again.',
+                ? l10n.streakFreezeActivatedSuccessfully
+                : l10n.failedToActivateStreakFreeze,
           ),
           backgroundColor: success ? Colors.green : Colors.red,
         ),
       );
     } catch (e) {
       if (!mounted) return;
-
+      final l10n = AppLocalizations.of(context)!;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        SnackBar(
+            content: Text('${l10n.unexpectedError}: $e'),
+            backgroundColor: Colors.red),
       );
     } finally {
       if (mounted) {

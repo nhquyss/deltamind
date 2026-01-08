@@ -12,6 +12,7 @@ import 'package:deltamind/services/learning_path_service.dart';
 import 'package:deltamind/services/quiz_service.dart';
 import 'package:deltamind/services/supabase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -99,7 +100,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error refreshing dashboard: $e'),
+            content: Text(
+                '${AppLocalizations.of(context)!.errorRefreshingDashboard}: $e'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -164,7 +166,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                           IconButton(
                             icon: Icon(PhosphorIconsFill.arrowClockwise),
                             onPressed: _loadDashboardData,
-                            tooltip: 'Refresh',
+                            tooltip: AppLocalizations.of(context)!.refresh,
                           ),
                           const ProfileAvatar(),
                         ],
@@ -233,13 +235,14 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
   /// Build welcome message in a card
   Widget _buildWelcomeCard(user) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final authState = ref.watch(authControllerProvider);
     final isAuthenticated = authState.user != null;
 
     // Safety check - if not authenticated, don't try to access user data
     final username = isAuthenticated && user?.email != null
         ? user.email.split('@').first
-        : 'Guest';
+        : l10n.user;
 
     return Card(
       elevation: 1,
@@ -280,8 +283,9 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                       ),
                       children: [
                         TextSpan(
-                            text:
-                                isAuthenticated ? 'Welcome back, ' : 'Hello, '),
+                            text: isAuthenticated
+                                ? l10n.welcomeBack
+                                : l10n.hello),
                         TextSpan(
                           text: username,
                           style: TextStyle(
@@ -297,7 +301,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
             ),
             const SizedBox(height: 12),
             Text(
-              'Ready to train your mind today?',
+              l10n.readyToTrain,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: AppColors.textSecondary,
                 fontWeight: FontWeight.w500,
@@ -320,7 +324,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                         borderRadius: BorderRadius.circular(8),
                       ),
                     ),
-                    child: const Text('Start a Quiz'),
+                    child: Text(l10n.startAQuiz),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -332,7 +336,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                       size: 16,
                       color: AppColors.primary,
                     ),
-                    label: const Text('Learning Paths'),
+                    label: Text(l10n.learningPaths),
                     style: OutlinedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -359,14 +363,15 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
     final path = _activePath!;
 
     // Find the first in-progress module if any
+    final l10n = AppLocalizations.of(context)!;
     final inProgressModule = path.modules.firstWhere(
       (module) => module.status == ModuleStatus.inProgress,
       orElse: () => path.modules.isNotEmpty
           ? path.modules.first
           : LearningPathModule(
               pathId: path.id,
-              title: 'No modules available',
-              description: 'This path has no modules.',
+              title: l10n.noModulesAvailable,
+              description: l10n.thisPathHasNoModules,
               moduleId: '0',
               position: 0,
             ),
@@ -414,7 +419,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Learning Path',
+                          AppLocalizations.of(context)!.learningPath,
                           style: TextStyle(
                             color: Colors.grey.shade700,
                             fontSize: 12,
@@ -447,7 +452,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        'Current Progress',
+                        AppLocalizations.of(context)!.currentProgress,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                               fontWeight: FontWeight.w500,
                             ),
@@ -481,7 +486,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Current Module',
+                    AppLocalizations.of(context)!.currentModule,
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.w500,
                         ),
@@ -516,7 +521,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Module ${inProgressModule.moduleId}',
+                                '${AppLocalizations.of(context)!.module} ${inProgressModule.moduleId}',
                                 style: TextStyle(
                                   fontSize: 12,
                                   color: Colors.grey.shade600,
@@ -583,13 +588,14 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Learning Paths',
+                      AppLocalizations.of(context)!.learningPaths,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
                     ),
                     Text(
-                      'Generate AI learning paths for any topic',
+                      AppLocalizations.of(context)!
+                          .generateAILearningPathsForAnyTopic,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: Colors.grey.shade700,
                           ),
@@ -639,7 +645,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  'Learning Analytics',
+                  AppLocalizations.of(context)!.learningAnalytics,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -667,7 +673,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 8),
           child: Text(
-            'Recent Quizzes',
+            AppLocalizations.of(context)!.recentQuizzes,
             style: theme.textTheme.bodyLarge?.copyWith(
               // Reduced from titleSmall
               fontWeight: FontWeight.bold,
@@ -677,8 +683,8 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
         ),
         _recentQuizzes.isEmpty
             ? _buildEmptyState(
-                'No quizzes yet',
-                'Create your first quiz to get started',
+                AppLocalizations.of(context)!.noQuizzesYet,
+                AppLocalizations.of(context)!.createYourFirstQuizToGetStarted,
                 PhosphorIconsFill.clipboard,
               )
             : ListView.builder(
@@ -787,7 +793,7 @@ class _DashboardPageState extends ConsumerState<DashboardPage>
           overflow: TextOverflow.ellipsis,
         ),
         subtitle: Text(
-          quiz.description ?? 'No description',
+          quiz.description ?? AppLocalizations.of(context)!.noDescription,
           style: theme.textTheme.bodySmall?.copyWith(
             color: AppColors.textSecondary,
             fontSize: 11,
@@ -855,7 +861,7 @@ class DashboardGreeting extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authControllerProvider);
     final user = authState.user;
-    final greeting = _getGreeting();
+    final greeting = _getGreeting(context);
 
     return Card(
       elevation: 0,
@@ -892,7 +898,7 @@ class DashboardGreeting extends ConsumerWidget {
                             ),
                       ),
                       Text(
-                        'Hello, ${user?.email?.split('@').first ?? 'User'}',
+                        '${AppLocalizations.of(context)!.hello}${user?.email?.split('@').first ?? AppLocalizations.of(context)!.user}',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
@@ -907,7 +913,7 @@ class DashboardGreeting extends ConsumerWidget {
             if (todaysQuestion != null) ...[
               const SizedBox(height: 16),
               Text(
-                'Today\'s question:',
+                AppLocalizations.of(context)!.todaysQuestion,
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
@@ -926,9 +932,9 @@ class DashboardGreeting extends ConsumerWidget {
     );
   }
 
-  String _getGreeting() {
+  String _getGreeting(BuildContext context) {
     // Implement your logic to determine the greeting based on the current time
-    return 'Good morning';
+    return AppLocalizations.of(context)!.goodMorning;
   }
 }
 
@@ -1023,7 +1029,7 @@ class YourStats extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
           child: Text(
-            'Your Stats',
+            AppLocalizations.of(context)!.yourStats,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -1039,28 +1045,28 @@ class YourStats extends ConsumerWidget {
           childAspectRatio: 1.2,
           children: [
             StatsCard(
-              title: 'Quizzes Completed',
+              title: AppLocalizations.of(context)!.quizzesCompleted,
               value: quizCounter?.toString() ?? '0',
               icon: PhosphorIconsFill.checkSquare,
               color: Colors.green,
               onTap: () => context.push(AppRoutes.quizList, extra: 1),
             ),
             StatsCard(
-              title: 'Total Score',
+              title: AppLocalizations.of(context)!.totalScore,
               value: totalScore?.toString() ?? '0',
               icon: PhosphorIconsFill.star,
               color: Colors.amber.shade700,
               onTap: () => context.push(AppRoutes.quizList, extra: 1),
             ),
             StatsCard(
-              title: 'Learning Hours',
+              title: AppLocalizations.of(context)!.learningHours,
               value: '${learningHours?.toStringAsFixed(1) ?? '0'}h',
               icon: PhosphorIconsFill.lightbulb,
               color: Colors.blue,
               onTap: () => context.push(AppRoutes.quizList, extra: 1),
             ),
             StatsCard(
-              title: 'Days Active',
+              title: AppLocalizations.of(context)!.daysActive,
               value: daysActive?.toString() ?? '0',
               icon: PhosphorIconsFill.calendar,
               color: Colors.purple,

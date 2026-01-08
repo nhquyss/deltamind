@@ -1,14 +1,11 @@
-import 'package:deltamind/core/theme/app_theme.dart';
 import 'package:deltamind/core/theme/app_colors.dart';
+import 'package:deltamind/core/utils/formatters.dart';
 import 'package:deltamind/services/supabase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
-import 'package:deltamind/features/quiz/quiz_attempt_controller.dart';
-import 'package:deltamind/services/quiz_service.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Widget for the History tab in the QuizListPage
 class QuizHistoryTab extends ConsumerStatefulWidget {
@@ -28,20 +25,41 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
 
   // Filters
   String _searchQuery = '';
-  String _selectedDifficulty = 'All';
-  String _selectedQuizType = 'All';
-  String _dateFilter = 'All Time';
+  String _selectedDifficulty = 'All'; // Will be localized in build
+  String _selectedQuizType = 'All'; // Will be localized in build
+  String _dateFilter = 'All Time'; // Will be localized in build
 
   // For dropdown filters
   List<String> _difficulties = ['All'];
   List<String> _quizTypes = ['All'];
-  final List<String> _dateFilters = [
-    'All Time',
-    'Today',
-    'This Week',
-    'This Month',
-    'Last 3 Months',
-  ];
+  List<String> _dateFilters = [];
+
+  // Helper methods to map between localized and English values
+  String _getEnglishDateFilter(String localizedFilter, AppLocalizations l10n) {
+    if (localizedFilter == l10n.allTime) return 'All Time';
+    if (localizedFilter == l10n.today) return 'Today';
+    if (localizedFilter == l10n.thisWeek) return 'This Week';
+    if (localizedFilter == l10n.thisMonth) return 'This Month';
+    if (localizedFilter == l10n.last3Months) return 'Last 3 Months';
+    return localizedFilter;
+  }
+
+  String _getLocalizedDateFilter(String englishFilter, AppLocalizations l10n) {
+    switch (englishFilter) {
+      case 'All Time':
+        return l10n.allTime;
+      case 'Today':
+        return l10n.today;
+      case 'This Week':
+        return l10n.thisWeek;
+      case 'This Month':
+        return l10n.thisMonth;
+      case 'Last 3 Months':
+        return l10n.last3Months;
+      default:
+        return englishFilter;
+    }
+  }
 
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
@@ -50,6 +68,47 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
   void initState() {
     super.initState();
     _loadQuizHistory();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Initialize date filters with localization
+    final l10n = AppLocalizations.of(context);
+    if (l10n != null) {
+      if (_dateFilters.isEmpty) {
+        _dateFilters = [
+          l10n.allTime,
+          l10n.today,
+          l10n.thisWeek,
+          l10n.thisMonth,
+          l10n.last3Months,
+        ];
+      }
+      // Update current filter to localized version if it's still in English
+      if (_dateFilter == 'All Time' ||
+          _dateFilter == 'Today' ||
+          _dateFilter == 'This Week' ||
+          _dateFilter == 'This Month' ||
+          _dateFilter == 'Last 3 Months') {
+        _dateFilter = _getLocalizedDateFilter(_dateFilter, l10n);
+      }
+      // Update difficulty and quiz type to localized versions if they're still in English
+      if (_selectedDifficulty == 'All' ||
+          _selectedDifficulty == 'easy' ||
+          _selectedDifficulty == 'medium' ||
+          _selectedDifficulty == 'hard' ||
+          _selectedDifficulty == 'expert') {
+        _selectedDifficulty =
+            _getLocalizedDifficulty(_selectedDifficulty, l10n);
+      }
+      if (_selectedQuizType == 'All' ||
+          _selectedQuizType == 'Multiple Choice' ||
+          _selectedQuizType == 'True/False' ||
+          _selectedQuizType == 'Fill in the Blank') {
+        _selectedQuizType = _getLocalizedQuizType(_selectedQuizType, l10n);
+      }
+    }
   }
 
   @override
@@ -91,33 +150,82 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
 
       if (mounted) {
         // Process the data for filters
-        final difficulties = <String>{'All'};
-        final quizTypes = <String>{'All'};
+        final l10n = AppLocalizations.of(context);
+        if (l10n != null) {
+          final difficulties = <String>{l10n.quizDifficultyAll};
+          final quizTypes = <String>{l10n.quizTypeAll};
 
-        for (final attempt in response) {
-          final quiz = attempt['quizzes'];
-          if (quiz != null) {
-            if (quiz['difficulty'] != null) {
-              difficulties.add(quiz['difficulty']);
-            }
-            if (quiz['quiz_type'] != null) {
-              quizTypes.add(quiz['quiz_type']);
+          for (final attempt in response) {
+            final quiz = attempt['quizzes'];
+            if (quiz != null) {
+              if (quiz['difficulty'] != null) {
+                final difficultyValue = quiz['difficulty'].toString();
+                // Normalize and localize difficulty
+                final localizedDifficulty = _getLocalizedDifficulty(
+                  difficultyValue,
+                  l10n,
+                );
+                // Only add if it's a valid localized value (not the original English)
+                if (localizedDifficulty != difficultyValue ||
+                    localizedDifficulty == l10n.quizDifficultyAll ||
+                    localizedDifficulty == l10n.quizDifficultyEasy ||
+                    localizedDifficulty == l10n.quizDifficultyMedium ||
+                    localizedDifficulty == l10n.quizDifficultyHard ||
+                    localizedDifficulty == l10n.quizDifficultyExpert) {
+                  difficulties.add(localizedDifficulty);
+                }
+              }
+              if (quiz['quiz_type'] != null) {
+                final quizTypeValue = quiz['quiz_type'].toString();
+                // Normalize and localize quiz type
+                final localizedQuizType = _getLocalizedQuizType(
+                  quizTypeValue,
+                  l10n,
+                );
+                // Only add if it's a valid localized value (not the original English)
+                if (localizedQuizType != quizTypeValue ||
+                    localizedQuizType == l10n.quizTypeAll ||
+                    localizedQuizType == l10n.quizTypeMultipleChoice ||
+                    localizedQuizType == l10n.quizTypeTrueFalse ||
+                    localizedQuizType == l10n.quizTypeFillInTheBlank) {
+                  quizTypes.add(localizedQuizType);
+                }
+              }
             }
           }
-        }
 
-        setState(() {
-          _quizAttempts = response;
-          _filteredAttempts = List.from(response);
-          _isLoading = false;
-          _difficulties = difficulties.toList()..sort();
-          _quizTypes = quizTypes.toList()..sort();
-        });
+          setState(() {
+            _quizAttempts = response;
+            _filteredAttempts = List.from(response);
+            _isLoading = false;
+            // Sort with "All" always first, then alphabetically
+            _difficulties = difficulties.toList()
+              ..sort((a, b) {
+                if (a == l10n.quizDifficultyAll) return -1;
+                if (b == l10n.quizDifficultyAll) return 1;
+                return a.compareTo(b);
+              });
+            _quizTypes = quizTypes.toList()
+              ..sort((a, b) {
+                if (a == l10n.quizTypeAll) return -1;
+                if (b == l10n.quizTypeAll) return 1;
+                return a.compareTo(b);
+              });
+          });
+        } else {
+          setState(() {
+            _quizAttempts = response;
+            _filteredAttempts = List.from(response);
+            _isLoading = false;
+          });
+        }
       }
     } catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         setState(() {
-          _errorMessage = 'Error loading quiz history: $e';
+          _errorMessage = l10n?.errorLoadingQuizHistoryMessage(e.toString()) ??
+              'Error loading quiz history: $e';
           _isLoading = false;
         });
         debugPrint('Error loading quiz history: $e');
@@ -127,21 +235,20 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
 
   /// Delete a quiz attempt
   Future<void> _deleteQuizAttempt(dynamic attempt) async {
+    final l10n = AppLocalizations.of(context)!;
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete Quiz Attempt'),
-        content: const Text(
-          'Are you sure you want to delete this quiz attempt?',
-        ),
+        title: Text(l10n.deleteQuizAttempt),
+        content: Text(l10n.deleteQuizAttemptConfirmation),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('CANCEL'),
+            child: Text(l10n.cancel),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('DELETE'),
+            child: Text(l10n.delete),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
           ),
         ],
@@ -164,9 +271,11 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
     } catch (e) {
       // If there's an error, unmark as deleting and show error
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
         setState(() {
           attempt['_isDeleting'] = false;
-          _errorMessage = 'Error deleting quiz attempt: $e';
+          _errorMessage = l10n?.errorDeletingQuizAttempt(e.toString()) ??
+              'Error deleting quiz attempt: $e';
         });
       }
       debugPrint('Error deleting quiz attempt: $e');
@@ -176,12 +285,14 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
   /// Apply all filters to the data
   void _applyFilters() {
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return;
 
     final List<dynamic> filtered = [];
 
     for (final attempt in _quizAttempts) {
       final quiz = attempt['quizzes'];
-      final quizTitle = quiz?['title'] ?? 'Untitled Quiz';
+      final quizTitle = quiz?['title'] ?? l10n.untitledQuiz;
       final difficulty = quiz?['difficulty'] ?? 'Unknown';
       final quizType = quiz?['quiz_type'] ?? 'Unknown';
       final createdAt = DateTime.parse(attempt['created_at']);
@@ -193,17 +304,66 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
       }
 
       // Apply difficulty filter
-      if (_selectedDifficulty != 'All' && difficulty != _selectedDifficulty) {
-        continue;
+      final englishDifficulty =
+          _getEnglishDifficulty(_selectedDifficulty, l10n);
+      if (englishDifficulty != 'All') {
+        // Normalize both values for comparison
+        final normalizedDbDifficulty = difficulty.toLowerCase().trim();
+        final normalizedSelectedDifficulty =
+            englishDifficulty.toLowerCase().trim();
+
+        // Handle various formats
+        bool matches = false;
+        if (normalizedDbDifficulty == normalizedSelectedDifficulty) {
+          matches = true;
+        } else if (normalizedSelectedDifficulty == 'expert' &&
+            (normalizedDbDifficulty == 'advanced' ||
+                normalizedDbDifficulty == 'expert')) {
+          matches = true;
+        } else if (normalizedSelectedDifficulty == 'medium' &&
+            (normalizedDbDifficulty == 'intermediate' ||
+                normalizedDbDifficulty == 'medium')) {
+          matches = true;
+        } else if (normalizedSelectedDifficulty == 'easy' &&
+            (normalizedDbDifficulty == 'beginner' ||
+                normalizedDbDifficulty == 'easy')) {
+          matches = true;
+        }
+
+        if (!matches) continue;
       }
 
       // Apply quiz type filter
-      if (_selectedQuizType != 'All' && quizType != _selectedQuizType) {
-        continue;
+      final englishQuizType = _getEnglishQuizType(_selectedQuizType, l10n);
+      if (englishQuizType != 'All') {
+        // Normalize both values for comparison
+        final normalizedDbQuizType = quizType.toLowerCase().trim();
+        final normalizedSelectedQuizType = englishQuizType.toLowerCase().trim();
+
+        // Handle various formats
+        bool matches = false;
+        if (normalizedDbQuizType == normalizedSelectedQuizType) {
+          matches = true;
+        } else if (normalizedSelectedQuizType == 'multiple choice') {
+          matches = normalizedDbQuizType == 'multiple choice' ||
+              normalizedDbQuizType == 'multiple_choice' ||
+              normalizedDbQuizType == 'multiplechoice';
+        } else if (normalizedSelectedQuizType == 'true/false') {
+          matches = normalizedDbQuizType == 'true/false' ||
+              normalizedDbQuizType == 'true_false' ||
+              normalizedDbQuizType == 'true false';
+        } else if (normalizedSelectedQuizType == 'fill in the blank') {
+          matches = normalizedDbQuizType == 'fill in the blank' ||
+              normalizedDbQuizType == 'fill_in_the_blank' ||
+              normalizedDbQuizType == 'fillintheblank';
+        }
+
+        if (!matches) continue;
       }
 
       // Apply date filter
-      if (_dateFilter != 'All Time') {
+      final englishDateFilter = _getEnglishDateFilter(_dateFilter, l10n);
+      if (englishDateFilter != 'All Time') {
         final now = DateTime.now();
         final today = DateTime(now.year, now.month, now.day);
         final createdDate = DateTime(
@@ -212,7 +372,7 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
           createdAt.day,
         );
 
-        switch (_dateFilter) {
+        switch (englishDateFilter) {
           case 'Today':
             if (createdDate != today) continue;
             break;
@@ -241,10 +401,101 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
     });
   }
 
-  /// Format date for display
-  String _formatDate(DateTime date) {
-    final formatter = DateFormat('MMM d, yyyy');
-    return formatter.format(date);
+  // Helper methods to map between localized and English values
+  String _getEnglishQuizType(String localizedType, AppLocalizations l10n) {
+    if (localizedType == l10n.quizTypeAll) return 'All';
+    if (localizedType == l10n.quizTypeMultipleChoice) return 'Multiple Choice';
+    if (localizedType == l10n.quizTypeTrueFalse) return 'True/False';
+    if (localizedType == l10n.quizTypeFillInTheBlank)
+      return 'Fill in the Blank';
+    return localizedType;
+  }
+
+  String _getEnglishDifficulty(
+      String localizedDifficulty, AppLocalizations l10n) {
+    if (localizedDifficulty == l10n.quizDifficultyAll) return 'All';
+    if (localizedDifficulty == l10n.quizDifficultyEasy) return 'easy';
+    if (localizedDifficulty == l10n.quizDifficultyMedium) return 'medium';
+    if (localizedDifficulty == l10n.quizDifficultyHard) return 'hard';
+    if (localizedDifficulty == l10n.quizDifficultyExpert) return 'expert';
+    return localizedDifficulty;
+  }
+
+  String _getLocalizedDifficulty(
+      String englishDifficulty, AppLocalizations l10n) {
+    // Normalize the input to handle different formats from database
+    final normalized = englishDifficulty.toLowerCase().trim();
+
+    switch (normalized) {
+      case 'all':
+        return l10n.quizDifficultyAll;
+      case 'easy':
+      case 'beginner': // Some databases might use "beginner" instead of "easy"
+        return l10n.quizDifficultyEasy;
+      case 'medium':
+      case 'intermediate': // Some databases might use "intermediate" instead of "medium"
+        return l10n.quizDifficultyMedium;
+      case 'hard':
+      case 'difficult':
+        return l10n.quizDifficultyHard;
+      case 'expert':
+      case 'advanced': // Handle "advanced" as "expert" difficulty
+        return l10n.quizDifficultyExpert;
+      default:
+        // If it's already a localized value, return as is
+        if (englishDifficulty == l10n.quizDifficultyAll ||
+            englishDifficulty == l10n.quizDifficultyEasy ||
+            englishDifficulty == l10n.quizDifficultyMedium ||
+            englishDifficulty == l10n.quizDifficultyHard ||
+            englishDifficulty == l10n.quizDifficultyExpert) {
+          return englishDifficulty;
+        }
+        return englishDifficulty;
+    }
+  }
+
+  String _getLocalizedQuizType(String englishQuizType, AppLocalizations l10n) {
+    // Normalize the input to handle different formats from database
+    final normalized = englishQuizType.toLowerCase().trim();
+
+    if (normalized == 'all') {
+      return l10n.quizTypeAll;
+    }
+
+    // Handle "Multiple Choice" or "multiple_choice" or "multiple choice"
+    if (normalized == 'multiple choice' ||
+        normalized == 'multiple_choice' ||
+        normalized == 'multiplechoice') {
+      return l10n.quizTypeMultipleChoice;
+    }
+
+    // Handle "True/False" or "true/false" or "true_false"
+    if (normalized == 'true/false' ||
+        normalized == 'true_false' ||
+        normalized == 'true false') {
+      return l10n.quizTypeTrueFalse;
+    }
+
+    // Handle "Fill in the Blank" or "fill_in_the_blank" or "fill in the blank"
+    if (normalized == 'fill in the blank' ||
+        normalized == 'fill_in_the_blank' ||
+        normalized == 'fillintheblank') {
+      return l10n.quizTypeFillInTheBlank;
+    }
+
+    // Fallback: try exact match for capitalized versions
+    switch (englishQuizType) {
+      case 'All':
+        return l10n.quizTypeAll;
+      case 'Multiple Choice':
+        return l10n.quizTypeMultipleChoice;
+      case 'True/False':
+        return l10n.quizTypeTrueFalse;
+      case 'Fill in the Blank':
+        return l10n.quizTypeFillInTheBlank;
+      default:
+        return englishQuizType;
+    }
   }
 
   /// Toggle filter visibility
@@ -256,12 +507,15 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
 
   /// Reset all filters
   void _resetFilters() {
+    final l10n = AppLocalizations.of(context);
+    if (l10n == null) return;
+
     setState(() {
       _searchController.clear();
       _searchQuery = '';
-      _selectedQuizType = 'All';
-      _selectedDifficulty = 'All';
-      _dateFilter = 'All Time';
+      _selectedQuizType = l10n.quizTypeAll;
+      _selectedDifficulty = l10n.quizDifficultyAll;
+      _dateFilter = l10n.allTime;
     });
     _applyFilters();
   }
@@ -293,6 +547,27 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Initialize date filters if not already done
+    if (_dateFilters.isEmpty) {
+      _dateFilters = [
+        l10n.allTime,
+        l10n.today,
+        l10n.thisWeek,
+        l10n.thisMonth,
+        l10n.last3Months,
+      ];
+      // Update current filter to localized version if it's still in English
+      if (_dateFilter == 'All Time' ||
+          _dateFilter == 'Today' ||
+          _dateFilter == 'This Week' ||
+          _dateFilter == 'This Month' ||
+          _dateFilter == 'Last 3 Months') {
+        _dateFilter = _getLocalizedDateFilter(_dateFilter, l10n);
+      }
+    }
+
     return Column(
       children: [
         // Search and filter bar
@@ -320,7 +595,7 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
                     child: TextField(
                       controller: _searchController,
                       decoration: InputDecoration(
-                        hintText: 'Search quiz history...',
+                        hintText: l10n.searchQuizHistory,
                         prefixIcon: const Icon(Icons.search),
                         suffixIcon: _searchQuery.isNotEmpty
                             ? IconButton(
@@ -371,9 +646,17 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
                     ),
                     child: IconButton(
                       icon: Badge(
-                        isLabelVisible: _selectedQuizType != 'All' ||
-                            _selectedDifficulty != 'All' ||
-                            _dateFilter != 'All Time',
+                        isLabelVisible: () {
+                          final englishQuizType =
+                              _getEnglishQuizType(_selectedQuizType, l10n);
+                          final englishDifficulty =
+                              _getEnglishDifficulty(_selectedDifficulty, l10n);
+                          final englishDateFilter =
+                              _getEnglishDateFilter(_dateFilter, l10n);
+                          return englishQuizType != 'All' ||
+                              englishDifficulty != 'All' ||
+                              englishDateFilter != 'All Time';
+                        }(),
                         child: Icon(
                           Icons.filter_list,
                           color: _showFilters
@@ -382,7 +665,7 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
                         ),
                       ),
                       onPressed: _toggleFilters,
-                      tooltip: 'Toggle Filters',
+                      tooltip: l10n.toggleFilters,
                     ),
                   ),
                 ],
@@ -398,7 +681,7 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
                   children: [
                     // Difficulty label
                     Text(
-                      'Difficulty:',
+                      l10n.difficultyLabel,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.grey[800],
@@ -432,7 +715,7 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
 
                     // Quiz type label
                     Text(
-                      'Quiz Type:',
+                      l10n.quizTypeLabel,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.grey[800],
@@ -466,7 +749,7 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
 
                     // Date range label
                     Text(
-                      'Date Range:',
+                      l10n.dateRange,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.grey[800],
@@ -514,22 +797,32 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
                 const SizedBox(height: 16),
 
                 // Filter actions
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    // Only show reset button if filters are applied
-                    if (_selectedQuizType != 'All' ||
-                        _selectedDifficulty != 'All' ||
-                        _dateFilter != 'All Time')
-                      TextButton.icon(
-                        onPressed: _resetFilters,
-                        icon: const Icon(Icons.refresh),
-                        label: const Text('Reset Filters'),
-                        style: TextButton.styleFrom(
-                          foregroundColor: AppColors.primary,
-                        ),
-                      ),
-                  ],
+                Builder(
+                  builder: (context) {
+                    final englishQuizType =
+                        _getEnglishQuizType(_selectedQuizType, l10n);
+                    final englishDifficulty =
+                        _getEnglishDifficulty(_selectedDifficulty, l10n);
+                    final englishDateFilter =
+                        _getEnglishDateFilter(_dateFilter, l10n);
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        // Only show reset button if filters are applied
+                        if (englishQuizType != 'All' ||
+                            englishDifficulty != 'All' ||
+                            englishDateFilter != 'All Time')
+                          TextButton.icon(
+                            onPressed: _resetFilters,
+                            icon: const Icon(Icons.refresh),
+                            label: Text(l10n.resetFilters),
+                            style: TextButton.styleFrom(
+                              foregroundColor: AppColors.primary,
+                            ),
+                          ),
+                      ],
+                    );
+                  },
                 ),
               ],
             ],
@@ -537,90 +830,102 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
         ),
 
         // Active filters display (when filters are collapsed)
-        if (!_showFilters &&
-            (_selectedQuizType != 'All' ||
-                _selectedDifficulty != 'All' ||
-                _dateFilter != 'All Time'))
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  const Text('Active filters:'),
-                  const SizedBox(width: 8),
-                  if (_selectedDifficulty != 'All')
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Chip(
-                        label: Text(_selectedDifficulty),
-                        backgroundColor: AppColors.primary.withOpacity(0.1),
-                        deleteIcon: const Icon(Icons.close, size: 16),
-                        onDeleted: () {
-                          setState(() {
-                            _selectedDifficulty = 'All';
-                          });
-                          _applyFilters();
-                        },
-                        visualDensity: VisualDensity.compact,
-                        labelStyle: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.primary,
+        Builder(
+          builder: (context) {
+            final englishQuizType =
+                _getEnglishQuizType(_selectedQuizType, l10n);
+            final englishDifficulty =
+                _getEnglishDifficulty(_selectedDifficulty, l10n);
+            final englishDateFilter = _getEnglishDateFilter(_dateFilter, l10n);
+            if (!_showFilters &&
+                (englishQuizType != 'All' ||
+                    englishDifficulty != 'All' ||
+                    englishDateFilter != 'All Time')) {
+              return Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      Text(l10n.activeFilters),
+                      const SizedBox(width: 8),
+                      if (englishDifficulty != 'All')
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Chip(
+                            label: Text(_selectedDifficulty),
+                            backgroundColor: AppColors.primary.withOpacity(0.1),
+                            deleteIcon: const Icon(Icons.close, size: 16),
+                            onDeleted: () {
+                              setState(() {
+                                _selectedDifficulty = l10n.quizDifficultyAll;
+                              });
+                              _applyFilters();
+                            },
+                            visualDensity: VisualDensity.compact,
+                            labelStyle: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      if (englishQuizType != 'All')
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Chip(
+                            label: Text(_selectedQuizType),
+                            backgroundColor: AppColors.primary.withOpacity(0.1),
+                            deleteIcon: const Icon(Icons.close, size: 16),
+                            onDeleted: () {
+                              setState(() {
+                                _selectedQuizType = l10n.quizTypeAll;
+                              });
+                              _applyFilters();
+                            },
+                            visualDensity: VisualDensity.compact,
+                            labelStyle: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      if (englishDateFilter != 'All Time')
+                        Padding(
+                          padding: const EdgeInsets.only(right: 8),
+                          child: Chip(
+                            label: Text(_dateFilter),
+                            backgroundColor: AppColors.primary.withOpacity(0.1),
+                            deleteIcon: const Icon(Icons.close, size: 16),
+                            onDeleted: () {
+                              setState(() {
+                                _dateFilter = l10n.allTime;
+                              });
+                              _applyFilters();
+                            },
+                            visualDensity: VisualDensity.compact,
+                            labelStyle: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ),
+                      TextButton(
+                        onPressed: _resetFilters,
+                        child: Text(l10n.clearAll),
+                        style: TextButton.styleFrom(
+                          visualDensity: VisualDensity.compact,
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
                         ),
                       ),
-                    ),
-                  if (_selectedQuizType != 'All')
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Chip(
-                        label: Text(_selectedQuizType),
-                        backgroundColor: AppColors.primary.withOpacity(0.1),
-                        deleteIcon: const Icon(Icons.close, size: 16),
-                        onDeleted: () {
-                          setState(() {
-                            _selectedQuizType = 'All';
-                          });
-                          _applyFilters();
-                        },
-                        visualDensity: VisualDensity.compact,
-                        labelStyle: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  if (_dateFilter != 'All Time')
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: Chip(
-                        label: Text(_dateFilter),
-                        backgroundColor: AppColors.primary.withOpacity(0.1),
-                        deleteIcon: const Icon(Icons.close, size: 16),
-                        onDeleted: () {
-                          setState(() {
-                            _dateFilter = 'All Time';
-                          });
-                          _applyFilters();
-                        },
-                        visualDensity: VisualDensity.compact,
-                        labelStyle: TextStyle(
-                          fontSize: 12,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ),
-                  TextButton(
-                    onPressed: _resetFilters,
-                    child: const Text('Clear All'),
-                    style: TextButton.styleFrom(
-                      visualDensity: VisualDensity.compact,
-                      padding: const EdgeInsets.symmetric(horizontal: 8),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ),
+                ),
+              );
+            }
+            return const SizedBox.shrink();
+          },
+        ),
 
         // Quiz history list
         Expanded(
@@ -638,7 +943,7 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'Error Loading Quiz History',
+                            l10n.errorLoadingQuizHistory,
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
@@ -658,7 +963,7 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
                           ElevatedButton.icon(
                             onPressed: _loadQuizHistory,
                             icon: const Icon(Icons.refresh),
-                            label: const Text('Try Again'),
+                            label: Text(l10n.tryAgain),
                           ),
                         ],
                       ),
@@ -688,10 +993,14 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
 
   /// Build empty state widget when no quiz history found
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
+    final englishQuizType = _getEnglishQuizType(_selectedQuizType, l10n);
+    final englishDifficulty = _getEnglishDifficulty(_selectedDifficulty, l10n);
+    final englishDateFilter = _getEnglishDateFilter(_dateFilter, l10n);
     final isFiltered = _searchQuery.isNotEmpty ||
-        _selectedDifficulty != 'All' ||
-        _selectedQuizType != 'All' ||
-        _dateFilter != 'All Time';
+        englishDifficulty != 'All' ||
+        englishQuizType != 'All' ||
+        englishDateFilter != 'All Time';
 
     return Center(
       child: Column(
@@ -704,7 +1013,7 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
           ),
           const SizedBox(height: 24),
           Text(
-            isFiltered ? 'No matching quiz attempts' : 'No quiz history yet',
+            isFiltered ? l10n.noMatchingQuizAttempts : l10n.noQuizHistoryYet,
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -716,8 +1025,8 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
             padding: const EdgeInsets.symmetric(horizontal: 32),
             child: Text(
               isFiltered
-                  ? 'Try adjusting your filters or search terms'
-                  : 'Complete your first quiz to see your progress here',
+                  ? l10n.tryAdjustingFiltersOrSearchTerms
+                  : l10n.completeFirstQuizToSeeProgress,
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16, color: Colors.grey[600]),
             ),
@@ -727,7 +1036,7 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
             OutlinedButton.icon(
               onPressed: _resetFilters,
               icon: const Icon(Icons.filter_alt_off),
-              label: const Text('Clear Filters'),
+              label: Text(l10n.clearFilters),
             ),
         ],
       ),
@@ -736,8 +1045,10 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
 
   /// Build quiz attempt card
   Widget _buildAttemptCard(dynamic attempt, dynamic quiz, bool isDeleting) {
+    final l10n = AppLocalizations.of(context)!;
+
     // Quiz details
-    final quizTitle = quiz?['title'] ?? 'Untitled Quiz';
+    final quizTitle = quiz?['title'] ?? l10n.untitledQuiz;
     final quizType = quiz?['quiz_type'] ?? 'Unknown';
     final difficulty = quiz?['difficulty'] ?? 'Unknown';
     final quizId = quiz?['id'];
@@ -806,36 +1117,36 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
                         }
                       },
                       itemBuilder: (context) => [
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'view',
                           child: Row(
                             children: [
-                              Icon(Icons.visibility),
-                              SizedBox(width: 8),
-                              Text('View Details'),
+                              const Icon(Icons.visibility),
+                              const SizedBox(width: 8),
+                              Text(l10n.viewDetails),
                             ],
                           ),
                         ),
                         if (quizId != null)
-                          const PopupMenuItem(
+                          PopupMenuItem(
                             value: 'retake',
                             child: Row(
                               children: [
-                                Icon(Icons.replay),
-                                SizedBox(width: 8),
-                                Text('Retake Quiz'),
+                                const Icon(Icons.replay),
+                                const SizedBox(width: 8),
+                                Text(l10n.retakeQuiz),
                               ],
                             ),
                           ),
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(Icons.delete, color: Colors.red),
-                              SizedBox(width: 8),
+                              const Icon(Icons.delete, color: Colors.red),
+                              const SizedBox(width: 8),
                               Text(
-                                'Delete',
-                                style: TextStyle(color: Colors.red),
+                                l10n.delete,
+                                style: const TextStyle(color: Colors.red),
                               ),
                             ],
                           ),
@@ -858,7 +1169,7 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
                   Icon(Icons.calendar_today, size: 16, color: Colors.grey[600]),
                   const SizedBox(width: 6),
                   Text(
-                    _formatDate(createdAt),
+                    formatDate(createdAt, context),
                     style: TextStyle(color: Colors.grey[700]),
                   ),
                   const SizedBox(width: 16),
@@ -877,7 +1188,7 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Score: $score/$totalQuestions',
+                    l10n.scoreFormat(score, totalQuestions),
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -912,12 +1223,16 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
               Row(
                 children: [
                   _buildBadge(
-                    difficulty,
+                    _getLocalizedDifficulty(difficulty, l10n),
                     Icons.fitness_center,
                     _getDifficultyColor(difficulty),
                   ),
                   const SizedBox(width: 8),
-                  _buildBadge(quizType, Icons.quiz, AppColors.primary),
+                  _buildBadge(
+                    _getLocalizedQuizType(quizType, l10n),
+                    Icons.quiz,
+                    AppColors.primary,
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
@@ -935,7 +1250,7 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
                               );
                             },
                       icon: const Icon(Icons.visibility),
-                      label: const Text('View Details'),
+                      label: Text(l10n.viewDetails),
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
@@ -950,7 +1265,7 @@ class _QuizHistoryTabState extends ConsumerState<QuizHistoryTab> {
                               context.go('/quiz/$quizId');
                             },
                       icon: const Icon(Icons.replay),
-                      label: const Text('Retake Quiz'),
+                      label: Text(l10n.retakeQuiz),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 12),
                       ),

@@ -1,5 +1,6 @@
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -7,7 +8,7 @@ class ActivityCalendarCard extends StatelessWidget {
   final Map<String, int> activityData;
 
   const ActivityCalendarCard({Key? key, required this.activityData})
-    : super(key: key);
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +45,7 @@ class ActivityCalendarCard extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Row(
@@ -77,7 +79,7 @@ class ActivityCalendarCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Activity Calendar',
+                l10n.activityCalendar,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.onSurface,
@@ -86,7 +88,7 @@ class ActivityCalendarCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Track your daily learning progress',
+                l10n.trackDailyLearningProgress,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurface.withOpacity(0.7),
                 ),
@@ -224,16 +226,15 @@ class ActivityCalendarCard extends StatelessWidget {
         border: isToday ? Border.all(color: AppColors.accent, width: 2) : null,
       ),
       child: Center(
-        child:
-            count > 0
-                ? Text(
-                  count.toString(),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: count > 3 ? Colors.white : AppColors.primary,
-                  ),
-                )
-                : null,
+        child: count > 0
+            ? Text(
+                count.toString(),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: count > 3 ? Colors.white : AppColors.primary,
+                ),
+              )
+            : null,
       ),
     );
   }

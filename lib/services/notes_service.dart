@@ -147,6 +147,8 @@ class NotesService {
     List<String>? tags,
     String? color,
     bool? isPinned,
+    bool updateColor =
+        false, // Flag to indicate if color should be updated (even if null)
   }) async {
     try {
       final userId = SupabaseService.currentUser?.id;
@@ -159,7 +161,8 @@ class NotesService {
       if (title != null) updateData['title'] = title;
       if (content != null) updateData['content'] = content;
       if (tags != null) updateData['tags'] = tags;
-      if (color != null) updateData['color'] = color;
+      // Always update color if updateColor flag is true (even if null to reset to default)
+      if (updateColor) updateData['color'] = color;
       if (isPinned != null) updateData['is_pinned'] = isPinned;
 
       // Always update the updated_at timestamp

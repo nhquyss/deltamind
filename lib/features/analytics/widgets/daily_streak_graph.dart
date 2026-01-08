@@ -1,6 +1,7 @@
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/services/streak_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
 
@@ -50,6 +51,7 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     // Get current streak value
     final currentStreak = widget.streakData['current_streak'] as int? ?? 0;
 
@@ -91,7 +93,7 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    'Daily Streak',
+                    l10n.dailyStreak,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -119,7 +121,7 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'days',
+                        l10n.days,
                         style: TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 12,
@@ -138,37 +140,24 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
                   : streakHistory.isEmpty
                       ? Center(
                           child: Text(
-                            'No streak data available',
+                            l10n.noStreakDataAvailable,
                             style: Theme.of(context)
                                 .textTheme
                                 .bodyMedium
                                 ?.copyWith(color: AppColors.textSecondary),
                           ),
                         )
-                      : _buildLineChart(streakHistory),
+                      : _buildLineChart(streakHistory, context, l10n),
             ),
             if (widget.streakData['longest_streak'] != null)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'Longest streak: ',
-                        style: TextStyle(
-                          color: AppColors.textSecondary,
-                          fontSize: 14,
-                        ),
-                      ),
-                      TextSpan(
-                        text: '${widget.streakData['longest_streak']} days',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
+                child: Text(
+                  l10n.longestStreakDays(
+                      widget.streakData['longest_streak'] as int),
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 14,
                   ),
                 ),
               ),
@@ -178,7 +167,9 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
     );
   }
 
-  Widget _buildLineChart(List<Map<String, dynamic>> streakHistory) {
+  Widget _buildLineChart(List<Map<String, dynamic>> streakHistory,
+      BuildContext context, AppLocalizations l10n) {
+    final locale = Localizations.localeOf(context);
     return LineChart(
       LineChartData(
         gridData: FlGridData(
@@ -206,7 +197,7 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
               reservedSize: 30,
               interval: 1.0,
               getTitlesWidget: (double value, TitleMeta meta) =>
-                  _bottomTitleWidgets(value, meta, streakHistory),
+                  _bottomTitleWidgets(value, meta, streakHistory, locale),
             ),
           ),
           leftTitles: AxisTitles(
@@ -258,13 +249,14 @@ class _DailyStreakGraphState extends State<DailyStreakGraph> {
     double value,
     TitleMeta meta,
     List<Map<String, dynamic>> streakHistory,
+    Locale locale,
   ) {
     if (value < 0 || value >= streakHistory.length) {
       return const SizedBox.shrink();
     }
 
     final DateTime date = DateTime.parse(streakHistory[value.toInt()]['date']);
-    final String text = DateFormat('MM/dd').format(date);
+    final String text = DateFormat('dd/MM', locale.toString()).format(date);
 
     return Padding(
       padding: const EdgeInsets.only(top: 8.0),

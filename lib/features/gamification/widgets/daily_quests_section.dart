@@ -4,6 +4,7 @@ import 'package:deltamind/features/gamification/widgets/daily_quest_card.dart';
 import 'package:deltamind/models/daily_quest.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -12,6 +13,7 @@ class DailyQuestsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final gamificationState = ref.watch(gamificationControllerProvider);
     final dailyQuests = gamificationState.dailyQuests;
     final theme = Theme.of(context);
@@ -35,9 +37,9 @@ class DailyQuestsSection extends ConsumerWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Daily Quests',
-                style: TextStyle(
+              Text(
+                l10n.dailyQuests,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -50,14 +52,14 @@ class DailyQuestsSection extends ConsumerWidget {
               ),
               const SizedBox(height: 16),
               Text(
-                'No quests available right now',
+                l10n.noQuestsAvailableRightNow,
                 style: theme.textTheme.bodyLarge?.copyWith(
                   fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 8),
               Text(
-                'Come back tomorrow for new quests',
+                l10n.comeBackTomorrowForNewQuests,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurface.withOpacity(0.7),
                 ),
@@ -74,7 +76,7 @@ class DailyQuestsSection extends ConsumerWidget {
                   backgroundColor: const Color(0xFF0056D2),
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Refresh'),
+                child: Text(l10n.refresh),
               ),
             ],
           ),
@@ -97,7 +99,7 @@ class DailyQuestsSection extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                'Daily Quests',
+                l10n.dailyQuests,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: const Color(0xFF000000), // Brand black
@@ -123,7 +125,7 @@ class DailyQuestsSection extends ConsumerWidget {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      '$earnedXP/$totalXP XP',
+                      '$earnedXP/$totalXP ${l10n.xpLabel}',
                       style: theme.textTheme.bodySmall?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: Colors.amber.shade800,
@@ -161,9 +163,9 @@ class DailyQuestsSection extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Daily Progress',
-                style: TextStyle(
+              Text(
+                l10n.dailyProgress,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
@@ -209,7 +211,9 @@ class DailyQuestsSection extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${dailyQuests.where((q) => q.completed).length} of ${dailyQuests.length} quests completed',
+                          l10n.questsCompleted(
+                              dailyQuests.where((q) => q.completed).length,
+                              dailyQuests.length),
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -219,8 +223,8 @@ class DailyQuestsSection extends ConsumerWidget {
                         const SizedBox(height: 4),
                         Text(
                           completionRate >= 1.0
-                              ? 'All quests completed today!'
-                              : 'Complete quests to earn XP',
+                              ? l10n.allQuestsCompletedToday
+                              : l10n.completeQuestsToEarnXp,
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.white.withOpacity(0.9),
@@ -250,37 +254,39 @@ class DailyQuestsSection extends ConsumerWidget {
   }
 
   void _handleQuestTap(BuildContext context, DailyQuest quest, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     if (quest.completed) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Quest already completed!')),
+        SnackBar(content: Text(l10n.questAlreadyCompleted)),
       );
       return;
     }
 
     // Show quest details or relevant action
-    final questAction = _getQuestAction(quest.questType);
+    final questAction = _getQuestAction(quest.questType, l10n);
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(quest.title),
+        title: Text(_getLocalizedTitle(quest.questType, l10n)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(quest.description),
+            Text(_getLocalizedDescription(
+                quest.questType, quest.targetCount, l10n)),
             const SizedBox(height: 16),
-            Text('Progress: ${quest.progressText}'),
+            Text(l10n.progress(quest.progressText)),
             const SizedBox(height: 8),
-            Text('Reward: +${quest.xpReward} XP'),
+            Text(l10n.reward(quest.xpReward)),
             const SizedBox(height: 16),
-            Text('Go to ${questAction.name} to make progress on this quest.'),
+            Text(l10n.goToToMakeProgress(questAction.name)),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
+            child: Text(l10n.close),
           ),
           ElevatedButton(
             onPressed: () {
@@ -306,23 +312,54 @@ class DailyQuestsSection extends ConsumerWidget {
                   break;
               }
             },
-            child: Text('Go to ${questAction.name}'),
+            child: Text(l10n.goTo(questAction.name)),
           ),
         ],
       ),
     );
   }
 
-  _QuestAction _getQuestAction(String questType) {
+  _QuestAction _getQuestAction(String questType, AppLocalizations l10n) {
     switch (questType) {
       case 'complete_quiz':
-        return _QuestAction('Quizzes', PhosphorIconsFill.exam);
+        return _QuestAction(l10n.quizzes, PhosphorIconsFill.exam);
       case 'write_note':
-        return _QuestAction('Notes', PhosphorIconsFill.notepad);
+        return _QuestAction(l10n.notes, PhosphorIconsFill.notepad);
       case 'review_flashcards':
-        return _QuestAction('Flashcards', PhosphorIconsFill.cards);
+        return _QuestAction(l10n.flashcards, PhosphorIconsFill.cards);
       default:
-        return _QuestAction('Dashboard', PhosphorIconsFill.house);
+        return _QuestAction(l10n.dashboard, PhosphorIconsFill.house);
+    }
+  }
+
+  String _getLocalizedTitle(String questType, AppLocalizations l10n) {
+    switch (questType) {
+      case 'complete_quiz':
+        return l10n.completeQuizzesTitle;
+      case 'write_note':
+        return l10n.writeNotesTitle;
+      case 'review_flashcards':
+        return l10n.reviewFlashcardsTitle;
+      default:
+        return l10n.unknownQuestTitle;
+    }
+  }
+
+  String _getLocalizedDescription(
+      String questType, int targetCount, AppLocalizations l10n) {
+    switch (questType) {
+      case 'complete_quiz':
+        return targetCount == 1
+            ? l10n.completeQuizzesDescriptionSingular(targetCount)
+            : l10n.completeQuizzesDescription(targetCount);
+      case 'write_note':
+        return targetCount == 1
+            ? l10n.writeNotesDescription(targetCount)
+            : l10n.writeNotesDescriptionPlural(targetCount);
+      case 'review_flashcards':
+        return l10n.reviewFlashcardsDescription(targetCount);
+      default:
+        return l10n.unknownQuestDescription;
     }
   }
 }

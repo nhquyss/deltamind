@@ -1,8 +1,10 @@
 import 'package:deltamind/core/routing/app_router.dart';
 import 'package:deltamind/core/theme/app_theme.dart';
 import 'package:deltamind/services/supabase_service.dart';
+import 'package:deltamind/widgets/language_switcher_button.dart';
 import 'package:deltamind/widgets/loading_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -53,7 +55,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         // For change password, verify old password first
         final user = SupabaseService.currentUser;
         if (user?.email == null) {
-          throw Exception('User not found');
+          throw Exception(AppLocalizations.of(context)!.userNotFound);
         }
 
         // Try to sign in with old password to verify it
@@ -63,7 +65,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
             _oldPasswordController.text,
           );
         } catch (e) {
-          throw Exception('Current password is incorrect');
+          throw Exception(
+              AppLocalizations.of(context)!.currentPasswordIncorrect);
         }
 
         // Update to new password
@@ -74,7 +77,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
         final user = SupabaseService.currentUser;
         if (user == null) {
           throw Exception(
-            'Please click the link from your email to reset your password',
+            AppLocalizations.of(context)!.clickEmailLinkToReset,
           );
         }
         await SupabaseService.resetPassword(
@@ -84,8 +87,9 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Password updated successfully'),
+          SnackBar(
+            content:
+                Text(AppLocalizations.of(context)!.passwordUpdatedSuccessfully),
             backgroundColor: Colors.green,
           ),
         );
@@ -112,11 +116,16 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          widget.isChangePassword ? 'Change Password' : 'Reset Password',
+          widget.isChangePassword ? l10n.changePassword : l10n.resetPassword,
         ),
+        actions: const [
+          LanguageSwitcherButton(),
+          SizedBox(width: 8),
+        ],
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -140,8 +149,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 // Title
                 Text(
                   widget.isChangePassword
-                      ? 'Change Your Password'
-                      : 'Set New Password',
+                      ? l10n.changeYourPassword
+                      : l10n.setNewPassword,
                   style: AppTheme.headingLarge,
                   textAlign: TextAlign.center,
                 ),
@@ -150,8 +159,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 // Description
                 Text(
                   widget.isChangePassword
-                      ? 'Enter your current password and choose a new one.'
-                      : 'Please enter your new password below.',
+                      ? l10n.changePasswordDescription
+                      : l10n.setNewPasswordDescription,
                   style: AppTheme.bodyText.copyWith(
                     color: Colors.grey[600],
                   ),
@@ -164,7 +173,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   TextFormField(
                     controller: _oldPasswordController,
                     decoration: InputDecoration(
-                      labelText: 'Current Password',
+                      labelText: l10n.currentPassword,
                       prefixIcon: const Icon(Icons.lock_outline),
                       suffixIcon: IconButton(
                         icon: Icon(
@@ -182,7 +191,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                     obscureText: _obscureOldPassword,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your current password';
+                        return l10n.pleaseEnterCurrentPassword;
                       }
                       return null;
                     },
@@ -194,7 +203,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 TextFormField(
                   controller: _newPasswordController,
                   decoration: InputDecoration(
-                    labelText: 'New Password',
+                    labelText: l10n.newPassword,
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -212,10 +221,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   obscureText: _obscureNewPassword,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please enter a new password';
+                      return l10n.pleaseEnterANewPassword;
                     }
                     if (value.length < 6) {
-                      return 'Password must be at least 6 characters';
+                      return l10n.passwordTooShort;
                     }
                     return null;
                   },
@@ -226,7 +235,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 TextFormField(
                   controller: _confirmPasswordController,
                   decoration: InputDecoration(
-                    labelText: 'Confirm New Password',
+                    labelText: l10n.confirmNewPassword,
                     prefixIcon: const Icon(Icons.lock_outline),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -244,10 +253,10 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   obscureText: _obscureConfirmPassword,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return 'Please confirm your new password';
+                      return l10n.pleaseConfirmNewPassword;
                     }
                     if (value != _newPasswordController.text) {
-                      return 'Passwords do not match';
+                      return l10n.passwordsDoNotMatch;
                     }
                     return null;
                   },
@@ -276,8 +285,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                   isLoading: _isLoading,
                   child: Text(
                     widget.isChangePassword
-                        ? 'Change Password'
-                        : 'Reset Password',
+                        ? l10n.changePassword
+                        : l10n.resetPassword,
                   ),
                 ),
               ],
@@ -288,4 +297,3 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
     );
   }
 }
-

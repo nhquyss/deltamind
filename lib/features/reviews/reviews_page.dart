@@ -3,6 +3,7 @@ import 'package:deltamind/features/reviews/card_review_page.dart';
 import 'package:deltamind/services/spaced_repetition_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Reviews page
 class ReviewsPage extends ConsumerStatefulWidget {
@@ -34,7 +35,7 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
     try {
       // Get spaced repetition statistics
       _stats = await SpacedRepetitionService.getStatistics();
-      
+
       // Get due cards
       _dueCards = await SpacedRepetitionService.getDueCards();
     } catch (e) {
@@ -51,9 +52,10 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reviews'),
+        title: Text(l10n.reviews),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -71,8 +73,9 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
 
   /// Build content
   Widget _buildContent() {
+    final l10n = AppLocalizations.of(context)!;
     final dueToday = _stats['dueToday'] ?? 0;
-    
+
     return RefreshIndicator(
       onRefresh: _loadReviewData,
       child: SingleChildScrollView(
@@ -93,29 +96,29 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Spaced Repetition Statistics',
+                      l10n.spacedRepetitionStats,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                            fontWeight: FontWeight.bold,
+                          ),
                     ),
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _buildStatItem(
-                          'Total Cards',
+                          l10n.totalCards,
                           (_stats['totalCards'] ?? 0).toString(),
                           Icons.layers,
                           AppColors.primary,
                         ),
                         _buildStatItem(
-                          'Due Today',
+                          l10n.dueToday,
                           dueToday.toString(),
                           Icons.calendar_today,
                           AppColors.secondary,
                         ),
                         _buildStatItem(
-                          'Mastered',
+                          l10n.mastered,
                           (_stats['mastered'] ?? 0).toString(),
                           Icons.check_circle,
                           AppColors.gray,
@@ -127,24 +130,25 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
               ),
             ),
             const SizedBox(height: 24),
-            
+
             // Due cards
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Cards Due Today',
+                  l10n.cardsDueToday,
                   style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                        fontWeight: FontWeight.bold,
+                      ),
                 ),
                 if (_dueCards.isNotEmpty)
                   ElevatedButton.icon(
                     onPressed: _startReview,
                     icon: const Icon(Icons.play_arrow),
-                    label: const Text('Start Review'),
+                    label: Text(l10n.startReview),
                     style: ElevatedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 8),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -153,11 +157,8 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
               ],
             ),
             const SizedBox(height: 16),
-            
-            if (_dueCards.isEmpty)
-              _buildEmptyState()
-            else
-              _buildDueCardsList(),
+
+            if (_dueCards.isEmpty) _buildEmptyState() else _buildDueCardsList(),
           ],
         ),
       ),
@@ -165,7 +166,8 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
   }
 
   /// Build statistic item
-  Widget _buildStatItem(String label, String value, IconData icon, Color color) {
+  Widget _buildStatItem(
+      String label, String value, IconData icon, Color color) {
     return Column(
       children: [
         Container(
@@ -181,14 +183,14 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
         Text(
           value,
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
+                fontWeight: FontWeight.bold,
+              ),
         ),
         Text(
           label,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Colors.grey[600],
-          ),
+                color: Colors.grey[600],
+              ),
         ),
       ],
     );
@@ -196,6 +198,7 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
 
   /// Build empty state
   Widget _buildEmptyState() {
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(
@@ -222,18 +225,18 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
               ),
               const SizedBox(height: 16),
               Text(
-                'All caught up!',
+                l10n.allCaughtUp,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.primary,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primary,
+                    ),
               ),
               const SizedBox(height: 8),
               Text(
-                'No cards due for review today.',
+                l10n.noCardsDueForReviewToday,
                 style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+                      color: AppColors.textSecondary,
+                    ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -258,7 +261,8 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             leading: CircleAvatar(
               backgroundColor: AppColors.primary.withOpacity(0.1),
               child: Icon(Icons.quiz, color: AppColors.primary),
@@ -284,7 +288,7 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
   /// Start review session with all due cards
   void _startReview() {
     if (_dueCards.isEmpty) return;
-    
+
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => CardReviewPage(
@@ -294,7 +298,7 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
       ),
     );
   }
-  
+
   /// Review a single card
   void _reviewSingleCard(Map<String, dynamic> card) {
     Navigator.of(context).push(
@@ -306,4 +310,4 @@ class _ReviewsPageState extends ConsumerState<ReviewsPage> {
       ),
     );
   }
-} 
+}

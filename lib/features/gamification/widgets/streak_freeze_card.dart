@@ -3,6 +3,7 @@ import 'package:deltamind/features/gamification/gamification_controller.dart';
 import 'package:deltamind/services/streak_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class StreakFreezeCard extends ConsumerWidget {
@@ -17,6 +18,7 @@ class StreakFreezeCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final availableFreezes = streakFreeze.availableFreezes;
 
@@ -47,7 +49,7 @@ class StreakFreezeCard extends ConsumerWidget {
 
             // Description
             Text(
-              'Streak freezes protect your streak when you miss a day of learning. Use them wisely!',
+              l10n.streakFreezesProtectDescriptionCard,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurface.withOpacity(0.7),
               ),
@@ -64,6 +66,7 @@ class StreakFreezeCard extends ConsumerWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Row(
@@ -97,7 +100,7 @@ class StreakFreezeCard extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Streak Freezes',
+                l10n.streakFreezes,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: theme.colorScheme.onSurface,
@@ -106,7 +109,7 @@ class StreakFreezeCard extends ConsumerWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Protect your learning progress',
+                l10n.protectYourLearningProgress,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurface.withOpacity(0.7),
                 ),
@@ -120,6 +123,7 @@ class StreakFreezeCard extends ConsumerWidget {
   }
 
   Widget _buildFreezeCount(BuildContext context, int count) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Container(
@@ -141,7 +145,7 @@ class StreakFreezeCard extends ConsumerWidget {
           ),
           const SizedBox(width: 8),
           Text(
-            count == 1 ? 'Freeze Available' : 'Freezes Available',
+            count == 1 ? l10n.freezeAvailable : l10n.freezesAvailable,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.w500,
               color: Colors.blue.shade700,
@@ -153,6 +157,7 @@ class StreakFreezeCard extends ConsumerWidget {
   }
 
   Widget _buildUseButton(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
@@ -167,8 +172,8 @@ class StreakFreezeCard extends ConsumerWidget {
           elevation: 2,
         ),
         child: Text(
-          'Use Streak Freeze',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          l10n.useStreakFreeze,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
         ),
       ),
     );

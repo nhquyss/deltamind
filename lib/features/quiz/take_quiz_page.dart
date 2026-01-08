@@ -4,6 +4,7 @@ import 'package:deltamind/features/history/quiz_review_detail_page.dart';
 import 'package:deltamind/services/quiz_service.dart';
 import 'package:deltamind/services/supabase_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -415,9 +416,10 @@ class TakeQuizPage extends ConsumerStatefulWidget {
         }
 
         if (quizSnapshot.hasError || !quizSnapshot.hasData) {
+          final l10n = AppLocalizations.of(context)!;
           return Scaffold(
             body: Center(
-              child: Text('Error loading quiz: ${quizSnapshot.error}'),
+              child: Text('${l10n.error}: ${l10n.errorLoadingQuizzes(quizSnapshot.error.toString())}'),
             ),
           );
         }
@@ -434,10 +436,11 @@ class TakeQuizPage extends ConsumerStatefulWidget {
             }
 
             if (questionsSnapshot.hasError || !questionsSnapshot.hasData) {
+              final l10n = AppLocalizations.of(context)!;
               return Scaffold(
                 body: Center(
                   child: Text(
-                    'Error loading questions: ${questionsSnapshot.error}',
+                    '${l10n.error}: ${l10n.errorLoadingQuizzes(questionsSnapshot.error.toString())}',
                   ),
                 ),
               );
@@ -446,10 +449,11 @@ class TakeQuizPage extends ConsumerStatefulWidget {
             final questions = questionsSnapshot.data!;
 
             if (questions.isEmpty) {
+              final l10n = AppLocalizations.of(context)!;
               return Scaffold(
                 appBar: AppBar(title: Text(quiz.title)),
-                body: const Center(
-                  child: Text('This quiz has no questions yet.'),
+                body: Center(
+                  child: Text(l10n.thisQuizHasNoQuestionsYet),
                 ),
               );
             }
@@ -484,6 +488,7 @@ class _TakeQuizPageState extends ConsumerState<TakeQuizPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final quizAttempt = ref.watch(quizAttemptProvider(_params));
     final quizAttemptNotifier = ref.read(quizAttemptProvider(_params).notifier);
 
@@ -498,7 +503,7 @@ class _TakeQuizPageState extends ConsumerState<TakeQuizPage> {
         actions: [
           TextButton(
             onPressed: () => quizAttemptNotifier.completeQuiz(),
-            child: const Text('Finish'),
+            child: Text(l10n.finish),
           ),
         ],
       ),
@@ -516,11 +521,11 @@ class _TakeQuizPageState extends ConsumerState<TakeQuizPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Question ${quizAttempt.currentQuestionIndex + 1}/${quizAttempt.totalQuestions}',
+                  '${l10n.question} ${quizAttempt.currentQuestionIndex + 1} ${l10n.ofSeparator} ${quizAttempt.totalQuestions}',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Text(
-                  'Score: ${quizAttempt.score}',
+                  '${l10n.score}: ${quizAttempt.score}',
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ],
@@ -558,7 +563,7 @@ class _TakeQuizPageState extends ConsumerState<TakeQuizPage> {
                 if (quizAttempt.currentQuestionIndex > 0)
                   ElevatedButton(
                     onPressed: () => quizAttemptNotifier.previousQuestion(),
-                    child: const Text('Previous'),
+                    child: Text(l10n.previous),
                   )
                 else
                   const SizedBox(width: 100),
@@ -569,8 +574,8 @@ class _TakeQuizPageState extends ConsumerState<TakeQuizPage> {
                   child: Text(
                     quizAttempt.currentQuestionIndex ==
                             quizAttempt.totalQuestions - 1
-                        ? 'Finish'
-                        : 'Next',
+                        ? l10n.finish
+                        : l10n.next,
                   ),
                 ),
               ],
@@ -663,10 +668,11 @@ class _TakeQuizPageState extends ConsumerState<TakeQuizPage> {
       }
     });
 
+    final l10n = AppLocalizations.of(context)!;
     // Show loading screen while saving attempt
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Finalizing Quiz'),
+        title: Text(l10n.finalizingQuiz),
         automaticallyImplyLeading: false,
       ),
       body: Center(
@@ -676,7 +682,7 @@ class _TakeQuizPageState extends ConsumerState<TakeQuizPage> {
             const CircularProgressIndicator(),
             const SizedBox(height: 24),
             Text(
-              'Saving your quiz results...',
+              l10n.savingYourQuizResults,
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ],

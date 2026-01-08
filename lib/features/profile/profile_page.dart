@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:deltamind/core/locale/locale_controller.dart';
 import 'package:deltamind/core/routing/app_router.dart';
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/features/auth/auth_controller.dart';
 import 'package:deltamind/services/supabase_service.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -66,6 +68,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
   /// Show options for picking profile picture
   Future<void> _showImageSourceOptions() async {
+    final l10n = AppLocalizations.of(context)!;
     showModalBottomSheet(
       context: context,
       builder: (context) => SafeArea(
@@ -73,7 +76,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           children: [
             ListTile(
               leading: const Icon(Icons.photo_library),
-              title: const Text('Choose from Gallery'),
+              title: Text(l10n.chooseFromGallery),
               onTap: () {
                 Navigator.of(context).pop();
                 _pickImageFromGallery();
@@ -81,7 +84,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             ),
             ListTile(
               leading: const Icon(Icons.photo_camera),
-              title: const Text('Take a Photo'),
+              title: Text(l10n.takeAPhoto),
               onTap: () {
                 Navigator.of(context).pop();
                 _pickImageFromCamera();
@@ -90,7 +93,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
             if (kIsWeb || !Platform.isIOS && !Platform.isAndroid)
               ListTile(
                 leading: const Icon(Icons.upload_file),
-                title: const Text('Upload File'),
+                title: Text(l10n.uploadFile),
                 onTap: () {
                   Navigator.of(context).pop();
                   _pickFileFromSystem();
@@ -142,7 +145,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       }
     } catch (e) {
       debugPrint('Error picking image: $e');
-      _showErrorSnackBar('Error picking image. Please try again.');
+      _showErrorSnackBar(AppLocalizations.of(context)!.errorPickingImage);
     }
   }
 
@@ -170,7 +173,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         debugPrint('Error with camera: $e');
         // Alert user that camera is not available
         _showErrorSnackBar(
-          'Camera is not available. Please use gallery or file upload instead.',
+          AppLocalizations.of(context)!.cameraNotAvailable,
         );
         return;
       }
@@ -181,7 +184,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       }
     } catch (e) {
       debugPrint('Error taking photo: $e');
-      _showErrorSnackBar('Error taking photo. Please try again.');
+      _showErrorSnackBar(AppLocalizations.of(context)!.errorTakingPhoto);
     }
   }
 
@@ -201,7 +204,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       }
     } catch (e) {
       debugPrint('Error picking file: $e');
-      _showErrorSnackBar('Error picking file. Please try again.');
+      _showErrorSnackBar(
+          AppLocalizations.of(context)!.errorPickingFile('Please try again'));
     }
   }
 
@@ -247,18 +251,21 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           });
 
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Profile picture updated successfully'),
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!
+                  .profilePictureUpdatedSuccessfully),
               backgroundColor: AppColors.success,
             ),
           );
         } else {
-          _showErrorSnackBar('Failed to upload profile picture');
+          _showErrorSnackBar(
+              AppLocalizations.of(context)!.failedToUploadProfilePicture);
         }
       }
     } catch (e) {
       debugPrint('Error uploading profile picture: $e');
-      _showErrorSnackBar('Error uploading profile picture');
+      _showErrorSnackBar(
+          AppLocalizations.of(context)!.errorUploadingProfilePicture);
     } finally {
       setState(() {
         _isUploadingImage = false;
@@ -291,8 +298,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
         );
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Profile updated'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.profileUpdated),
             backgroundColor: AppColors.success,
           ),
         );
@@ -303,7 +310,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       debugPrint('Error updating profile: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error updating profile: $e'),
+          content:
+              Text('${AppLocalizations.of(context)!.errorUpdatingProfile}: $e'),
           backgroundColor: AppColors.error,
         ),
       );
@@ -337,8 +345,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
 
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Signed out successfully'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.signedOutSuccessfully),
             backgroundColor: AppColors.success,
           ),
         );
@@ -348,7 +356,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error signing out: $e'),
+            content:
+                Text('${AppLocalizations.of(context)!.errorSigningOut}: $e'),
             backgroundColor: AppColors.error,
           ),
         );
@@ -370,17 +379,18 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   Widget build(BuildContext context) {
     final authState = ref.watch(authControllerProvider);
     final user = authState.user;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: Text(l10n.profile),
         backgroundColor: Colors.white,
         elevation: 0,
         actions: [
           IconButton(
             icon: Icon(PhosphorIconsFill.signOut),
             onPressed: _isLoading ? null : _signOut,
-            tooltip: 'Sign Out',
+            tooltip: l10n.logout,
           ),
         ],
       ),
@@ -410,22 +420,22 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Profile Information',
+                              l10n.profileInformation,
                               style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const SizedBox(height: 16),
                             TextFormField(
                               controller: _usernameController,
-                              decoration: const InputDecoration(
-                                labelText: 'Username',
-                                border: OutlineInputBorder(),
+                              decoration: InputDecoration(
+                                labelText: l10n.username,
+                                border: const OutlineInputBorder(),
                               ),
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Please enter a username';
+                                  return l10n.pleaseEnterUsername;
                                 }
                                 if (value.length < 3) {
-                                  return 'Username must be at least 3 characters long';
+                                  return l10n.usernameTooShort;
                                 }
                                 return null;
                               },
@@ -435,7 +445,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                               width: double.infinity,
                               child: ElevatedButton(
                                 onPressed: _isLoading ? null : _updateProfile,
-                                child: const Text('Update Profile'),
+                                child: Text(l10n.save),
                               ),
                             ),
                           ],
@@ -458,12 +468,12 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Shortcuts',
+                            l10n.shortcuts,
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           const SizedBox(height: 16),
                           ListTile(
-                            title: const Text('Achievements'),
+                            title: Text(l10n.achievements),
                             leading: const Icon(
                               PhosphorIconsFill.trophy,
                               color: AppColors.accent,
@@ -472,7 +482,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           ),
                           const Divider(),
                           ListTile(
-                            title: const Text('Analytics'),
+                            title: Text(l10n.analytics),
                             leading: const Icon(
                               PhosphorIconsFill.chartLine,
                               color: AppColors.primary,
@@ -498,13 +508,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Account Information',
+                            l10n.accountInformation,
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                           const SizedBox(height: 16),
                           ListTile(
-                            title: const Text('Email'),
-                            subtitle: Text(user?.email ?? 'Not available'),
+                            title: Text(l10n.email),
+                            subtitle: Text(user?.email ?? l10n.notAvailable),
                             leading: const Icon(
                               Icons.email,
                               color: AppColors.primary,
@@ -512,9 +522,9 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           ),
                           const Divider(),
                           ListTile(
-                            title: const Text('User ID'),
+                            title: Text(l10n.userID),
                             subtitle: Text(
-                              user?.id ?? 'Not available',
+                              user?.id ?? l10n.notAvailable,
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                             leading: const Icon(
@@ -524,13 +534,13 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           ),
                           const Divider(),
                           ListTile(
-                            title: const Text('Joined'),
+                            title: Text(l10n.joined),
                             subtitle: Text(
                               user?.createdAt != null
                                   ? _formatDate(
                                       DateTime.parse(user!.createdAt),
                                     )
-                                  : 'Not available',
+                                  : l10n.notAvailable,
                             ),
                             leading: const Icon(
                               Icons.calendar_today,
@@ -539,7 +549,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                           ),
                           const Divider(),
                           ListTile(
-                            title: const Text('Change Password'),
+                            title: Text(l10n.changePassword),
                             leading: const Icon(
                               Icons.lock_outline,
                               color: AppColors.primary,
@@ -550,6 +560,8 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                             trailing:
                                 const Icon(Icons.arrow_forward_ios, size: 16),
                           ),
+                          const Divider(),
+                          _buildLanguageSelector(),
                         ],
                       ),
                     ),
@@ -567,7 +579,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
                         horizontal: 16.0,
                         vertical: 8.0,
                       ),
-                      title: const Text('Sign Out'),
+                      title: Text(l10n.logout),
                       leading: const Icon(
                         Icons.logout,
                         color: AppColors.error,
@@ -663,7 +675,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
           Text(
             _profileData?['username'] ??
                 user?.email?.split('@').first ??
-                'User',
+                AppLocalizations.of(context)!.user,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
           Text(
@@ -709,5 +721,70 @@ class _ProfilePageState extends ConsumerState<ProfilePage> {
   /// Format date to readable string
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
+  }
+
+  /// Build language selector
+  Widget _buildLanguageSelector() {
+    final l10n = AppLocalizations.of(context)!;
+    final localeState = ref.watch(localeControllerProvider);
+    final currentLocale = localeState.locale;
+
+    return ListTile(
+      title: Text(l10n.language),
+      subtitle: Text(
+        currentLocale.languageCode == 'vi' ? l10n.vietnamese : l10n.english,
+      ),
+      leading: const Icon(
+        Icons.language,
+        color: AppColors.primary,
+      ),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+      onTap: () => _showLanguageDialog(currentLocale),
+    );
+  }
+
+  /// Show language selection dialog
+  void _showLanguageDialog(Locale currentLocale) {
+    final l10n = AppLocalizations.of(context)!;
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.language),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<Locale>(
+              title: Text(l10n.english),
+              value: const Locale('en', ''),
+              groupValue: currentLocale,
+              onChanged: (Locale? value) {
+                if (value != null) {
+                  ref.read(localeControllerProvider.notifier).setLocale(value);
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+            RadioListTile<Locale>(
+              title: Text(l10n.vietnamese),
+              value: const Locale('vi', ''),
+              groupValue: currentLocale,
+              onChanged: (Locale? value) {
+                if (value != null) {
+                  ref.read(localeControllerProvider.notifier).setLocale(value);
+                  Navigator.of(context).pop();
+                }
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.cancel),
+          ),
+        ],
+      ),
+    );
   }
 }

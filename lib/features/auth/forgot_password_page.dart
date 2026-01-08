@@ -1,7 +1,9 @@
 import 'package:deltamind/core/theme/app_theme.dart';
 import 'package:deltamind/services/supabase_service.dart';
+import 'package:deltamind/widgets/language_switcher_button.dart';
 import 'package:deltamind/widgets/loading_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Forgot password page for requesting password reset
 class ForgotPasswordPage extends StatefulWidget {
@@ -56,9 +58,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Forgot Password'),
+        title: Text(l10n.forgotPassword.replaceAll('?', '')),
+        actions: const [
+          LanguageSwitcherButton(),
+          SizedBox(width: 8),
+        ],
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -80,7 +87,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
                   // Title
                   Text(
-                    'Reset Your Password',
+                    l10n.resetYourPassword,
                     style: AppTheme.headingLarge,
                     textAlign: TextAlign.center,
                   ),
@@ -88,7 +95,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
 
                   // Description
                   Text(
-                    'Enter your email address and we\'ll send you a link to reset your password.',
+                    l10n.resetPasswordDescription,
                     style: AppTheme.bodyText.copyWith(
                       color: Colors.grey[600],
                     ),
@@ -99,17 +106,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   // Email field
                   TextFormField(
                     controller: _emailController,
-                    decoration: const InputDecoration(
-                      labelText: 'Email',
-                      prefixIcon: Icon(Icons.email_outlined),
+                    decoration: InputDecoration(
+                      labelText: l10n.email,
+                      prefixIcon: const Icon(Icons.email_outlined),
                     ),
                     keyboardType: TextInputType.emailAddress,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your email';
+                        return l10n.pleaseEnterEmail;
                       }
                       if (!RegExp(r'^[^@]+@[^@]+\.[^@]+').hasMatch(value)) {
-                        return 'Please enter a valid email';
+                        return l10n.pleaseEnterValidEmail;
                       }
                       return null;
                     },
@@ -136,7 +143,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   LoadingButton(
                     onPressed: _sendResetEmail,
                     isLoading: _isLoading,
-                    child: const Text('Send Reset Link'),
+                    child: Text(l10n.sendResetLink),
                   ),
                 ] else ...[
                   // Success message
@@ -148,14 +155,14 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   const SizedBox(height: 24),
 
                   Text(
-                    'Check Your Email',
+                    l10n.checkYourEmail,
                     style: AppTheme.headingLarge,
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 16),
 
                   Text(
-                    'We\'ve sent a password reset link to:\n${_emailController.text.trim()}',
+                    l10n.resetLinkSent(_emailController.text.trim()),
                     style: AppTheme.bodyText.copyWith(
                       color: Colors.grey[600],
                     ),
@@ -164,7 +171,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   const SizedBox(height: 8),
 
                   Text(
-                    'Please check your inbox and click on the link to reset your password.',
+                    l10n.checkInboxMessage,
                     style: AppTheme.smallText.copyWith(
                       color: Colors.grey[600],
                     ),
@@ -177,7 +184,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     onPressed: () {
                       Navigator.of(context).pop();
                     },
-                    child: const Text('Back to Login'),
+                    child: Text(l10n.backToLogin),
                   ),
                 ],
               ],
@@ -188,4 +195,3 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     );
   }
 }
-

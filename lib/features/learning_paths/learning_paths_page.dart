@@ -2,6 +2,7 @@ import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/models/learning_path.dart';
 import 'package:deltamind/services/learning_path_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:deltamind/features/learning_paths/generate_path_dialog.dart';
 // import 'package:deltamind/features/learning_paths/learning_path_detail_page.dart';
@@ -88,7 +89,8 @@ class _LearningPathsPageState extends State<LearningPathsPage>
     } catch (e) {
       if (mounted) {
         setState(() {
-          _errorMessage = 'Failed to load learning paths: $e';
+          _errorMessage =
+              '${AppLocalizations.of(context)!.failedToLoadLearningPaths}: $e';
           _isLoading = false;
         });
       }
@@ -165,21 +167,22 @@ class _LearningPathsPageState extends State<LearningPathsPage>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Learning Paths'),
+        title: Text(l10n.learningPaths),
         actions: [
           IconButton(
             icon: Icon(PhosphorIcons.arrowClockwise(PhosphorIconsStyle.fill)),
             onPressed: _loadLearningPaths,
-            tooltip: 'Refresh',
+            tooltip: l10n.refresh,
           ),
         ],
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Dashboard'),
-            Tab(text: 'All Paths'),
+          tabs: [
+            Tab(text: l10n.dashboard),
+            Tab(text: l10n.allPaths),
           ],
         ),
       ),
@@ -196,7 +199,7 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                 ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showGeneratePathDialog,
-        tooltip: 'Generate Learning Path',
+        tooltip: l10n.generateLearningPath,
         child: Icon(PhosphorIcons.brain(PhosphorIconsStyle.fill)),
       ),
     );
@@ -222,7 +225,7 @@ class _LearningPathsPageState extends State<LearningPathsPage>
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _loadLearningPaths,
-            child: const Text('Try Again'),
+            child: Text(AppLocalizations.of(context)!.tryAgain),
           ),
         ],
       ),
@@ -254,7 +257,7 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      'Learning Paths Dashboard',
+                      AppLocalizations.of(context)!.learningPathsDashboard,
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -263,7 +266,8 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Track your progress and continue your learning journey',
+                  AppLocalizations.of(context)!
+                      .trackYourProgressAndContinueYourLearningJourney,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: Colors.grey.shade700,
                       ),
@@ -317,14 +321,14 @@ class _LearningPathsPageState extends State<LearningPathsPage>
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Recent Learning Paths',
+                AppLocalizations.of(context)!.recentLearningPaths,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
               ),
               TextButton(
                 onPressed: () => _tabController.animateTo(1),
-                child: const Text('View All'),
+                child: Text(AppLocalizations.of(context)!.viewAll),
               ),
             ],
           ),
@@ -358,7 +362,8 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                 child: Row(
                   children: [
                     Text(
-                      '${_filteredPaths.length} ${_filteredPaths.length == 1 ? 'path' : 'paths'} found',
+                      AppLocalizations.of(context)!
+                          .pathsFound(_filteredPaths.length),
                       style: TextStyle(
                         color: Colors.grey.shade700,
                         fontWeight: FontWeight.w500,
@@ -375,7 +380,7 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                           PhosphorIcons.x(PhosphorIconsStyle.fill),
                           size: 16,
                         ),
-                        label: const Text('Clear Filters'),
+                        label: Text(AppLocalizations.of(context)!.clearFilters),
                         style: TextButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
@@ -419,7 +424,7 @@ class _LearningPathsPageState extends State<LearningPathsPage>
           // Search
           TextField(
             decoration: InputDecoration(
-              hintText: 'Search learning paths...',
+              hintText: AppLocalizations.of(context)!.searchLearningPaths,
               prefixIcon: Icon(
                 PhosphorIcons.magnifyingGlass(PhosphorIconsStyle.fill),
                 size: 20,
@@ -450,7 +455,7 @@ class _LearningPathsPageState extends State<LearningPathsPage>
               // Category filter
               Expanded(
                 child: _buildFilterDropdown(
-                  hint: 'Category',
+                  hint: AppLocalizations.of(context)!.category,
                   value: _selectedCategory,
                   items: _availableCategories
                       .where((c) => c != null)
@@ -476,13 +481,18 @@ class _LearningPathsPageState extends State<LearningPathsPage>
               // Difficulty filter
               Expanded(
                 child: _buildFilterDropdown(
-                  hint: 'Difficulty',
+                  hint: AppLocalizations.of(context)!.difficulty,
                   value: _selectedDifficulty,
                   items: _availableDifficulties
                       .map((d) => DropdownMenuItem<String>(
                             value: d,
                             child: Text(
-                              d[0].toUpperCase() + d.substring(1),
+                              d == 'beginner'
+                                  ? AppLocalizations.of(context)!.beginner
+                                  : d == 'intermediate'
+                                      ? AppLocalizations.of(context)!
+                                          .intermediate
+                                      : AppLocalizations.of(context)!.advanced,
                               overflow: TextOverflow.ellipsis,
                             ),
                           ))
@@ -584,13 +594,13 @@ class _LearningPathsPageState extends State<LearningPathsPage>
             ),
             const SizedBox(height: 16),
             Text(
-              "You don't have any learning paths yet",
+              AppLocalizations.of(context)!.noLearningPathsYet,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             Text(
-              "Generate a new AI-powered learning path to start your journey",
+              AppLocalizations.of(context)!.generateNewPath,
               textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: Colors.grey.shade700,
@@ -600,7 +610,7 @@ class _LearningPathsPageState extends State<LearningPathsPage>
             ElevatedButton.icon(
               onPressed: _showGeneratePathDialog,
               icon: Icon(PhosphorIcons.brain(PhosphorIconsStyle.fill)),
-              label: const Text('Generate Learning Path'),
+              label: Text(AppLocalizations.of(context)!.generateLearningPath),
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -611,7 +621,7 @@ class _LearningPathsPageState extends State<LearningPathsPage>
             const SizedBox(height: 12),
             OutlinedButton(
               onPressed: () => context.pop(),
-              child: const Text('Go Back'),
+              child: Text(AppLocalizations.of(context)!.goBack),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
@@ -677,19 +687,19 @@ class _LearningPathsPageState extends State<LearningPathsPage>
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         _buildStatItem(
-          label: 'Total Paths',
+          label: AppLocalizations.of(context)!.totalPaths,
           value: totalPaths.toString(),
           icon: PhosphorIcons.books(PhosphorIconsStyle.fill),
           color: Colors.blue,
         ),
         _buildStatItem(
-          label: 'Completed',
+          label: AppLocalizations.of(context)!.completedStatus,
           value: completedPaths.toString(),
           icon: PhosphorIcons.checkCircle(PhosphorIconsStyle.fill),
           color: Colors.green,
         ),
         _buildStatItem(
-          label: 'In Progress',
+          label: AppLocalizations.of(context)!.inProgress,
           value: inProgressPaths.toString(),
           icon: PhosphorIcons.caretRight(PhosphorIconsStyle.fill),
           color: AppColors.primary,
@@ -743,6 +753,15 @@ class _LearningPathsPageState extends State<LearningPathsPage>
     );
   }
 
+  /// Localize learning path title (replace "Learning Path: " with localized version)
+  String _localizePathTitle(String title) {
+    final l10n = AppLocalizations.of(context)!;
+    if (title.startsWith('Learning Path: ')) {
+      return title.replaceFirst('Learning Path: ', l10n.learningPathPrefix);
+    }
+    return title;
+  }
+
   /// Build a recent path card for the dashboard
   Widget _buildRecentPathCard(LearningPath path) {
     return Card(
@@ -778,7 +797,7 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          path.title,
+                          _localizePathTitle(path.title),
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
@@ -808,8 +827,12 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                               ),
                             ],
                             Text(
-                              path.difficulty[0].toUpperCase() +
-                                  path.difficulty.substring(1),
+                              path.difficulty == 'beginner'
+                                  ? AppLocalizations.of(context)!.beginner
+                                  : path.difficulty == 'intermediate'
+                                      ? AppLocalizations.of(context)!
+                                          .intermediate
+                                      : AppLocalizations.of(context)!.advanced,
                               style: TextStyle(
                                 fontSize: 11,
                                 color: _getDifficultyColor(path.difficulty),
@@ -834,8 +857,8 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                           color: Colors.green.withOpacity(0.2),
                         ),
                       ),
-                      child: const Text(
-                        'Active',
+                      child: Text(
+                        AppLocalizations.of(context)!.active,
                         style: TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
@@ -935,7 +958,7 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          path.title,
+                          _localizePathTitle(path.title),
                           style:
                               Theme.of(context).textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
@@ -946,7 +969,7 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                         Row(
                           children: [
                             Text(
-                              formatDate(path.createdAt),
+                              formatDate(path.createdAt, context),
                               style: Theme.of(context).textTheme.bodySmall,
                             ),
                             if (path.category != null) ...[
@@ -971,7 +994,7 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                     children: [
                       if (path.isActive)
                         Chip(
-                          label: const Text('Active'),
+                          label: Text(AppLocalizations.of(context)!.active),
                           backgroundColor: AppColors.primary.withOpacity(0.2),
                           labelStyle: TextStyle(
                             color: AppColors.primary,
@@ -994,8 +1017,11 @@ class _LearningPathsPageState extends State<LearningPathsPage>
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: Text(
-                          path.difficulty[0].toUpperCase() +
-                              path.difficulty.substring(1),
+                          path.difficulty == 'beginner'
+                              ? AppLocalizations.of(context)!.beginner
+                              : path.difficulty == 'intermediate'
+                                  ? AppLocalizations.of(context)!.intermediate
+                                  : AppLocalizations.of(context)!.advanced,
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,

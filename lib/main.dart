@@ -1,6 +1,9 @@
 import 'package:deltamind/core/constants/app_constants.dart';
+import 'package:deltamind/core/locale/locale_controller.dart';
 import 'package:deltamind/core/routing/app_router.dart';
 import 'package:deltamind/core/theme/app_theme.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:deltamind/features/auth/auth_controller.dart';
 import 'package:deltamind/features/auth/forgot_password_page.dart';
 import 'package:deltamind/features/auth/login_page.dart';
@@ -353,12 +356,25 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(_routerProvider);
+    final localeState = ref.watch(localeControllerProvider);
 
     return MaterialApp.router(
       title: AppConstants.appName,
       theme: AppTheme.lightTheme,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
+      // Localization support
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('en', ''), // English
+        Locale('vi', ''), // Vietnamese
+      ],
+      locale: localeState.locale,
     );
   }
 }

@@ -1,6 +1,7 @@
 import 'package:deltamind/core/theme/app_colors.dart';
 import 'package:deltamind/services/analytics_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:intl/intl.dart';
 
@@ -13,6 +14,7 @@ class SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final percentFormat = NumberFormat.decimalPercentPattern(decimalDigits: 1);
 
     return Card(
@@ -46,7 +48,7 @@ class SummaryCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 12),
                 Text(
-                  'Performance Overview',
+                  l10n.performanceOverview,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: AppColors.textPrimary,
@@ -55,7 +57,7 @@ class SummaryCard extends StatelessWidget {
                 const Spacer(),
                 if (analytics.lastUpdated != null)
                   Text(
-                    'Updated: ${_formatUpdateTime(analytics.lastUpdated!)}',
+                    '${l10n.updated}${_formatUpdateTime(analytics.lastUpdated!, l10n)}',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: AppColors.textSecondary.withOpacity(0.7),
                       fontSize: 11,
@@ -68,9 +70,9 @@ class SummaryCard extends StatelessWidget {
             // Average score with circular indicator
             Row(
               children: [
-                _buildScoreIndicator(context, analytics.averageScore),
+                _buildScoreIndicator(context, analytics.averageScore, l10n),
                 const SizedBox(width: 16),
-                Expanded(child: _buildStatsList(context)),
+                Expanded(child: _buildStatsList(context, l10n)),
               ],
             ),
           ],
@@ -79,7 +81,8 @@ class SummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildScoreIndicator(BuildContext context, double score) {
+  Widget _buildScoreIndicator(
+      BuildContext context, double score, AppLocalizations l10n) {
     final theme = Theme.of(context);
     final size = 100.0;
 
@@ -120,7 +123,7 @@ class SummaryCard extends StatelessWidget {
                 ),
               ),
               Text(
-                'Average',
+                l10n.average,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -132,33 +135,32 @@ class SummaryCard extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsList(BuildContext context) {
+  Widget _buildStatsList(BuildContext context, AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildStatItem(
           context,
-          'Quizzes Completed',
+          l10n.quizzesCompleted,
           '${analytics.totalAttempts}',
           PhosphorIconsFill.checkSquare,
         ),
         const SizedBox(height: 16),
         _buildStatItem(
           context,
-          'Questions Answered',
+          l10n.questionsAnswered,
           '${analytics.totalQuestionsAttempted}',
           PhosphorIconsFill.listChecks,
         ),
         const SizedBox(height: 16),
         _buildStatItem(
           context,
-          'Correct Answers',
+          l10n.correctAnswers,
           '${analytics.totalCorrectAnswers}',
           PhosphorIconsFill.check,
-          additionalInfo:
-              analytics.totalQuestionsAttempted > 0
-                  ? '${(analytics.totalCorrectAnswers / analytics.totalQuestionsAttempted * 100).toStringAsFixed(1)}% accuracy'
-                  : null,
+          additionalInfo: analytics.totalQuestionsAttempted > 0
+              ? '${(analytics.totalCorrectAnswers / analytics.totalQuestionsAttempted * 100).toStringAsFixed(1)}% ${l10n.accuracy}'
+              : null,
         ),
       ],
     );
@@ -226,18 +228,18 @@ class SummaryCard extends StatelessWidget {
     );
   }
 
-  String _formatUpdateTime(DateTime dateTime) {
+  String _formatUpdateTime(DateTime dateTime, AppLocalizations l10n) {
     final now = DateTime.now();
     final difference = now.difference(dateTime);
 
     if (difference.inDays > 0) {
-      return '${difference.inDays}d ago';
+      return l10n.daysAgo(difference.inDays);
     } else if (difference.inHours > 0) {
-      return '${difference.inHours}h ago';
+      return l10n.hoursAgo(difference.inHours);
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes}m ago';
+      return l10n.minutesAgo(difference.inMinutes);
     } else {
-      return 'Just now';
+      return l10n.justNow;
     }
   }
 }

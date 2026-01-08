@@ -5,6 +5,7 @@ import 'package:deltamind/features/quiz/quiz_controller.dart';
 import 'package:deltamind/services/gemini_service.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -45,6 +46,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
   }
 
   Future<void> _pickFile() async {
+    final l10n = AppLocalizations.of(context)!;
     try {
       final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
@@ -54,11 +56,10 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
 
       if (result != null && result.files.isNotEmpty) {
         final file = result.files.first;
-
         // Check file size
         if (file.size > maxFileSize) {
           setState(() {
-            _errorMessage = 'File is too large. Maximum size is 5MB.';
+            _errorMessage = l10n.fileIsTooLarge;
           });
           return;
         }
@@ -66,7 +67,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
         // Validate if we have bytes for web platform
         if (kIsWeb && file.bytes == null) {
           setState(() {
-            _errorMessage = 'Error: Cannot access file data on web platform.';
+            _errorMessage = l10n.errorCannotAccessFileData;
           });
           return;
         }
@@ -82,8 +83,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
           'png',
         ].contains(fileExtension)) {
           setState(() {
-            _errorMessage =
-                'Unsupported file format. Please upload a text, document, PDF, or image file.';
+            _errorMessage = l10n.unsupportedFileFormat;
           });
           return;
         }
@@ -106,14 +106,14 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
 
         // Update the UI to show the file is ready for processing
         setState(() {
-          _contentController.text = 'File uploaded: $_fileName\n\n'
-              '${_getFileTypeDescription(fileExtension)} ready for processing.\n\n'
-              'Click "Generate Quiz" to create a quiz from this file content.';
+          _contentController.text = '${l10n.uploadFile}: $_fileName\n\n'
+              '${_getFileTypeDescription(fileExtension)} ${l10n.readyForProcessing}.\n\n'
+              '${l10n.clickGenerateQuizToCreate}';
         });
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Error picking file: $e';
+        _errorMessage = l10n.errorPickingFile(e.toString());
       });
     }
   }
@@ -141,9 +141,10 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
       return;
     }
 
+    final l10n = AppLocalizations.of(context)!;
     if (_contentController.text.trim().isEmpty && _fileBytes == null) {
       setState(() {
-        _errorMessage = 'Please enter some content or upload a file';
+        _errorMessage = l10n.pleaseEnterContentOrUploadFile;
       });
       return;
     }
@@ -158,10 +159,11 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
       if (_fileBytes != null && _fileName != null) {
         final String fileExtension = _fileName!.split('.').last.toLowerCase();
 
+        final l10n = AppLocalizations.of(context)!;
         // Update loading state with file processing info
         setState(() {
           _contentController.text =
-              'Processing ${fileExtension.toUpperCase()} file...';
+              l10n.processingFile(fileExtension.toUpperCase());
         });
 
         if (fileExtension == 'pdf') {
@@ -172,10 +174,11 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
 
             // Extract text from all pages
             final buffer = StringBuffer();
+            final l10n = AppLocalizations.of(context)!;
             for (int i = 1; i <= document.pages.count; i++) {
               setState(() {
                 _contentController.text =
-                    'Processing PDF page $i of ${document.pages.count}...';
+                    l10n.processingPdfPage(i, document.pages.count);
               });
 
               String text = extractor.extractText(
@@ -194,8 +197,9 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
             // Dispose the document
             document.dispose();
           } catch (e) {
+            final l10n = AppLocalizations.of(context)!;
             setState(() {
-              _errorMessage = 'Error processing PDF: $e';
+              _errorMessage = l10n.errorProcessingPdf(e.toString());
               _isLoading = false;
             });
             return;
@@ -208,8 +212,9 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
               _contentController.text = fileContent;
             });
           } catch (e) {
+            final l10n = AppLocalizations.of(context)!;
             setState(() {
-              _errorMessage = 'Error reading text file: $e';
+              _errorMessage = l10n.errorReadingTextFile(e.toString());
               _isLoading = false;
             });
             return;
@@ -227,6 +232,10 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
           // Use the title from the title field
           final title = _titleController.text.trim();
 
+          // Get current locale and map to language name
+          final locale = Localizations.localeOf(context);
+          final language = _getLanguageName(locale);
+
           // Use the Riverpod controller to generate the quiz directly from file
           final quizController = ref.read(quizControllerProvider.notifier);
 
@@ -238,6 +247,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
             fileBytes: _fileBytes!,
             fileName: _fileName!,
             questionCount: _questionCount,
+            language: language,
           );
 
           if (!mounted) return;
@@ -255,7 +265,8 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
             context.go('/quiz/${quiz.id}');
             return; // Exit early as we've already handled this case
           } else {
-            throw Exception('Failed to generate quiz from file');
+            final l10n = AppLocalizations.of(context)!;
+            throw Exception(l10n.failedToGenerateQuizFromFile);
           }
         } else {
           setState(() {
@@ -270,11 +281,16 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
       // Use the title from the title field
       final title = _titleController.text.trim();
 
+      final l10n = AppLocalizations.of(context)!;
       // Update UI to show we're generating the quiz
       setState(() {
         _contentController.text =
-            '${_contentController.text}\n\nGenerating quiz questions...';
+            '${_contentController.text}\n\n${l10n.generatingQuizQuestions}';
       });
+
+      // Get current locale and map to language name
+      final locale = Localizations.localeOf(context);
+      final language = _getLanguageName(locale);
 
       // Use the Riverpod controller to generate the quiz
       final quizController = ref.read(quizControllerProvider.notifier);
@@ -286,15 +302,17 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
         difficulty: _selectedDifficulty,
         content: _contentController.text,
         questionCount: _questionCount,
+        language: language,
       );
 
       if (!mounted) return;
 
       if (quiz != null) {
         // Show success message
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Quiz generated successfully!'),
+            content: Text(l10n.quizGeneratedSuccessfully),
             backgroundColor: AppTheme.successColor,
           ),
         );
@@ -302,12 +320,14 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
         // Navigate to the quiz details page
         context.go('/quiz/${quiz.id}');
       } else {
-        throw Exception('Failed to generate quiz');
+        final l10n = AppLocalizations.of(context)!;
+        throw Exception(l10n.failedToGenerateQuiz);
       }
     } catch (e) {
       if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
-        _errorMessage = 'Error generating quiz: $e';
+        _errorMessage = l10n.errorGeneratingQuiz(e.toString());
       });
     } finally {
       if (mounted) {
@@ -320,9 +340,10 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Create Quiz'),
+        title: Text(l10n.createQuizTitle),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -353,7 +374,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          'AI Quiz Generator',
+                          l10n.aiQuizGenerator,
                           style: AppTheme.headingMedium.copyWith(
                             color: AppColors.primary,
                             fontSize: 22,
@@ -363,7 +384,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      'Create a new quiz by entering your study material or uploading a file. Our AI will generate quiz questions for you.',
+                      l10n.createQuizDescription,
                       style: AppTheme.bodyText.copyWith(
                         color: AppColors.textSecondary,
                       ),
@@ -375,7 +396,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
 
               // Quiz title field
               Text(
-                'Quiz Title',
+                l10n.quizTitle,
                 style: AppTheme.subtitle.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
@@ -383,12 +404,12 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
                 controller: _titleController,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a quiz title';
+                    return l10n.pleaseEnterQuizTitle;
                   }
                   return null;
                 },
                 decoration: InputDecoration(
-                  hintText: 'Enter a title for your quiz',
+                  hintText: l10n.enterQuizTitle,
                   filled: true,
                   fillColor: Colors.white,
                   prefixIcon: Icon(
@@ -433,7 +454,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Quiz Settings',
+                          l10n.quizSettings,
                           style: AppTheme.subtitle.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -444,7 +465,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
 
                     // Quiz type selection
                     Text(
-                      'Quiz Type',
+                      l10n.quizType,
                       style: AppTheme.smallText.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -469,9 +490,17 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
                         ),
                       ),
                       items: AppConstants.quizTypes.map((type) {
+                        String displayType = type;
+                        if (type == 'Multiple Choice') {
+                          displayType = l10n.quizTypeMultipleChoice;
+                        } else if (type == 'True/False') {
+                          displayType = l10n.quizTypeTrueFalse;
+                        } else if (type == 'Fill in the Blank') {
+                          displayType = l10n.quizTypeFillInTheBlank;
+                        }
                         return DropdownMenuItem(
                           value: type,
-                          child: Text(type),
+                          child: Text(displayType),
                         );
                       }).toList(),
                       onChanged: _isLoading
@@ -488,7 +517,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
 
                     // Difficulty selection
                     Text(
-                      'Difficulty',
+                      l10n.difficulty,
                       style: AppTheme.smallText.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -513,9 +542,19 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
                         ),
                       ),
                       items: AppConstants.quizDifficulties.map((difficulty) {
+                        String displayDifficulty = difficulty;
+                        if (difficulty == 'Easy') {
+                          displayDifficulty = l10n.quizDifficultyEasy;
+                        } else if (difficulty == 'Medium') {
+                          displayDifficulty = l10n.quizDifficultyMedium;
+                        } else if (difficulty == 'Hard') {
+                          displayDifficulty = l10n.quizDifficultyHard;
+                        } else if (difficulty == 'Expert') {
+                          displayDifficulty = l10n.quizDifficultyExpert;
+                        }
                         return DropdownMenuItem(
                           value: difficulty,
-                          child: Text(difficulty),
+                          child: Text(displayDifficulty),
                         );
                       }).toList(),
                       onChanged: _isLoading
@@ -532,7 +571,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
 
                     // Question count
                     Text(
-                      'Number of Questions: $_questionCount',
+                      l10n.numberOfQuestions(_questionCount),
                       style: AppTheme.smallText.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -570,12 +609,12 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
 
               // Content section
               Text(
-                'Study Material',
+                l10n.studyMaterial,
                 style: AppTheme.subtitle.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(
-                'Enter your notes, text, or learning material, or upload a file.',
+                l10n.studyMaterialHint,
                 style: AppTheme.smallText.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -599,7 +638,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'File Upload',
+                          l10n.fileUpload,
                           style: AppTheme.subtitle.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -614,7 +653,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
                         color: AppColors.primary,
                       ),
                       label: Text(
-                        _fileName != null ? 'Change File' : 'Upload File',
+                        _fileName != null ? l10n.changeFile : l10n.uploadFile,
                       ),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.primary,
@@ -682,8 +721,7 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
                 controller: _contentController,
                 maxLines: 8,
                 decoration: InputDecoration(
-                  hintText:
-                      'Paste your notes, text, or learning material here...',
+                  hintText: l10n.pasteYourNotes,
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -754,13 +792,13 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
                               ),
                             ),
                             const SizedBox(width: 12),
-                            const Text('Generating Quiz...'),
+                            Text(l10n.generatingQuiz),
                           ],
                         )
                       : Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text('Generate Quiz'),
+                            Text(l10n.generateQuiz),
                             const SizedBox(width: 8),
                             Icon(PhosphorIcons.sparkle()),
                           ],
@@ -773,5 +811,17 @@ class _CreateQuizPageState extends ConsumerState<CreateQuizPage> {
         ),
       ),
     );
+  }
+
+  /// Map locale to language name for AI generation
+  String? _getLanguageName(Locale locale) {
+    switch (locale.languageCode) {
+      case 'vi':
+        return 'Vietnamese';
+      case 'en':
+        return 'English';
+      default:
+        return 'English'; // Default to English
+    }
   }
 }

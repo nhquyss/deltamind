@@ -8,6 +8,7 @@ import 'package:deltamind/features/dashboard/widgets/quiz_accuracy_chart.dart';
 import 'package:deltamind/features/gamification/widgets/activity_calendar_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Analytics page to display charts and insights
@@ -81,6 +82,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final analyticsState = ref.watch(analyticsControllerProvider);
 
     return Scaffold(
@@ -89,7 +91,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
         backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         title: Text(
-          'Analytics',
+          l10n.analytics,
           style: Theme.of(
             context,
           ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
@@ -101,7 +103,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
               color: AppColors.primary,
             ),
             onPressed: _loadData,
-            tooltip: 'Refresh',
+            tooltip: l10n.refresh,
           ),
         ],
       ),
@@ -114,6 +116,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
   }
 
   Widget _buildLoadingView() {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -121,7 +124,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
           CircularProgressIndicator(color: AppColors.primary),
           const SizedBox(height: 16),
           Text(
-            'Loading your analytics...',
+            l10n.loadingAnalytics,
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ],
@@ -130,6 +133,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
   }
 
   Widget _buildErrorView(String errorMessage) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -137,7 +141,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
           Icon(PhosphorIconsFill.warning, size: 64, color: AppColors.error),
           const SizedBox(height: 16),
           Text(
-            'Error loading analytics',
+            l10n.errorLoadingAnalytics,
             style: Theme.of(context).textTheme.titleLarge,
           ),
           const SizedBox(height: 8),
@@ -155,7 +159,7 @@ class _AnalyticsPageState extends ConsumerState<AnalyticsPage>
           ElevatedButton.icon(
             onPressed: _loadData,
             icon: const Icon(PhosphorIconsFill.arrowClockwise),
-            label: const Text('Try Again'),
+            label: Text(l10n.tryAgain),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,

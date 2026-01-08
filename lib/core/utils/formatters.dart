@@ -1,12 +1,25 @@
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-/// Format date to a readable string (e.g. "Jan 1, 2023")
-String formatDate(DateTime date) {
+/// Format date to a readable string (e.g. "Jan 1, 2023" or "1 thg 1, 2023" for Vietnamese)
+String formatDate(DateTime date, [BuildContext? context]) {
+  // If context is provided, use locale from context
+  if (context != null) {
+    final locale = Localizations.localeOf(context);
+    return DateFormat.yMMMd(locale.toString()).format(date);
+  }
+  // Default to English format
   return DateFormat('MMM d, yyyy').format(date);
 }
 
-/// Format date to a readable string with time (e.g. "Jan 1, 2023 2:30 PM")
-String formatDateWithTime(DateTime date) {
+/// Format date to a readable string with time (e.g. "Jan 1, 2023 2:30 PM" or "1 thg 1, 2023 14:30" for Vietnamese)
+String formatDateWithTime(DateTime date, [BuildContext? context]) {
+  // If context is provided, use locale from context
+  if (context != null) {
+    final locale = Localizations.localeOf(context);
+    return DateFormat.yMMMd(locale.toString()).add_jm().format(date);
+  }
+  // Default to English format
   return DateFormat('MMM d, yyyy h:mm a').format(date);
 }
 
