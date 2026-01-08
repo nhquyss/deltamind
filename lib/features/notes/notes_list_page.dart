@@ -225,7 +225,8 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
               padding: const EdgeInsets.all(8.0),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                childAspectRatio: 0.8,
+                childAspectRatio:
+                    0.65, // Reduced from 0.8 to give more height to cards
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
               ),
@@ -309,6 +310,7 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Row(
                     children: [
@@ -349,30 +351,31 @@ class _NotesListPageState extends ConsumerState<NotesListPage> {
                         maxHeight: 100,
                       ),
                     ),
-                  if (note.tags.isNotEmpty)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: Wrap(
-                        spacing: 4,
-                        runSpacing: 4,
-                        children: note.tags
-                            .map(
-                              (tag) => Chip(
-                                label: Text(
-                                  tag,
-                                  style: const TextStyle(fontSize: 10),
-                                ),
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                                visualDensity: VisualDensity.compact,
-                                padding: EdgeInsets.zero,
-                                labelPadding:
-                                    const EdgeInsets.symmetric(horizontal: 4),
-                              ),
-                            )
-                            .toList(),
-                      ),
-                    ),
+                  // Tags inside card - commented out to fix overflow
+                  // if (note.tags.isNotEmpty)
+                  //   Padding(
+                  //     padding: const EdgeInsets.only(top: 8.0),
+                  //     child: Wrap(
+                  //       spacing: 4,
+                  //       runSpacing: 4,
+                  //       children: note.tags
+                  //           .map(
+                  //             (tag) => Chip(
+                  //               label: Text(
+                  //                 tag,
+                  //                 style: const TextStyle(fontSize: 10),
+                  //               ),
+                  //               materialTapTargetSize:
+                  //                   MaterialTapTargetSize.shrinkWrap,
+                  //               visualDensity: VisualDensity.compact,
+                  //               padding: EdgeInsets.zero,
+                  //               labelPadding:
+                  //                   const EdgeInsets.symmetric(horizontal: 4),
+                  //             ),
+                  //           )
+                  //           .toList(),
+                  //     ),
+                  //   ),
                   if (formattedDate.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),

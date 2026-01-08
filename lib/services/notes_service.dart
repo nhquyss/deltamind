@@ -1,9 +1,47 @@
+import 'dart:convert';
 import 'package:deltamind/models/note.dart';
 import 'package:deltamind/services/supabase_service.dart';
 import 'package:flutter/foundation.dart';
 
 /// Service for managing notes
 class NotesService {
+  /// Convert plain text to Delta JSON format for Quill editor
+  /// Delta format: [{"insert":"text\n"}]
+  static String convertPlainTextToDelta(String plainText) {
+    if (plainText.isEmpty) {
+      return '[{"insert":"\n"}]';
+    }
+
+    // Split by newlines and create Delta operations
+    // Combine text and newline in the same operation for efficiency
+    final lines = plainText.split('\n');
+    final List<Map<String, dynamic>> deltaOps = [];
+
+    for (int i = 0; i < lines.length; i++) {
+      final line = lines[i];
+      // Combine text with newline (except for the last line if it's not empty)
+      if (i < lines.length - 1) {
+        // Not the last line, add newline
+        deltaOps.add({'insert': '$line\n'});
+      } else {
+        // Last line - add newline only if line is not empty or if it's the only line
+        if (line.isNotEmpty || lines.length == 1) {
+          deltaOps.add({'insert': '$line\n'});
+        } else {
+          // Last line is empty and there are multiple lines, just add newline
+          deltaOps.add({'insert': '\n'});
+        }
+      }
+    }
+
+    // If no operations were created, add at least one newline
+    if (deltaOps.isEmpty) {
+      deltaOps.add({'insert': '\n'});
+    }
+
+    return jsonEncode(deltaOps);
+  }
+
   /// Get all notes for the current user
   static Future<List<Note>> getUserNotes({
     String? searchQuery,

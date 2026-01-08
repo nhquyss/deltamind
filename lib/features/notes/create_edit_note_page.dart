@@ -127,7 +127,7 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
 
   Future<void> _autoSave() async {
     // Không tự động lưu nếu không có thay đổi hoặc đang trong quá trình lưu
-    if (!_isDirty || _isSaving) return;
+    if (!_isDirty || _isSaving || !mounted) return;
 
     // Khi auto-save, chỉ lưu khi đã có ghi chú (nghĩa là cập nhật)
     // Không tạo ghi chú mới khi auto-save để tránh tạo nhiều ghi chú trùng lặp
@@ -136,12 +136,14 @@ class _CreateEditNotePageState extends ConsumerState<CreateEditNotePage> {
       return;
     }
 
+    if (!mounted) return;
     setState(() {
       _isSaving = true;
     });
 
     await _saveNote(showFeedback: false);
 
+    if (!mounted) return;
     setState(() {
       _isDirty = false;
       _isSaving = false;
